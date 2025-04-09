@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AppController {
     @GetMapping("/")
     public String hello() {
-        return "Hello MatchDay! -github action";
+        return "Hello MatchDay! -github action2";
     }
 }
