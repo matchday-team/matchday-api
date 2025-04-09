@@ -17,4 +17,4 @@ out/
 .vscode/
 
 # 민감정보
-src/main/resources/application.yml
+application.yml
