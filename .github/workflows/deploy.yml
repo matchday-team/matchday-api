@@ -1,0 +1,60 @@
+name: Git Action 실행
+
+#main에 push될때 아래 workflow 실행
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest # ubuntu 환경/가장 최신 버전에서 하세요
+    steps: #step : 특정 작업을 수행하는 가장 작은 단위, job은 여러 step들로 구성
+      - name: Github Repository에 올린 파일들을 불러오기
+        uses: actions/checkout@v4
+
+      - name: 불러온 파일 리스트 출력(디버그)
+        run: |
+          ls
+          pwd
+
+      - name: JDK 17버전 설치
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin #자바브랜드
+          java-version: 17 #버전
+
+      - name: application.yml 파일 생성
+        run: echo "${{ secrets.APPLICATION_PROPERTIES}}" > src/main/resources/application.yml
+
+      - name: 테스트 및 빌드하기
+        run: ./gradlew clean build
+
+      - name: 빌드된 파일 이름 변경
+        run: mv ./build/libs/*SNAPSHOT.jar ./project.jar
+
+      - name: SCP로 EC2에 빌드된 파일 전송하기 #SCP : SSH 기반 원격서버 파일 전송 명령어
+        uses: appleboy/ssh-action@v0.1.7 #를 해주는 라이브러리
+        with:
+          host: ${{ secrets.NCP_HOST }}
+          username: ${{ secrets.NCP_USERNAME }}
+          password: ${{ secrets.NCP_PASSWORD }}
+          source: project.jar
+          target: /home/ubuntu/matchday-server/tobe #타겟이 저장될 위치
+
+      - name: SSH EC2 접속
+        uses: appleboy/ssh-action@v1.0.3 #SSH 접속 라이브러리
+        with:
+          host: ${{ secrets.NCP_HOST }}
+          username: ${{ secrets.NCP_USERNAME }}
+          password: ${{ secrets.NCP_PASSWORD }}
+          script_stop: true #명령어들중 하나라도 실패하면 워크플로우 중단
+          script: | # 예전 current 파일을 지우고 새롭게 생성된 tobe 폴더 옮겨주기
+            rm -rf /home/ubuntu/matchday-server/current
+            mkdir /home/ubuntu/matchday-server/current
+            mv /home/ubuntu/matchday-server/tobe/project.jar /home/ubuntu/matchday-server/current/project.jar
+            cd /home/ubuntu/matchday-server/current
+            sudo fuser -k -n tcp 8080 || true
+            nohup java -jar project.jar > ./output.log 2>&1 &
+            rm -rf /home/ubuntu/matchday-server/tobe
+
