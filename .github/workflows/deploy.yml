@@ -38,7 +38,7 @@ jobs:
         run: mv ./build/libs/*SNAPSHOT.jar ./project.jar
 
       - name: SCP로 EC2에 빌드된 파일 전송하기 #SCP : SSH 기반 원격서버 파일 전송 명령어
-        uses: appleboy/ssh-action@v0.1.7 #를 해주는 라이브러리
+        uses: appleboy/scp-action@v0.1.7 #를 해주는 라이브러리
         with:
           host: ${{ secrets.NCP_HOST }}
           username: ${{ secrets.NCP_USERNAME }}
@@ -46,7 +46,7 @@ jobs:
           source: project.jar
           target: /home/ubuntu/matchday-server/tobe #타겟이 저장될 위치
 
-      - name: SSH EC2 접속
+      - name: SSH NCP 접속
         uses: appleboy/ssh-action@v1.0.3 #SSH 접속 라이브러리
         with:
           host: ${{ secrets.NCP_HOST }}
