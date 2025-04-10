@@ -5,6 +5,11 @@ on:
     branches:
       - release
       - main
+    paths:
+      - '**.java'
+      - 'src/**'
+      - 'build.gradle'
+      - 'settings.gradle'
 
 jobs:
   test:
