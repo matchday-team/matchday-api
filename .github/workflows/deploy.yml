@@ -1,11 +1,13 @@
 name: Git Action 실행
 
-#main,release에 pullrequest날릴때 아래 workflow 실행
+#main,release에 pullrequest close 시점에서 아래 workflow 실행
 on:
   pull_request:
     branches:
       - release
       - main
+    types:
+      - closed
 
 jobs:
   Deploy:
