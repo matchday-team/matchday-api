@@ -11,6 +11,7 @@ on:
 
 jobs:
   Deploy:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest # ubuntu 환경/가장 최신 버전에서 하세요
     steps: #step : 특정 작업을 수행하는 가장 작은 단위, job은 여러 step들로 구성
       - name: Github Repository에 올린 파일들을 불러오기
