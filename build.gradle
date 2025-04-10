@@ -31,8 +31,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     //DB
-    //implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    //runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
