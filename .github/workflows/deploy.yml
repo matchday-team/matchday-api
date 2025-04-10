@@ -10,6 +10,7 @@ on:
       - release
     types:
       - closed
+
 jobs:
   Deploy:
     runs-on: ubuntu-latest # ubuntu 환경/가장 최신 버전에서 하세요
