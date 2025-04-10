@@ -2,12 +2,10 @@ name: Git Action 실행
 
 #main에 push될때 아래 workflow 실행
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - release
+      - main
     types:
       - closed
 

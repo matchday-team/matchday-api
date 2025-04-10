@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AppController {
     @GetMapping("/")
     public String hello() {
-        return 1234;
+        return "Hello MatchDay!";
     }
 }
