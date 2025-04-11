@@ -1,6 +1,6 @@
 package com.matchday.matchdayserver.common.exception;
 
-import org.springframework.http.ResponseEntity;
+import com.matchday.matchdayserver.common.response.ApiResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApiExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ApiExceptionInterface> handleApiException(Exception ex, ApiException apiException) {
-        return ResponseEntity
-                .status(apiException.getStatus().getHttpStatusCode())
-                .body(apiException);
+    public ApiResponse<ApiExceptionInterface> handleApiException(Exception ex, ApiException apiException) {
+        return ApiResponse.error(apiException.getStatus());
     }
 }
