@@ -5,6 +5,11 @@ on:
     branches:
       - release
       - main
+    paths:
+      - '**.java'
+      - 'src/**'
+      - 'build.gradle'
+      - 'settings.gradle'
 
 jobs:
   test:
@@ -27,13 +32,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle
 
-      - name: 캐시 히트 여부 디버깅
-        run: |
-          if [ "${{ steps.cache-gradle.outputs.cache-hit }}" = "true" ]; then
-            echo "Cache hit: true"
-          else
-            echo "Cache hit: false"
-          fi
       - name: application.yml 파일 생성
         run: |
           mkdir -p ./src/main/resources
