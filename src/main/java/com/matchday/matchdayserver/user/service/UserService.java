@@ -5,9 +5,8 @@ import com.matchday.matchdayserver.common.response.DefaultStatus;
 import com.matchday.matchdayserver.user.model.Entity.User;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
 import com.matchday.matchdayserver.user.repository.UserRepository;
-import lombok.NoArgsConstructor;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,12 +16,15 @@ public class UserService {
     private final UserRepository userRepository;
 
     public void create(UserCreateRequest request){
-
-        if (userRepository.existsByName(request.getName())) {
-            throw new ApiException(DefaultStatus.BAD_REQUEST, "이미 존재하는 유저 이름");
-        }
-
+        validateDuplicateUser(request.getName());
         User user = new User(request.getName());
         userRepository.save(user);
+    }
+
+    //유저 이름 중복 체크
+    private void validateDuplicateUser(String name) {
+        if (userRepository.existsByName(name)) {
+            throw new ApiException(DefaultStatus.BAD_REQUEST, "이미 존재하는 유저 이름");
+        }
     }
 }
