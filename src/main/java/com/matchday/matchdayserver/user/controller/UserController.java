@@ -8,14 +8,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
     @Operation(summary = "임시 유저 생성")
-    @PostMapping("/create")
+    @PostMapping
     public ApiResponse<?> createUser(@RequestBody UserCreateRequest request) {
 
         userService.create(request);
