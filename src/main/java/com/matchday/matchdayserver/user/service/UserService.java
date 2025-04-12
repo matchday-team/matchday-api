@@ -2,6 +2,7 @@ package com.matchday.matchdayserver.user.service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.DefaultStatus;
+import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.user.model.Entity.User;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
 import com.matchday.matchdayserver.user.repository.UserRepository;
@@ -24,7 +25,7 @@ public class UserService {
     //유저 이름 중복 체크
     private void validateDuplicateUser(String name) {
         if (userRepository.existsByName(name)) {
-            throw new ApiException(DefaultStatus.BAD_REQUEST, "이미 존재하는 유저 이름");
+            throw new ApiException(UserStatus.DUPLICATE_NAME);
         }
     }
 }
