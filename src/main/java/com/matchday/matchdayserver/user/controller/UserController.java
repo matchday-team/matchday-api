@@ -26,7 +26,6 @@ public class UserController {
     @Operation(summary = "팀 입단")
     @PostMapping("/{userId}/teams")
     public ApiResponse<?> joinTeam(@PathVariable Long userId,@RequestBody UserJoinTeamRequest request) {
-        userService.joinTeam(userId,request);
-        return ApiResponse.ok("팀 입단 완료");
+        return ApiResponse.ok(userService.joinTeam(userId,request));
     }
 }

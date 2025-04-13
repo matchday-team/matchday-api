@@ -9,6 +9,7 @@ import com.matchday.matchdayserver.user.model.dto.request.UserJoinTeamRequest;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
 import com.matchday.matchdayserver.user.repository.UserRepository;
+import com.matchday.matchdayserver.userteam.model.dto.JoinUserTeamResponse;
 import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
 import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void joinTeam(Long userId,UserJoinTeamRequest request){
+    public JoinUserTeamResponse joinTeam(Long userId, UserJoinTeamRequest request){
         //유저객체 가져오기
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
@@ -50,6 +51,7 @@ public class UserService {
                 .build();
         //객체 저장
         userTeamRepository.save(userTeam);
+        return userTeam.toDTO();
     }
 
     //유저 이름 중복 체크

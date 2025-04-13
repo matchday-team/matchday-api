@@ -2,6 +2,7 @@ package com.matchday.matchdayserver.userteam.model.entity;
 
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.user.model.entity.User;
+import com.matchday.matchdayserver.userteam.model.dto.JoinUserTeamResponse;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,6 +50,16 @@ public class UserTeam {
         this.number = number;
         this.defaultPosition = defaultPosition;
         this.isActive = isActive;
+    }
+
+    public JoinUserTeamResponse toDTO(){
+        return new JoinUserTeamResponse(
+                this.id,
+                this.team.getName(),
+                this.user.getName(),
+                this.number,
+                this.defaultPosition
+        );
     }
 
     public void updateNumber(Integer number) {
