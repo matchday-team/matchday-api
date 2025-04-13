@@ -52,7 +52,7 @@ public class UserTeam {
         this.isActive = isActive;
     }
 
-    public JoinUserTeamResponse toDTO(){
+    public JoinUserTeamResponse toJoinUserTeamResponseDTO(){
         return new JoinUserTeamResponse(
                 this.id,
                 this.team.getName(),

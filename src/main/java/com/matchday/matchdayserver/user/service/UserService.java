@@ -51,7 +51,7 @@ public class UserService {
                 .build();
         //객체 저장
         userTeamRepository.save(userTeam);
-        return userTeam.toDTO();
+        return userTeam.toJoinUserTeamResponseDTO();
     }
 
     //유저 이름 중복 체크
