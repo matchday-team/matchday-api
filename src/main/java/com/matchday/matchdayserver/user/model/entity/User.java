@@ -1,4 +1,4 @@
-package com.matchday.matchdayserver.user.model.Entity;
+package com.matchday.matchdayserver.user.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
