@@ -1,27 +1,33 @@
-package com.matchday.matchdayserver.user.model.entity;
+    package com.matchday.matchdayserver.user.model.entity;
 
-import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+    import com.matchday.matchdayserver.teamuser.model.entity.UserTeam;
+    import jakarta.persistence.*;
+    import lombok.Builder;
+    import lombok.Getter;
+    import lombok.NoArgsConstructor;
 
-@Entity
-@Getter
-@NoArgsConstructor
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    import java.util.List;
 
-    @Column(nullable = false, length = 30, unique = true)
-    private String name;
+    @Entity
+    @Getter
+    @NoArgsConstructor
+    public class User {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @Builder
-    public User (String name) {
-        this.name = name;
+        @Column(nullable = false, length = 30, unique = true)
+        private String name;
+
+        @Builder
+        public User (String name) {
+            this.name = name;
+        }
+
+        public void updateName(String name) {
+            this.name = name;
+        }
+
+        @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
+        private List<UserTeam> userTeams;
     }
-
-    public void updateName(String name) {
-        this.name = name;
-    }
-}

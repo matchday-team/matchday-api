@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.team.model.entity;
 
+import com.matchday.matchdayserver.teamuser.model.entity.UserTeam;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,5 +33,8 @@ public class Team {
     public void updateName(String name) {
         this.name = name;
     }
+
+    @OneToMany(mappedBy = "team" , cascade = CascadeType.REMOVE)
+    private List<UserTeam> userTeams;
 }
 

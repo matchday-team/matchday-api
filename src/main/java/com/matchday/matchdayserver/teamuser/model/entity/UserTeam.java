@@ -1,5 +1,7 @@
 package com.matchday.matchdayserver.teamuser.model.entity;
 
+import com.matchday.matchdayserver.team.model.entity.Team;
+import com.matchday.matchdayserver.user.model.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +33,14 @@ public class UserTeam {
 
     @Column
     private Boolean isActive; //현재 팀에서 활동 여부
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) //EAGER 로딩이 필요하다면 변경하시오
+    @JoinColumn(name = "user_id", nullable = false) //명시적으로 외래키 명 지정
+    private Team team;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "team_id", nullable = false)
+    private User user;
 
     @Builder
     public UserTeam (Integer number, String defaultPosition) {
