@@ -3,7 +3,7 @@ package com.matchday.matchdayserver.common.response;
 import java.io.Serializable;
 
 public enum UserStatus implements StatusInterface {
-    DUPLICATE_NAME(400,4001, "이미 존재하는 유저 이름");
+    DUPLICATE_USERNAME(400,4001, "이미 존재하는 유저 이름");
 
     private final int httpStatusCode;
     private final int customStatusCode;
