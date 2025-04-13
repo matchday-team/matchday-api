@@ -1,4 +1,4 @@
-package com.matchday.matchdayserver.teamuser.model.entity;
+package com.matchday.matchdayserver.userteam.model.entity;
 
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.user.model.entity.User;
@@ -43,9 +43,12 @@ public class UserTeam {
     private User user;
 
     @Builder
-    public UserTeam (Integer number, String defaultPosition) {
+    public UserTeam (Team team,User user,Integer number, String defaultPosition,Boolean isActive) {
+        this.team = team;
+        this.user = user;
         this.number = number;
         this.defaultPosition = defaultPosition;
+        this.isActive = isActive;
     }
 
     public void updateNumber(Integer number) {
