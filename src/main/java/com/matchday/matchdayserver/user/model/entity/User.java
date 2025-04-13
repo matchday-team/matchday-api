@@ -1,6 +1,6 @@
     package com.matchday.matchdayserver.user.model.entity;
 
-    import com.matchday.matchdayserver.teamuser.model.entity.UserTeam;
+    import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
     import jakarta.persistence.*;
     import lombok.Builder;
     import lombok.Getter;
