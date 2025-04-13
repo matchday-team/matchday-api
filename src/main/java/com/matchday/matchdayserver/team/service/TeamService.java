@@ -5,6 +5,7 @@ import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.team.model.dto.TeamCreateRequest;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
+import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class TeamService {
 
     private final TeamRepository teamRepository;
+    private final UserTeamRepository userTeamRepository;
 
     public void create(TeamCreateRequest request){
         validateDuplicateTeamName(request.getName());
@@ -20,10 +22,15 @@ public class TeamService {
         teamRepository.save(team);
     }
 
-    //유저 이름 중복 체크
-    private void validateDuplicateTeamName(String name) {
+    //팀 이름 중복 체크
+    public void validateDuplicateTeamName(String name) {
         if (teamRepository.existsByName(name)) {
             throw new ApiException(TeamStatus.DUPLICATE_TEAMNAME);
         }
+    }
+
+    //팀에 특정 유저가 존재하는지 체크
+    public boolean validateUserInTeam(Long userId, Long teamId){
+        return userTeamRepository.existsByUserIdAndTeamId(userId, teamId);
     }
 }
