@@ -1,11 +1,16 @@
 package com.matchday.matchdayserver.team.controller;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
-import com.matchday.matchdayserver.team.model.dto.TeamCreateRequest;
+import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
+import com.matchday.matchdayserver.team.model.dto.response.TeamBasicDto;
+import com.matchday.matchdayserver.team.model.dto.response.TeamListResponse;
+import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/teams")
@@ -19,5 +24,13 @@ public class TeamController {
     public ApiResponse<?> createUser(@RequestBody TeamCreateRequest request) {
         teamService.create(request);
         return ApiResponse.ok("팀생성완료");
+    }
+
+    @Operation(summary = "팀 검색")
+    @GetMapping("/search")
+    public ApiResponse<?> searchTeams(@RequestParam String keyword) {
+        List<TeamBasicDto> teamList = teamService.searchTeams(keyword);
+        TeamListResponse response = new TeamListResponse(teamList);
+        return ApiResponse.ok(response);
     }
 }
