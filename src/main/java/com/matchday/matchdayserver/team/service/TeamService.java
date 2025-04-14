@@ -4,13 +4,13 @@ import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
 import com.matchday.matchdayserver.team.model.dto.response.TeamBasicDto;
-import com.matchday.matchdayserver.team.model.dto.response.TeamListResponse;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +46,15 @@ public class TeamService {
         if (teams.isEmpty()) {
             throw new ApiException(TeamStatus.NOTFOUND_TEAM);
         }
+
+        return teams.stream()
+                .map(team -> new TeamBasicDto(team.getId(), team.getName()))
+                .collect(Collectors.toList());
+    }
+
+    //전체 팀 조회
+    public List<TeamBasicDto> getAllTeams(){
+        List<Team> teams = teamRepository.findAllBy();
 
         return teams.stream()
                 .map(team -> new TeamBasicDto(team.getId(), team.getName()))

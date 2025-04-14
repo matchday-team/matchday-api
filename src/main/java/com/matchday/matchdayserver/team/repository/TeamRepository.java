@@ -9,4 +9,5 @@ import java.util.List;
 public interface TeamRepository extends JpaRepository<Team, Long> {
     boolean existsByName(String name);
     List<Team> findByNameContaining(String keyword); //키워드에 해당하는 팀 조회
+    List<Team> findAllBy();
 }

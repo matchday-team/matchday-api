@@ -33,4 +33,12 @@ public class TeamController {
         TeamListResponse response = new TeamListResponse(teamList);
         return ApiResponse.ok(response);
     }
+
+    @Operation(summary = "팀 목록 조회")
+    @GetMapping()
+    public ApiResponse<?> getTeam() {
+        List<TeamBasicDto> teamList = teamService.getAllTeams();
+        TeamListResponse response = new TeamListResponse(teamList);
+        return ApiResponse.ok(response);
+    }
 }
