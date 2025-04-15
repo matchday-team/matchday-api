@@ -22,7 +22,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    //유저 이름 중복 체크
+    //유저 이름 중복 체크.
     private void validateDuplicateUser(String name) {
         if (userRepository.existsByName(name)) {
             throw new ApiException(UserStatus.DUPLICATE_NAME);
