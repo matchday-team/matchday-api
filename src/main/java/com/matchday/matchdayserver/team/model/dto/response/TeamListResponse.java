@@ -11,5 +11,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TeamListResponse {
-    private List<TeamBasicDto> teams;
+    private List<TeamNameResponse> teams;
 }

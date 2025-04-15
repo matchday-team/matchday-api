@@ -2,9 +2,8 @@ package com.matchday.matchdayserver.team.controller;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
-import com.matchday.matchdayserver.team.model.dto.response.TeamBasicDto;
 import com.matchday.matchdayserver.team.model.dto.response.TeamListResponse;
-import com.matchday.matchdayserver.team.model.entity.Team;
+import com.matchday.matchdayserver.team.model.dto.response.TeamNameResponse;
 import com.matchday.matchdayserver.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ public class TeamController {
     @Operation(summary = "팀 검색")
     @GetMapping("/search")
     public ApiResponse<?> searchTeams(@RequestParam String keyword) {
-        List<TeamBasicDto> teamList = teamService.searchTeams(keyword);
+        List<TeamNameResponse> teamList = teamService.searchTeams(keyword);
         TeamListResponse response = new TeamListResponse(teamList);
         return ApiResponse.ok(response);
     }
@@ -37,7 +36,7 @@ public class TeamController {
     @Operation(summary = "팀 목록 조회")
     @GetMapping()
     public ApiResponse<?> getTeam() {
-        List<TeamBasicDto> teamList = teamService.getAllTeams();
+        List<TeamNameResponse> teamList = teamService.getAllTeams();
         TeamListResponse response = new TeamListResponse(teamList);
         return ApiResponse.ok(response);
     }

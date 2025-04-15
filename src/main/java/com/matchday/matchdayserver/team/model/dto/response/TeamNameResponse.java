@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TeamBasicDto { //팀명 검색시 사용
+public class TeamNameResponse { //팀명 검색시 사용
     private Long id;
     private String name;
 }

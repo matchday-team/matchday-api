@@ -3,14 +3,13 @@ package com.matchday.matchdayserver.team.service;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
-import com.matchday.matchdayserver.team.model.dto.response.TeamBasicDto;
+import com.matchday.matchdayserver.team.model.dto.response.TeamNameResponse;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +39,7 @@ public class TeamService {
     }
 
     //키워드에 해당하는 팀 검색
-    public List<TeamBasicDto> searchTeams(String keyword) {
+    public List<TeamNameResponse> searchTeams(String keyword) {
         List<Team> teams = teamRepository.searchByKeyword(keyword);
 
         if (teams.isEmpty()) {
@@ -48,16 +47,16 @@ public class TeamService {
         }
 
         return teams.stream()
-                .map(team -> new TeamBasicDto(team.getId(), team.getName()))
+                .map(team -> new TeamNameResponse(team.getId(), team.getName()))
                 .collect(Collectors.toList());
     }
 
     //전체 팀 조회
-    public List<TeamBasicDto> getAllTeams(){
+    public List<TeamNameResponse> getAllTeams(){
         List<Team> teams = teamRepository.findAllBy();
 
         return teams.stream()
-                .map(team -> new TeamBasicDto(team.getId(), team.getName()))
+                .map(team -> new TeamNameResponse(team.getId(), team.getName()))
                 .collect(Collectors.toList());
     }
 }
