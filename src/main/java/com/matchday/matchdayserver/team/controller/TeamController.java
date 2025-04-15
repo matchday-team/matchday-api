@@ -27,7 +27,7 @@ public class TeamController {
 
     @Operation(summary = "팀 검색")
     @GetMapping("/search")
-    public ApiResponse<?> searchTeams(@RequestParam String keyword) {
+    public ApiResponse<TeamListResponse> searchTeams(@RequestParam String keyword) {
         List<TeamNameResponse> teamList = teamService.searchTeams(keyword);
         TeamListResponse response = new TeamListResponse(teamList);
         return ApiResponse.ok(response);
@@ -35,7 +35,7 @@ public class TeamController {
 
     @Operation(summary = "팀 목록 조회")
     @GetMapping()
-    public ApiResponse<?> getTeam() {
+    public ApiResponse<TeamListResponse> getTeam() {
         List<TeamNameResponse> teamList = teamService.getAllTeams();
         TeamListResponse response = new TeamListResponse(teamList);
         return ApiResponse.ok(response);
