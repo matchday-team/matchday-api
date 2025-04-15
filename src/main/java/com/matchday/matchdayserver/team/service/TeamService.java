@@ -41,7 +41,7 @@ public class TeamService {
 
     //키워드에 해당하는 팀 검색
     public List<TeamBasicDto> searchTeams(String keyword) {
-        List<Team> teams = teamRepository.findByNameContaining(keyword);
+        List<Team> teams = teamRepository.searchByKeyword(keyword);
 
         if (teams.isEmpty()) {
             throw new ApiException(TeamStatus.NOTFOUND_TEAM);
