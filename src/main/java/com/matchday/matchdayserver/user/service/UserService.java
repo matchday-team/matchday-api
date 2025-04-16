@@ -11,6 +11,7 @@ import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
 import com.matchday.matchdayserver.user.repository.UserRepository;
 import com.matchday.matchdayserver.userteam.model.dto.JoinUserTeamResponse;
 import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
+import com.matchday.matchdayserver.userteam.model.mapper.UserTeamMapper;
 import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ public class UserService {
                 .build();
         //객체 저장
         userTeamRepository.save(userTeam);
-        return userTeam.toJoinUserTeamResponseDTO();
+        return UserTeamMapper.toJoinUserTeamResponse(userTeam);
     }
 
     //유저 이름 중복 체크

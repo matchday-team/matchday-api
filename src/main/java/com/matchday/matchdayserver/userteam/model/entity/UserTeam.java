@@ -52,16 +52,6 @@ public class UserTeam {
         this.isActive = isActive;
     }
 
-    public JoinUserTeamResponse toJoinUserTeamResponseDTO(){
-        return new JoinUserTeamResponse(
-                this.id,
-                this.team.getName(),
-                this.user.getName(),
-                this.number,
-                this.defaultPosition
-        );
-    }
-
     public void updateNumber(Integer number) {
         this.number = number;
     }
