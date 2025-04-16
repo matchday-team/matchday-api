@@ -22,9 +22,9 @@ public class TeamController {
 
     @Operation(summary = "팀 생성")
     @PostMapping
-    public ApiResponse<?> createUser(@RequestBody TeamCreateRequest request) {
-        teamService.create(request);
-        return ApiResponse.ok("팀생성완료");
+    public ApiResponse<Long> createUser(@RequestBody TeamCreateRequest request) {
+        Long teamId=teamService.create(request);
+        return ApiResponse.ok(teamId);
     }
 
     @Operation(summary = "팀 검색")

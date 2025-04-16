@@ -20,10 +20,12 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final UserTeamRepository userTeamRepository;
 
-    public void create(TeamCreateRequest request){
+    //팀 생성
+    public Long create(TeamCreateRequest request){
         validateDuplicateTeamName(request.getName());
         Team team = new Team(request.getName());
         teamRepository.save(team);
+        return team.getId();
     }
 
     //팀 이름 중복 체크
