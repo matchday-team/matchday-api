@@ -1,4 +1,4 @@
-name: 수동 Spring Boot 서버 재시작
+name: 수동 서버 재시작
 
 on:
   workflow_dispatch:
