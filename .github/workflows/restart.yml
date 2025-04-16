@@ -1,0 +1,26 @@
+name: 수동 서버 재시작
+
+on:
+  workflow_dispatch:
+
+jobs:
+  RestartOnly:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Spring Boot 재시작
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.NCP_HOST }}
+          username: ${{ secrets.NCP_USERNAME }}
+          password: ${{ secrets.NCP_PASSWORD }}
+          script_stop: true
+          script: |
+            echo "기존 프로세스를 종료하고 재시작."
+            sudo fuser -k -n tcp 8080 || true
+
+            echo "Spring Boot 다시 실행합니다."
+            cd /home/ubuntu/matchday-server/current
+            nohup java -jar project.jar > ./output.log 2>&1 &
+
+            echo "재시작 완료"
