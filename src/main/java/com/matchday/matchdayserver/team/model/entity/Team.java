@@ -21,7 +21,7 @@ public class Team {
     @Column(nullable = false, length = 50, unique = true)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     @CreationTimestamp //추후 필요하다면 EntityListener 추가
     private LocalDateTime createdAt;
 
