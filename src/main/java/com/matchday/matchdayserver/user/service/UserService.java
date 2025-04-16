@@ -1,4 +1,5 @@
 package com.matchday.matchdayserver.user.service;
+
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
@@ -25,10 +26,11 @@ public class UserService {
     private final TeamRepository teamRepository;
     private final UserTeamRepository userTeamRepository;
 
-    public void createUser(UserCreateRequest request){
+    public Long createUser(UserCreateRequest request){
         validateDuplicateUser(request.getName());
         User user = new User(request.getName());
         userRepository.save(user);
+        return user.getId();
     }
 
     public JoinUserTeamResponse joinTeam(Long userId, UserJoinTeamRequest request){

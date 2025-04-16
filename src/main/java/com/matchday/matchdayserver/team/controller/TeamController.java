@@ -6,11 +6,13 @@ import com.matchday.matchdayserver.team.model.dto.response.TeamListResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamNameResponse;
 import com.matchday.matchdayserver.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "teams", description = "팀 관련 API")
 @RestController
 @RequestMapping("/api/v1/teams")
 @RequiredArgsConstructor
