@@ -1,4 +1,4 @@
-name: Test and Build
+name: 빌드 테스트
 #PR 단계에서 단순 코드 테스트용, 테스트를 통과하지 못한다면 merge 불가
 on:
   pull_request:
@@ -10,7 +10,7 @@ on:
       - 'src/**'
       - 'build.gradle'
       - 'settings.gradle'
-
+      - 'workflows/**'
 jobs:
   test:
     runs-on: ubuntu-latest

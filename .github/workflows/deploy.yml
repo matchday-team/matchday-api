@@ -1,4 +1,4 @@
-name: Git Action 실행
+name: NCP 서버 배포
 
 #main,release에 pullrequest close 시점에서 아래 workflow 실행
 on:
