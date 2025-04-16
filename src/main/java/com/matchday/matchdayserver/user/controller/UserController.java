@@ -19,6 +19,6 @@ public class UserController {
     public ApiResponse<?> createUser(@RequestBody UserCreateRequest request) {
 
         userService.create(request);
-        return ApiResponse.ok("유저생성완료");
+        return ApiResponse.ok("유저 생성 완료");
     }
 }
