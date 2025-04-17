@@ -16,7 +16,7 @@ import java.time.LocalTime;
 
 @Service
 @RequiredArgsConstructor
-public class MatchService {
+public class MatchCreateService {
     private final MatchRepository matchRepository;
     private final TeamRepository teamRepository;
 

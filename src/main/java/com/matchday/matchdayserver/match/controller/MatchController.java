@@ -2,7 +2,7 @@ package com.matchday.matchdayserver.match.controller;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.match.model.dto.request.MatchCreateRequest;
-import com.matchday.matchdayserver.match.service.MatchService;
+import com.matchday.matchdayserver.match.service.MatchCreateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/matches")
 @RequiredArgsConstructor
 public class MatchController {
-    private final MatchService matchService;
+    private final MatchCreateService matchService;
 
     @Operation(summary = "매치 생성")
     @PostMapping
