@@ -4,8 +4,12 @@ import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.user.model.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor
 public class MatchPlayer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +31,14 @@ public class MatchPlayer {
     private String matchPosition;
 
     public enum Role {
-        START_PLAYER, SUB_PLAYER
+        start_player, sub_player
     }
 
+    @Builder
+    public MatchPlayer(Match match, User user, Role role, String matchPosition) {
+        this.match = match;
+        this.user = user;
+        this.role = role;
+        this.matchPosition = matchPosition;
+    }
 }
