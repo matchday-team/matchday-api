@@ -18,3 +18,4 @@ out/
 
 # 민감정보
 .env
+./src/main/resources/application.yml
