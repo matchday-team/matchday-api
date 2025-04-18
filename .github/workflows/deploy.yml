@@ -34,7 +34,18 @@ jobs:
             ${{ runner.os }}-gradle
 
       - name: .env 파일 생성
-        run: echo "${{ secrets.DOTENV }}" > .env
+        run: |
+          echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" > .env
+          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
+          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+          echo "SPRING_JPA_HIBERNATE_DDL_AUTO=${{ secrets.SPRING_JPA_HIBERNATE_DDL_AUTO }}" >> .env
+      - name: .env 파일 생성 확인 (디버깅용)
+        run: |
+          echo "✅ .env 파일 존재 여부!:"
+          ls -l .env || echo "❌ .env 파일 없음"
+      
+          echo "✅ .env 파일 내용 (마스킹 없이 확인용):"
+          cat .env || echo "❌ .env 파일 읽기 실패"
 
       - name: 테스트 및 빌드하기
         run: |
