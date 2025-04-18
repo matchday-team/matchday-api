@@ -10,7 +10,7 @@ on:
       - 'src/**'
       - 'build.gradle'
       - 'settings.gradle'
-      - 'workflows/**'
+      - '.github/workflows/**'
 jobs:
   test:
     runs-on: ubuntu-latest

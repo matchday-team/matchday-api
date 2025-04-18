@@ -36,6 +36,9 @@ jobs:
       - name: .env 파일 생성
         run: echo "${{ secrets.DOTENV }}" > .env
 
+      - name: .env 파일 확인 (디버깅용)
+        run: cat .env
+
       - name: 테스트 및 빌드하기
         run: |
           chmod +x gradlew
