@@ -26,7 +26,7 @@ public class MatchUser {
     private String matchPosition;
 
     public enum Role {
-        START_PLAYER, SUB_PLAYER
+        admin, start_player, sub_player //감독, 선발선수, 후발선수
     }
 
 }
