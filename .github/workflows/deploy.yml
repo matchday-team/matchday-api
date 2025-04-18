@@ -36,8 +36,17 @@ jobs:
       - name: .env 파일 생성
         run: echo "${{ secrets.DOTENV }}" > .env
 
-      - name: .env 파일 확인 (디버깅용)
-        run: cat .env
+      - name: .env 디버깅용 생성 (한 줄씩 나눔)
+        run: |
+          echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
+          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
+          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+          echo "SPRING_JPA_HIBERNATE_DDL_AUTO=${{ secrets.SPRING_JPA_HIBERNATE_DDL_AUTO }}" >> .env
+
+      - name: .env 내용 포맷 확인 (마스킹 방지용)
+        run: |
+          echo "==== .env 포맷 확인 ===="
+          cat .env
 
       - name: 테스트 및 빌드하기
         run: |
