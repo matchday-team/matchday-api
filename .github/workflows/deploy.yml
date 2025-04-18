@@ -35,13 +35,6 @@ jobs:
 
       - name: .env 파일 생성
         run: echo "${{ secrets.DOTENV }}" > .env
-      - name: .env 파일 생성 확인 (디버깅용)
-        run: |
-          echo "✅ .env 파일 존재 여부!:"
-          ls -l .env || echo "❌ .env 파일 없음"
-      
-          echo "✅ .env 파일 내용 (마스킹 없이 확인용):"
-          cat .env || echo "❌ .env 파일 읽기 실패"
 
       - name: 테스트 및 빌드하기
         run: |
@@ -57,9 +50,7 @@ jobs:
           host: ${{ secrets.NCP_HOST }}
           username: ${{ secrets.NCP_USERNAME }}
           password: ${{ secrets.NCP_PASSWORD }}
-          source: |
-            project.jar
-            .env
+          source: project.jar
           target: /home/ubuntu/matchday-server/tobe #타겟이 저장될 위치
 
       - name: SSH NCP 접속
@@ -69,13 +60,11 @@ jobs:
           username: ${{ secrets.NCP_USERNAME }}
           password: ${{ secrets.NCP_PASSWORD }}
           script_stop: true #명령어들중 하나라도 실패하면 워크플로우 중단
-          script: |
+          script: | # 예전 current 파일을 지우고 새롭게 생성된 tobe 폴더 옮겨주기
             rm -rf /home/ubuntu/matchday-server/current
             mkdir -p /home/ubuntu/matchday-server/current
             mv /home/ubuntu/matchday-server/tobe/project.jar /home/ubuntu/matchday-server/current/project.jar
-            mv /home/ubuntu/matchday-server/tobe/.env /home/ubuntu/matchday-server/current/.env
             cd /home/ubuntu/matchday-server/current
             sudo fuser -k -n tcp 8080 || true
             nohup java -jar project.jar > ./output.log 2>&1 &
             rm -rf /home/ubuntu/matchday-server/tobe
-
