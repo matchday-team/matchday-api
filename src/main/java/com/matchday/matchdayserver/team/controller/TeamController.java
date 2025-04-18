@@ -3,11 +3,14 @@ package com.matchday.matchdayserver.team.controller;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
 import com.matchday.matchdayserver.team.model.dto.response.TeamListResponse;
+import com.matchday.matchdayserver.team.model.dto.response.TeamMemberListResponse;
+import com.matchday.matchdayserver.team.model.dto.response.TeamMemberResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamNameResponse;
 import com.matchday.matchdayserver.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,5 +44,11 @@ public class TeamController {
         List<TeamNameResponse> teamList = teamService.getAllTeams();
         TeamListResponse response = new TeamListResponse(teamList);
         return ApiResponse.ok(response);
+    }
+
+    @Operation(summary = "팀에 속한 맴버 리스트 조회")
+    @GetMapping("/{teamId}/users")
+    public ApiResponse<TeamMemberListResponse> getTeamMembers(@PathVariable Long teamId) {
+        return ApiResponse.ok(teamService.getTeamMembers(teamId));
     }
 }
