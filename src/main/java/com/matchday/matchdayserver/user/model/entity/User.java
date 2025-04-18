@@ -1,5 +1,6 @@
     package com.matchday.matchdayserver.user.model.entity;
 
+    import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
     import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
     import jakarta.persistence.*;
     import lombok.Builder;
@@ -30,4 +31,7 @@
 
         @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
         private List<UserTeam> userTeams;
+
+        @OneToMany(mappedBy = "user") // cascade = CascadeType.REMOVE 안한 이유 : 유저의 과거 기록은 남겨두는게 좋을듯?
+        private List<MatchEvent> matchEvents;
     }
