@@ -41,7 +41,7 @@ jobs:
           echo "SPRING_JPA_HIBERNATE_DDL_AUTO=${{ secrets.SPRING_JPA_HIBERNATE_DDL_AUTO }}" >> .env
       - name: .env 파일 생성 확인 (디버깅용)
         run: |
-          echo "✅ .env 파일 존재 여부:"
+          echo "✅ .env 파일 존재 여부!:"
           ls -l .env || echo "❌ .env 파일 없음"
       
           echo "✅ .env 파일 내용 (마스킹 없이 확인용):"
