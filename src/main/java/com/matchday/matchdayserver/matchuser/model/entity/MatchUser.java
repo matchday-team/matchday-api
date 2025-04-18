@@ -1,12 +1,11 @@
-package com.matchday.matchdayserver.matchplayer.model.entity;
+package com.matchday.matchdayserver.matchuser.model.entity;
 
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.user.model.entity.User;
 import jakarta.persistence.*;
-import lombok.Builder;
 
 @Entity
-public class MatchPlayer {
+public class MatchUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
