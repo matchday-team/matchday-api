@@ -44,7 +44,7 @@ public class UserService {
         if(teamService.validateUserInTeam(userId,request.getTeamId())){
            throw new ApiException(TeamStatus.ALREADY_JOINED_USER);
         }
-        //userTeam 객체 생성.
+        //userTeam 객체 생성
         UserTeam userTeam = UserTeam.builder()
                 .user(user)
                 .team(team)
