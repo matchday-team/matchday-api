@@ -22,7 +22,7 @@ jobs:
         with:
           tokenPrefix: "${"
           tokenSuffix: "}"
-          files: '["./src/main/resources/application.yaml"]'
+          files: '["./src/main/resources/application.yml"]'
         env:
           SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
@@ -68,7 +68,8 @@ jobs:
           username: ${{ secrets.NCP_USERNAME }}
           password: ${{ secrets.NCP_PASSWORD }}
           script_stop: true #명령어들중 하나라도 실패하면 워크플로우 중단
-          script: | # 예전 current 파일을 지우고 새롭게 생성된 tobe 폴더 옮겨주기
+          script:
+            | # 예전 current 파일을 지우고 새롭게 생성된 tobe 폴더 옮겨주기
             rm -rf /home/ubuntu/matchday-server/current
             mkdir -p /home/ubuntu/matchday-server/current
             mv /home/ubuntu/matchday-server/tobe/project.jar /home/ubuntu/matchday-server/current/project.jar
