@@ -6,7 +6,10 @@ public enum MatchStatus implements StatusInterface {
     SAME_TEAM_ERROR(400, 6003,"홈 팀과 어웨이 팀은 동일할 수 없습니다"),
     INVALID_STADIUM(400, 6004, "경기장을 입력하세요"),
     INVALID_DATE(400, 6005, "과거 날짜는 등록할 수 없습니다"),
-    INVALID_TIME(400, 6006, "시작시간이 종료시간 보다 늦을 수 없습니다");
+    INVALID_TIME(400, 6006, "시작시간이 종료시간 보다 늦을 수 없습니다"),
+    NOTFOUND_MATCH(404, 6007, "존재하지 않는 매치 입니다")
+    ;
+
 
     private final int httpStatusCode;
     private final int customStatusCode;
