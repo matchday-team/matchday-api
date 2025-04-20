@@ -4,13 +4,21 @@ import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 import com.matchday.matchdayserver.user.model.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MatchEvent {
 
     @Id
