@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.match.model.entity;
 
+import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "`match`")
@@ -64,5 +66,8 @@ public class Match {
         this.startTime = startTime;
         this.endTime = endTime;
     }
+
+    @OneToMany(mappedBy = "match",cascade = CascadeType.REMOVE)
+    private List<MatchEvent> matchEvents;
 }
 
