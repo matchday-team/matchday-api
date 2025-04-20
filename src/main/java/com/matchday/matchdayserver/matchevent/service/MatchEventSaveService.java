@@ -1,6 +1,7 @@
 package com.matchday.matchdayserver.matchevent.service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
+import com.matchday.matchdayserver.common.model.Message;
 import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
@@ -34,18 +35,23 @@ public class MatchEventSaveService {
     private final MatchEventRepository matchEventRepository;
     private final TeamRepository teamRepository;
 
-    public MatchEventResponse saveMatchEvent(MatchEventRequest request) {
+    public MatchEventResponse saveMatchEvent(Message<MatchEventRequest> request) {
+        Long userId = Long.parseLong(request.getToken());
+
         MatchUser matchUser = matchUserRepository
-                .findByMatchIdAndUserIdWithFetch(request.getMatchId(), request.getUserId())
+                .findByMatchIdAndUserIdWithFetch(request.getData().getMatchId(), userId)
                 .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
+        if (!matchUser.getRole().equals(MatchUser.Role.ARCHIVES)) {
+            new ApiException(MatchStatus.UNAUTHORIZED_RECORD);
+        }
 
         User user = matchUser.getUser();
         Match match = matchUser.getMatch();
 
-        Team team = teamRepository.findByMatchIdAndUserId(request.getMatchId(), request.getUserId())
+        Team team = teamRepository.findByMatchIdAndUserId(request.getData().getMatchId(), userId)
                 .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
 
-        MatchEvent matchEvent = MatchEventMapper.toEntity(request, match, user);
+        MatchEvent matchEvent = MatchEventMapper.toEntity(request.getData(), match, user);
         matchEventRepository.save(matchEvent);
 
         return MatchEventMapper.toResponse(matchEvent, team);
