@@ -3,8 +3,13 @@ package com.matchday.matchdayserver.matchuser.model.entity;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.user.model.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor
 public class MatchUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +37,12 @@ public class MatchUser {
         admin, start_player, sub_player //감독, 선발선수, 후발선수
     }
 
+    @Builder
+    public MatchUser(Match match, User user, Role role, String matchPosition, String matchGrid) {
+        this.match = match;
+        this.user = user;
+        this.role = role;
+        this.matchPosition = matchPosition;
+        this.matchGrid = matchGrid;
+    }
 }
