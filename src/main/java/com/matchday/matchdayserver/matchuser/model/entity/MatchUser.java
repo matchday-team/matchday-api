@@ -3,7 +3,9 @@ package com.matchday.matchdayserver.matchuser.model.entity;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.user.model.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 public class MatchUser {
     @Id
