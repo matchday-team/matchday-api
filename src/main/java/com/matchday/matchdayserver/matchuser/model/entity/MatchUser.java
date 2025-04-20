@@ -24,14 +24,14 @@ public class MatchUser {
     @Column(nullable = false)
     private Role role;
 
-    @Column(name = "match_position") //감독 고려하여 null 허용
+    @Column(name = "match_position") // 감독 고려하여 null 허용
     private String matchPosition;
 
-    @Column(name = "match_grid") //감독 고려하여 null 허용
+    @Column(name = "match_grid") // 감독 고려하여 null 허용
     private String matchGrid;
 
     public enum Role {
-        admin, start_player, sub_player //감독, 선발선수, 후발선수
+        ADMIN, START_PLAYER, SUB_PLAYER, ARCHIVES // 감독, 선발선수, 후발선수, 기록관
     }
 
 }
