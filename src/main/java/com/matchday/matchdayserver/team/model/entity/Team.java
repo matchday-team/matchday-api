@@ -26,12 +26,12 @@ public class Team {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private String team_color;
+    private String teamColor;
 
     @Builder
-    public Team (String name, String team_color) {
+    public Team (String name, String teamColor) {
         this.name = name;
-        this.team_color = team_color;
+        this.teamColor = teamColor;
     }
 
     public void updateName(String name) {
