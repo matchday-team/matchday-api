@@ -3,10 +3,9 @@ package com.matchday.matchdayserver.team.service;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
-import com.matchday.matchdayserver.team.model.dto.response.TeamMemberListResponse;
-import com.matchday.matchdayserver.team.model.dto.response.TeamMemberResponse;
-import com.matchday.matchdayserver.team.model.dto.response.TeamSearchResponse;
+import com.matchday.matchdayserver.team.model.dto.response.*;
 import com.matchday.matchdayserver.team.model.entity.Team;
+import com.matchday.matchdayserver.team.model.mapper.TeamMapper;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
 import com.matchday.matchdayserver.userteam.model.mapper.UserTeamMapper;
@@ -64,6 +63,13 @@ public class TeamService {
         return teams.stream()
                 .map(team -> new TeamSearchResponse(team.getId(), team.getName()))
                 .collect(Collectors.toList());
+    }
+
+    //팀 정보 조회
+    public TeamResponse getTeamInfo(Long teamId){
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
+        return TeamMapper.toTeamResponse(team);
     }
 
     //팀에 속한 선수들 조회

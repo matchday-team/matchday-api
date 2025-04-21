@@ -2,6 +2,7 @@ package com.matchday.matchdayserver.team.controller;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
+import com.matchday.matchdayserver.team.model.dto.response.TeamResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamSearchListResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamMemberListResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamSearchResponse;
@@ -39,9 +40,16 @@ public class TeamController {
 
     @Operation(summary = "팀 목록 조회", description = "전체 팀 조회 API입니다")
     @GetMapping()
-    public ApiResponse<TeamSearchListResponse> getTeam() {
+    public ApiResponse<TeamSearchListResponse> getTeamList() {
         List<TeamSearchResponse> teamList = teamService.getAllTeams();
         TeamSearchListResponse response = new TeamSearchListResponse(teamList);
+        return ApiResponse.ok(response);
+    }
+
+    @Operation(summary = "팀 정보 조회", description = "{timeId]의 정보 조회 API입니다.")
+    @GetMapping("/{teamId}")
+    public ApiResponse<TeamResponse> getTeamInfo(@PathVariable Long teamId) {
+        TeamResponse response = teamService.getTeamInfo(teamId);
         return ApiResponse.ok(response);
     }
 
