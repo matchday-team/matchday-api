@@ -31,7 +31,7 @@ public class TeamService {
     //팀 생성
     public Long create(TeamCreateRequest request){
         validateDuplicateTeamName(request.getName());
-        Team team = new Team(request.getName());
+        Team team = new Team(request.getName(), request.getTeamColor());
         teamRepository.save(team);
         return team.getId();
     }

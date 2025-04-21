@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TeamCreateRequest {
     private String name;//팀명
+    private String teamColor; //팀 컬러
 }
