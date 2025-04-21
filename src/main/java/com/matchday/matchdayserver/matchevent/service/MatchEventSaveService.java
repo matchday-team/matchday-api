@@ -42,7 +42,7 @@ public class MatchEventSaveService {
                 .findByMatchIdAndUserIdWithFetch(request.getData().getMatchId(), userId)
                 .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
         if (!matchUser.getRole().equals(MatchUser.Role.ARCHIVES)) {
-            new ApiException(MatchStatus.UNAUTHORIZED_RECORD);
+          throw new ApiException(MatchStatus.UNAUTHORIZED_RECORD);
         }
 
         User user = matchUser.getUser();
