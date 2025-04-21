@@ -2,9 +2,9 @@ package com.matchday.matchdayserver.team.controller;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
-import com.matchday.matchdayserver.team.model.dto.response.TeamListResponse;
+import com.matchday.matchdayserver.team.model.dto.response.TeamSearchListResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamMemberListResponse;
-import com.matchday.matchdayserver.team.model.dto.response.TeamNameResponse;
+import com.matchday.matchdayserver.team.model.dto.response.TeamSearchResponse;
 import com.matchday.matchdayserver.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,19 +29,19 @@ public class TeamController {
         return ApiResponse.ok(teamId);
     }
 
-    @Operation(summary = "팀 검색")
+    @Operation(summary = "팀 검색", description = "키워드로 팀 검색하는 API입니다.")
     @GetMapping("/search")
-    public ApiResponse<TeamListResponse> searchTeams(@RequestParam String keyword) {
-        List<TeamNameResponse> teamList = teamService.searchTeams(keyword);
-        TeamListResponse response = new TeamListResponse(teamList);
+    public ApiResponse<TeamSearchListResponse> searchTeams(@RequestParam String keyword) {
+        List<TeamSearchResponse> teamList = teamService.searchTeams(keyword);
+        TeamSearchListResponse response = new TeamSearchListResponse(teamList);
         return ApiResponse.ok(response);
     }
 
-    @Operation(summary = "팀 목록 조회")
+    @Operation(summary = "팀 목록 조회", description = "전체 팀 조회 API입니다")
     @GetMapping()
-    public ApiResponse<TeamListResponse> getTeam() {
-        List<TeamNameResponse> teamList = teamService.getAllTeams();
-        TeamListResponse response = new TeamListResponse(teamList);
+    public ApiResponse<TeamSearchListResponse> getTeam() {
+        List<TeamSearchResponse> teamList = teamService.getAllTeams();
+        TeamSearchListResponse response = new TeamSearchListResponse(teamList);
         return ApiResponse.ok(response);
     }
 

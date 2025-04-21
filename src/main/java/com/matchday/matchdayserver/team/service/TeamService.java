@@ -5,7 +5,7 @@ import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
 import com.matchday.matchdayserver.team.model.dto.response.TeamMemberListResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamMemberResponse;
-import com.matchday.matchdayserver.team.model.dto.response.TeamNameResponse;
+import com.matchday.matchdayserver.team.model.dto.response.TeamSearchResponse;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
@@ -45,7 +45,7 @@ public class TeamService {
     }
 
     //키워드에 해당하는 팀 검색
-    public List<TeamNameResponse> searchTeams(String keyword) {
+    public List<TeamSearchResponse> searchTeams(String keyword) {
         List<Team> teams = teamRepository.searchByKeyword(keyword);
 
         if (teams.isEmpty()) {
@@ -53,16 +53,16 @@ public class TeamService {
         }
 
         return teams.stream()
-                .map(team -> new TeamNameResponse(team.getId(), team.getName()))
+                .map(team -> new TeamSearchResponse(team.getId(), team.getName()))
                 .collect(Collectors.toList());
     }
 
     //전체 팀 조회
-    public List<TeamNameResponse> getAllTeams(){
+    public List<TeamSearchResponse> getAllTeams(){
         List<Team> teams = teamRepository.findAllBy();
 
         return teams.stream()
-                .map(team -> new TeamNameResponse(team.getId(), team.getName()))
+                .map(team -> new TeamSearchResponse(team.getId(), team.getName()))
                 .collect(Collectors.toList());
     }
 

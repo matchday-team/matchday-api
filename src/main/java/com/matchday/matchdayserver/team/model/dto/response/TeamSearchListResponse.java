@@ -10,6 +10,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TeamListResponse {
-    private List<TeamNameResponse> teams;
+public class TeamSearchListResponse {
+    private List<TeamSearchResponse> teamSearchResponses;
 }
