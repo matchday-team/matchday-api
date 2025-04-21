@@ -43,7 +43,7 @@ public class TeamService {
         return userTeamRepository.existsByUserIdAndTeamId(userId, teamId);
     }
 
-    //키워드에 해당하는 팀 검색
+    // 키워드에 해당하는 팀 검색
     public List<TeamSearchResponse> searchTeams(String keyword) {
         List<Team> teams = teamRepository.searchByKeyword(keyword);
 
@@ -51,18 +51,13 @@ public class TeamService {
             throw new ApiException(TeamStatus.NOTFOUND_TEAM);
         }
 
-        return teams.stream()
-                .map(team -> new TeamSearchResponse(team.getId(), team.getName()))
-                .collect(Collectors.toList());
+        return TeamMapper.toTeamSearchResponseList(teams);
     }
 
-    //전체 팀 조회
-    public List<TeamSearchResponse> getAllTeams(){
+    // 전체 팀 조회
+    public List<TeamSearchResponse> getAllTeams() {
         List<Team> teams = teamRepository.findAllBy();
-
-        return teams.stream()
-                .map(team -> new TeamSearchResponse(team.getId(), team.getName()))
-                .collect(Collectors.toList());
+        return TeamMapper.toTeamSearchResponseList(teams);
     }
 
     //팀 정보 조회
