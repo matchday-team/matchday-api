@@ -23,7 +23,7 @@ public class TeamController {
 
     private final TeamService teamService;
 
-    @Operation(summary = "팀 생성")
+    @Operation(summary = "팀 생성", description = "팀 생성 API입니다. ")
     @PostMapping
     public ApiResponse<Long> createUser(@RequestBody TeamCreateRequest request) {
         Long teamId=teamService.create(request);
