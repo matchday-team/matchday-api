@@ -4,13 +4,12 @@ import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
 import com.matchday.matchdayserver.team.model.dto.response.TeamListResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamMemberListResponse;
-import com.matchday.matchdayserver.team.model.dto.response.TeamMemberResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamNameResponse;
 import com.matchday.matchdayserver.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +24,8 @@ public class TeamController {
 
     @Operation(summary = "팀 생성", description = "팀 생성 API입니다. ")
     @PostMapping
-    public ApiResponse<Long> createUser(@RequestBody TeamCreateRequest request) {
-        Long teamId=teamService.create(request);
+    public ApiResponse<Long> createTeam(@RequestBody @Valid TeamCreateRequest request) {
+        Long teamId = teamService.create(request);
         return ApiResponse.ok(teamId);
     }
 

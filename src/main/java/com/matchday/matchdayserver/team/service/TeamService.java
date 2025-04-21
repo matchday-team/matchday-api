@@ -12,12 +12,8 @@ import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
 import com.matchday.matchdayserver.userteam.model.mapper.UserTeamMapper;
 import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +27,6 @@ public class TeamService {
     //팀 생성
     public Long create(TeamCreateRequest request){
         validateDuplicateTeamName(request.getName());
-        validateTeamColor(request.getTeamColor());
         Team team = new Team(request.getName(), request.getTeamColor());
         teamRepository.save(team);
         return team.getId();
@@ -41,13 +36,6 @@ public class TeamService {
     public void validateDuplicateTeamName(String name) {
         if (teamRepository.existsByName(name)) {
             throw new ApiException(TeamStatus.DUPLICATE_TEAMNAME);
-        }
-    }
-
-    //팀 컬러 빈 값이면 예외 발생
-    public void validateTeamColor(String color) {
-        if(color == null || color.isEmpty()){
-            throw  new ApiException(TeamStatus.REQUIRED_TEAM_COLOR);
         }
     }
 
