@@ -25,9 +25,13 @@ public class Team {
     @CreationTimestamp //추후 필요하다면 EntityListener 추가
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private String team_color;
+
     @Builder
-    public Team (String name) {
+    public Team (String name, String team_color) {
         this.name = name;
+        this.team_color = team_color;
     }
 
     public void updateName(String name) {
