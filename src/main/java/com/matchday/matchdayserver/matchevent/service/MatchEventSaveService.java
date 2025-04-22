@@ -32,31 +32,32 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MatchEventSaveService {
 
-    private final MatchUserRepository matchUserRepository;
-    private final MatchEventRepository matchEventRepository;
-    private final TeamRepository teamRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+  private final MatchUserRepository matchUserRepository;
+  private final MatchEventRepository matchEventRepository;
+  private final TeamRepository teamRepository;
+  private final SimpMessagingTemplate messagingTemplate;
 
-    public void saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
-        Long userId = Long.parseLong(request.getToken());
+  public void saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
+    Long userId = Long.parseLong(request.getToken());
 
-        MatchUser matchUser = matchUserRepository
-                .findByMatchIdAndUserIdWithFetch(matchId, userId)
-                .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
-        if (!matchUser.getRole().equals(MatchUser.Role.ARCHIVES)) {
-          throw new ApiException(MatchStatus.UNAUTHORIZED_RECORD);
-        }
-
-        User user = matchUser.getUser();
-        Match match = matchUser.getMatch();
-
-        Team team = teamRepository.findByMatchIdAndUserId(matchId, userId)
-                .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
-
-        MatchEvent matchEvent = MatchEventMapper.toEntity(request.getData(), match, user);
-        matchEventRepository.save(matchEvent);
-
-        MatchEventResponse matchEventResponse = MatchEventMapper.toResponse(matchEvent, team);
-        messagingTemplate.convertAndSend("/topic/match/" + matchId, matchEventResponse);
+    MatchUser matchUser = matchUserRepository
+        .findByMatchIdAndUserIdWithFetch(matchId, userId)
+        .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
+    if (!matchUser.getRole().equals(MatchUser.Role.ARCHIVES)) {
+      throw new ApiException(MatchStatus.UNAUTHORIZED_RECORD);
     }
+
+    User user = matchUser.getUser();
+    Match match = matchUser.getMatch();
+
+    Team team = teamRepository.findByMatchIdAndUserId(userId, matchId).orElseThrow(
+        () -> new ApiException(TeamStatus.NOTFOUND_TEAM)
+    );
+
+    MatchEvent matchEvent = MatchEventMapper.toEntity(request.getData(), match, user);
+    matchEventRepository.save(matchEvent);
+
+    MatchEventResponse matchEventResponse = MatchEventMapper.toResponse(matchEvent, team);
+    messagingTemplate.convertAndSend("/topic/match/" + matchId, matchEventResponse);
+  }
 }
