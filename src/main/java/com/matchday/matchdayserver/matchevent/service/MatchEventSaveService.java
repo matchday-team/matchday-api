@@ -6,13 +6,11 @@ import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
-import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.matchevent.mapper.MatchEventMapper;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
 import com.matchday.matchdayserver.user.model.entity.User;
-import com.matchday.matchdayserver.user.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -38,19 +36,16 @@ public class MatchEventSaveService {
   private final SimpMessagingTemplate messagingTemplate;
 
   public void saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
-    Long userId = Long.parseLong(request.getToken());
+    validateAuthUser(matchId, request.getToken());
 
     MatchUser matchUser = matchUserRepository
-        .findByMatchIdAndUserIdWithFetch(matchId, userId)
+        .findByMatchIdAndUserIdWithFetch(matchId, request.getData().getUserId())
         .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
-    if (!matchUser.getRole().equals(MatchUser.Role.ARCHIVES)) {
-      throw new ApiException(MatchStatus.UNAUTHORIZED_RECORD);
-    }
 
     User user = matchUser.getUser();
     Match match = matchUser.getMatch();
 
-    Team team = teamRepository.findByMatchIdAndUserId(userId, matchId).orElseThrow(
+    Team team = teamRepository.findByMatchIdAndUserId(user.getId(), matchId).orElseThrow(
         () -> new ApiException(TeamStatus.NOTFOUND_TEAM)
     );
 
@@ -59,5 +54,17 @@ public class MatchEventSaveService {
 
     MatchEventResponse matchEventResponse = MatchEventMapper.toResponse(matchEvent, team);
     messagingTemplate.convertAndSend("/topic/match/" + matchId, matchEventResponse);
+  }
+
+  private void validateAuthUser(Long matchId, String token) {
+    Long authId = Long.parseLong(token);
+
+    MatchUser authUser = matchUserRepository
+        .findByMatchIdAndUserIdWithFetch(matchId, authId)
+        .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
+
+    if(!authUser.getMatch().getId().equals(matchId)) {
+      throw new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER);
+    }
   }
 }
