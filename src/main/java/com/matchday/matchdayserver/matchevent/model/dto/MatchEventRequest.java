@@ -11,9 +11,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Schema(description = "경기 이벤트 요청 DTO")
 public class MatchEventRequest {
-  @Schema(description = "경기 ID", example = "1")
-  private final Long matchId;
-
   @Schema(description = "이벤트 타입", example = "GOAL")
   private final MatchEventType eventType;
 

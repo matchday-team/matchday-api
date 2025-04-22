@@ -35,11 +35,11 @@ public class MatchEventSaveService {
     private final MatchEventRepository matchEventRepository;
     private final TeamRepository teamRepository;
 
-    public MatchEventResponse saveMatchEvent(Message<MatchEventRequest> request) {
+    public MatchEventResponse saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
         Long userId = Long.parseLong(request.getToken());
 
         MatchUser matchUser = matchUserRepository
-                .findByMatchIdAndUserIdWithFetch(request.getData().getMatchId(), userId)
+                .findByMatchIdAndUserIdWithFetch(matchId, userId)
                 .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
         if (!matchUser.getRole().equals(MatchUser.Role.ARCHIVES)) {
           throw new ApiException(MatchStatus.UNAUTHORIZED_RECORD);
@@ -48,7 +48,7 @@ public class MatchEventSaveService {
         User user = matchUser.getUser();
         Match match = matchUser.getMatch();
 
-        Team team = teamRepository.findByMatchIdAndUserId(request.getData().getMatchId(), userId)
+        Team team = teamRepository.findByMatchIdAndUserId(matchId, userId)
                 .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
 
         MatchEvent matchEvent = MatchEventMapper.toEntity(request.getData(), match, user);
