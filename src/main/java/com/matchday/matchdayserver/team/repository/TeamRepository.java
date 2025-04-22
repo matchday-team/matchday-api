@@ -17,10 +17,9 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     @Query("""
                 SELECT t FROM Team t
-                    WHERE (t.id IN (SELECT m.homeTeam.id FROM Match m WHERE m.id = :matchId)
-                    AND t.id IN (SELECT ut.team.id FROM UserTeam ut WHERE ut.user.id = :userId))
-                    OR (t.id IN (SELECT m.awayTeam.id FROM Match m WHERE m.id = :matchId)
-                    AND t.id IN (SELECT ut.team.id FROM UserTeam ut WHERE ut.user.id = :userId))
+                WHERE (t.id = (SELECT m.homeTeam.id FROM Match m WHERE m.id = :matchId)
+                OR t.id = (SELECT m.awayTeam.id FROM Match m WHERE m.id = :matchId))
+                AND t.id = (SELECT ut.team.id FROM UserTeam ut WHERE ut.user.id = :userId)
             """)
     Optional<Team> findByMatchIdAndUserId(@Param("matchId") Long matchId, @Param("userId") Long userId);
 }
