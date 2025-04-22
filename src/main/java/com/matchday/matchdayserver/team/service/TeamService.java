@@ -63,7 +63,7 @@ public class TeamService {
 
     //전체 팀 조회
     public List<TeamNameResponse> getAllTeams(){
-        List<Team> teams = teamRepository.findAllBy();
+        List<Team> teams = teamRepository.findAll();
 
         return teams.stream()
                 .map(team -> new TeamNameResponse(team.getId(), team.getName()))

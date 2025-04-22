@@ -15,7 +15,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     @Query(value = "SELECT * FROM team WHERE MATCH(name) AGAINST(:keyword IN NATURAL LANGUAGE MODE)", nativeQuery = true)
     List<Team> searchByKeyword(@Param("keyword") String keyword);
 
-    List<Team> findAllBy();
 
     Optional<Team> findByMatchIdAndUserId(Long matchId, Long userId);
 }
