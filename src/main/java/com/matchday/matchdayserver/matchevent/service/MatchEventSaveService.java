@@ -16,6 +16,7 @@ import com.matchday.matchdayserver.user.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
@@ -34,8 +35,9 @@ public class MatchEventSaveService {
     private final MatchUserRepository matchUserRepository;
     private final MatchEventRepository matchEventRepository;
     private final TeamRepository teamRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public MatchEventResponse saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
+    public void saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
         Long userId = Long.parseLong(request.getToken());
 
         MatchUser matchUser = matchUserRepository
@@ -54,6 +56,7 @@ public class MatchEventSaveService {
         MatchEvent matchEvent = MatchEventMapper.toEntity(request.getData(), match, user);
         matchEventRepository.save(matchEvent);
 
-        return MatchEventMapper.toResponse(matchEvent, team);
+        MatchEventResponse matchEventResponse = MatchEventMapper.toResponse(matchEvent, team);
+        messagingTemplate.convertAndSend("/topic/match/" + matchId, matchEventResponse);
     }
 }
