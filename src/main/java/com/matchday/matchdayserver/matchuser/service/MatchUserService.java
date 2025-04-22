@@ -2,10 +2,12 @@ package com.matchday.matchdayserver.matchuser.service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.MatchUserStatus;
+import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserCreateRequest;
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
+import com.matchday.matchdayserver.matchuser.model.mapper.MatchUserMapper;
 import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.repository.UserRepository;
@@ -25,16 +27,9 @@ public class MatchUserService {
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCH));
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_USER));
+                .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
 
-        MatchUser matchPlayer = MatchUser.builder()
-                .match(match)
-                .user(user)
-                .role(request.getRole())
-                .matchPosition(request.getMatchPosition())
-                .matchGrid(request.getMatchGrid())
-                .build();
-
-        matchUserRepository.save(matchPlayer);
+        MatchUser matchUser = MatchUserMapper.toMatchUser(match, user, request);
+        matchUserRepository.save(matchUser);
     }
 }
