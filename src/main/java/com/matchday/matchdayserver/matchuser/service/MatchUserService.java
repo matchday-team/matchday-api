@@ -31,8 +31,8 @@ public class MatchUserService {
                 .match(match)
                 .user(user)
                 .role(request.getRole())
-                .matchPosition(request.getMatch_position())
-                .matchGrid(request.getMatch_grid())
+                .matchPosition(request.getMatchPosition())
+                .matchGrid(request.getMatchGrid())
                 .build();
 
         matchUserRepository.save(matchPlayer);

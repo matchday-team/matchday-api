@@ -7,6 +7,6 @@ import lombok.Getter;
 public class MatchUserCreateRequest {
     private Long userId;
     private MatchUser.Role role;
-    private String match_position;
-    private String match_grid;
+    private String matchPosition;
+    private String matchGrid;
 }
