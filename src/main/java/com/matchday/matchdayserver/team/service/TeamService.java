@@ -54,9 +54,9 @@ public class TeamService {
         return TeamMapper.toTeamSearchResponseList(teams);
     }
 
-    // 전체 팀 조회
+    //전체 팀 조회
     public List<TeamSearchResponse> getAllTeams() {
-        List<Team> teams = teamRepository.findAllBy();
+        List<Team> teams = teamRepository.findAll();
         return TeamMapper.toTeamSearchResponseList(teams);
     }
 
