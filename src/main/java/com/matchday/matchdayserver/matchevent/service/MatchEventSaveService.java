@@ -45,7 +45,7 @@ public class MatchEventSaveService {
     User user = matchUser.getUser();
     Match match = matchUser.getMatch();
 
-    Team team = teamRepository.findByMatchIdAndUserId(user.getId(), matchId).orElseThrow(
+    Team team = teamRepository.findByMatchIdAndUserId(matchId, user.getId()).orElseThrow(
         () -> new ApiException(TeamStatus.NOTFOUND_TEAM)
     );
 
