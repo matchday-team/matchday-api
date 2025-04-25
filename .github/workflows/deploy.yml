@@ -8,6 +8,9 @@ on:
       - main
     types:
       - closed
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
 
 jobs:
   Deploy:
