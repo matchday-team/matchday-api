@@ -3,21 +3,16 @@ package com.matchday.matchdayserver.team.service;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
-import com.matchday.matchdayserver.team.model.dto.response.TeamMemberListResponse;
-import com.matchday.matchdayserver.team.model.dto.response.TeamMemberResponse;
-import com.matchday.matchdayserver.team.model.dto.response.TeamNameResponse;
+import com.matchday.matchdayserver.team.model.dto.response.*;
 import com.matchday.matchdayserver.team.model.entity.Team;
+import com.matchday.matchdayserver.team.model.mapper.TeamMapper;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
 import com.matchday.matchdayserver.userteam.model.mapper.UserTeamMapper;
 import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +26,7 @@ public class TeamService {
     //팀 생성
     public Long create(TeamCreateRequest request){
         validateDuplicateTeamName(request.getName());
-        Team team = new Team(request.getName());
+        Team team = new Team(request.getName(), request.getTeamColor());
         teamRepository.save(team);
         return team.getId();
     }
@@ -48,26 +43,28 @@ public class TeamService {
         return userTeamRepository.existsByUserIdAndTeamId(userId, teamId);
     }
 
-    //키워드에 해당하는 팀 검색
-    public List<TeamNameResponse> searchTeams(String keyword) {
+    // 키워드에 해당하는 팀 검색
+    public List<TeamSearchResponse> searchTeams(String keyword) {
         List<Team> teams = teamRepository.searchByKeyword(keyword);
 
         if (teams.isEmpty()) {
             throw new ApiException(TeamStatus.NOTFOUND_TEAM);
         }
 
-        return teams.stream()
-                .map(team -> new TeamNameResponse(team.getId(), team.getName()))
-                .collect(Collectors.toList());
+        return TeamMapper.toTeamSearchResponseList(teams);
     }
 
     //전체 팀 조회
-    public List<TeamNameResponse> getAllTeams(){
+    public List<TeamSearchResponse> getAllTeams() {
         List<Team> teams = teamRepository.findAll();
+        return TeamMapper.toTeamSearchResponseList(teams);
+    }
 
-        return teams.stream()
-                .map(team -> new TeamNameResponse(team.getId(), team.getName()))
-                .collect(Collectors.toList());
+    //팀 정보 조회
+    public TeamResponse getTeamInfo(Long teamId){
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
+        return TeamMapper.toTeamResponse(team);
     }
 
     //팀에 속한 선수들 조회

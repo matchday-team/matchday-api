@@ -2,15 +2,14 @@ package com.matchday.matchdayserver.team.controller;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
-import com.matchday.matchdayserver.team.model.dto.response.TeamListResponse;
+import com.matchday.matchdayserver.team.model.dto.response.TeamResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamMemberListResponse;
-import com.matchday.matchdayserver.team.model.dto.response.TeamMemberResponse;
-import com.matchday.matchdayserver.team.model.dto.response.TeamNameResponse;
+import com.matchday.matchdayserver.team.model.dto.response.TeamSearchResponse;
 import com.matchday.matchdayserver.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,26 +22,31 @@ public class TeamController {
 
     private final TeamService teamService;
 
-    @Operation(summary = "팀 생성")
+    @Operation(summary = "팀 생성", description = "팀 생성 API입니다. ")
     @PostMapping
-    public ApiResponse<Long> createUser(@RequestBody TeamCreateRequest request) {
-        Long teamId=teamService.create(request);
+    public ApiResponse<Long> createTeam(@RequestBody @Valid TeamCreateRequest request) {
+        Long teamId = teamService.create(request);
         return ApiResponse.ok(teamId);
     }
 
-    @Operation(summary = "팀 검색")
+    @Operation(summary = "팀 검색", description = "키워드로 팀 검색하는 API입니다.")
     @GetMapping("/search")
-    public ApiResponse<TeamListResponse> searchTeams(@RequestParam String keyword) {
-        List<TeamNameResponse> teamList = teamService.searchTeams(keyword);
-        TeamListResponse response = new TeamListResponse(teamList);
-        return ApiResponse.ok(response);
+    public ApiResponse<List<TeamSearchResponse>> searchTeams(@RequestParam String keyword) {
+        List<TeamSearchResponse> teamList = teamService.searchTeams(keyword);
+        return ApiResponse.ok(teamList);
     }
 
-    @Operation(summary = "팀 목록 조회")
-    @GetMapping()
-    public ApiResponse<TeamListResponse> getTeam() {
-        List<TeamNameResponse> teamList = teamService.getAllTeams();
-        TeamListResponse response = new TeamListResponse(teamList);
+    @Operation(summary = "팀 목록 조회", description = "전체 팀 조회 API입니다")
+    @GetMapping
+    public ApiResponse<List<TeamSearchResponse>> getTeamList() {
+        List<TeamSearchResponse> teamList = teamService.getAllTeams();
+        return ApiResponse.ok(teamList);
+    }
+
+    @Operation(summary = "팀 정보 조회", description = "{timeId]의 정보 조회 API입니다.")
+    @GetMapping("/{teamId}")
+    public ApiResponse<TeamResponse> getTeamInfo(@PathVariable Long teamId) {
+        TeamResponse response = teamService.getTeamInfo(teamId);
         return ApiResponse.ok(response);
     }
 
