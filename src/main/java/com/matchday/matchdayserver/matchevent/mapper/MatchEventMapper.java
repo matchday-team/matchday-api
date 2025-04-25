@@ -38,8 +38,9 @@ public class MatchEventMapper {
         .build();
   }
 
-  private static Long calculateElapsedMinutes(LocalDateTime matchStartTime, LocalDateTime eventTime) {
-    return Duration.between(matchStartTime, eventTime).toMinutes();
+  private static Long calculateElapsedMinutes(LocalDateTime matchStartTime,
+      LocalDateTime eventTime) {
+    long minutes = Duration.between(matchStartTime, eventTime).toMinutes();
+    return minutes < 0 ? 0L : minutes; // 음수인 경우 0으로 처리
   }
-
 }
