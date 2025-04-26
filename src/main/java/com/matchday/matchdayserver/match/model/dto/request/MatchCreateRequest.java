@@ -24,13 +24,13 @@ public class MatchCreateRequest {
   @Schema(description = "경기장 주소", example = "경기장 주소")
   private String stadium;
 
-  @Schema(description = "경기 일자", example = "경기 일자")
+  @Schema(description = "경기 일자", example = "2025-04-01")
   private LocalDate matchDate;
 
-  @Schema(description = "경기 시작 시간", example = "경기 시작 시간")
+  @Schema(description = "경기 시작 시간", example = "14:00:00")
   private LocalTime startTime;
 
-  @Schema(description = "경기 종료 시간", example = "경기 종료 시간")
+  @Schema(description = "경기 종료 시간", example = "16:00:00")
   private LocalTime endTime;
 
   @Schema(description = "주심", example = "주심 이름")
