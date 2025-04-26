@@ -25,7 +25,7 @@ public class MatchInfoResponse {
   private LocalTime startTime;
 
   //종료 시간
-  @Schema(description = "시작 시간")
+  @Schema(description = "종료 시간")
   private LocalTime endTime;
 
   //주심
