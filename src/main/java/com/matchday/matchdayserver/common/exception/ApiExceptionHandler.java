@@ -31,4 +31,10 @@ public class ApiExceptionHandler {
 
         return ApiResponse.error(DefaultStatus.BAD_REQUEST, errorMessage); //400 에러 발생 후 각 검증 어노테이션에서 설정한 msg 출력
     }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiResponse<String> handleAllExceptions(Exception ex) {
+      return ApiResponse.error(DefaultStatus.UNKNOWN_ERROR);
+    }
 }
