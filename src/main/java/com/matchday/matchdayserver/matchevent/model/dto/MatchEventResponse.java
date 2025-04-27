@@ -29,20 +29,4 @@ public class MatchEventResponse {
 
   @Schema(description = "이벤트 로그", example = "손흥민 경고")
   private String eventLog;
-
-  public static String generateEventLog(String userName, MatchEventType eventType) {
-    return switch (eventType) {
-      case GOAL -> userName + " 득점";
-      case ASSIST -> userName + " 어시스트";
-      case SHOT -> userName + " 슛";
-      case VALID_SHOT -> userName + " 유효슛";
-      case FOUL -> userName + " 파울";
-      case OFFSIDE -> userName + " 오프사이드";
-      case SUB_IN -> userName + " 교체 투입";
-      case SUB_OUT -> userName + " 교체 아웃";
-      case YELLOW_CARD -> userName + " 경고";
-      case RED_CARD -> userName + " 퇴장";
-      case OWN_GOAL -> userName + " 자책골";
-    };
-  }
 }
