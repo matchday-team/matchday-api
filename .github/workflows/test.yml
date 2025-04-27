@@ -5,12 +5,7 @@ on:
     branches:
       - release
       - main
-    paths:
-      - '**.java'
-      - 'src/**'
-      - 'build.gradle'
-      - 'settings.gradle'
-      - '.github/workflows/**'
+
 jobs:
   test:
     runs-on: ubuntu-latest
