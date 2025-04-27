@@ -79,7 +79,7 @@ public class MatchEventSaveService {
       errorMessages.add("userId는 필수 입력 값입니다.");
     }
 
-    if (request.getData().getUserId() != matchId) {
+    if (request.getData().getUserId() != null) {
       errorMessages.add("userId는 필수 입력 값입니다.");
     }
 
