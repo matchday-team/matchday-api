@@ -51,20 +51,45 @@ public class Match {
     @Column(nullable = false)
     private LocalTime endTime;
 
-    public enum MatchType {
+    @Column(name = "first_half_start_time")
+    private LocalTime firstHalfStartTime; // 전반 시작 시간
+
+    @Column(name = "second_half_start_time")
+    private LocalTime secondHalfStartTime; // 후반 시작 시간
+
+    @Column(name = "main_referee")
+    private String mainRefereeName; //주심
+
+    @Column(name = "assistant_referee_1")
+    private String assistantReferee1; //부심1
+
+    @Column(name = "assistant_referee_2")
+    private String assistantReferee2; //부심2
+
+    @Column(name = "fourth_referee")
+    private String fourthReferee;  //대기심
+
+  public enum MatchType {
         리그, 대회, 친선경기
     }
 
     @Builder
-    public Match(String title, Team homeTeam, Team awayTeam, MatchType matchType, String stadium, LocalDate matchDate, LocalTime startTime, LocalTime endTime) {
-        this.title = title;
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
-        this.matchType = matchType;
-        this.stadium = stadium;
-        this.matchDate = matchDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
+    public Match(String title, Team homeTeam, Team awayTeam, MatchType matchType, String stadium, LocalDate matchDate,
+        LocalTime startTime, LocalTime endTime, LocalTime firstHalfStartTime, LocalTime secondHalfStartTime, String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee) {
+      this.title = title;
+      this.homeTeam = homeTeam;
+      this.awayTeam = awayTeam;
+      this.matchType = matchType;
+      this.stadium = stadium;
+      this.matchDate = matchDate;
+      this.startTime = startTime;
+      this.endTime = endTime;
+      this.firstHalfStartTime = firstHalfStartTime;
+      this.secondHalfStartTime = secondHalfStartTime;
+      this.mainRefereeName = mainRefereeName;
+      this.assistantReferee1 = assistantReferee1;
+      this.assistantReferee2 = assistantReferee2;
+      this.fourthReferee = fourthReferee;
     }
 
     @OneToMany(mappedBy = "match",cascade = CascadeType.REMOVE)

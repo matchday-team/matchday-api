@@ -39,6 +39,10 @@ public class MatchCreateService {
                 .matchDate(request.getMatchDate())
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
+                .mainRefereeName(request.getMainRefereeName())
+                .assistantReferee1(request.getAssistantReferee1())
+                .assistantReferee2(request.getAssistantReferee2())
+                .fourthReferee(request.getFourthReferee())
                 .build();
 
         matchRepository.save(match);
