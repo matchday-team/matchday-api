@@ -2,6 +2,7 @@ package com.matchday.matchdayserver.common.exception;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.common.response.DefaultStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
@@ -30,5 +32,12 @@ public class ApiExceptionHandler {
                 .orElse("유효성 검사 실패");
 
         return ApiResponse.error(DefaultStatus.BAD_REQUEST, errorMessage); //400 에러 발생 후 각 검증 어노테이션에서 설정한 msg 출력
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiResponse<String> handleAllExceptions(Exception ex) {
+      log.error("예외 발생: 타입=[{}], 메시지=[{}]", ex.getClass().getName(), ex.getMessage(), ex);
+      return ApiResponse.error(DefaultStatus.UNKNOWN_ERROR);
     }
 }
