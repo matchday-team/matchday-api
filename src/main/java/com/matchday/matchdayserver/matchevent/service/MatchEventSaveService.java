@@ -2,6 +2,7 @@ package com.matchday.matchdayserver.matchevent.service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.model.Message;
+import com.matchday.matchdayserver.common.response.DefaultStatus;
 import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
@@ -14,13 +15,17 @@ import com.matchday.matchdayserver.user.model.entity.User;
 
 import jakarta.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
 import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
+import com.matchday.matchdayserver.team.model.entity.Team;
+import com.matchday.matchdayserver.team.repository.TeamRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +39,7 @@ public class MatchEventSaveService {
   private final MatchEventStrategy matchEventStrategy;
 
   public void saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
+    validateRequest(matchId, request);
     validateAuthUser(matchId, request.getToken());
 
     MatchUser matchUser = matchUserRepository
@@ -59,6 +65,20 @@ public class MatchEventSaveService {
 
     if (!authUser.getMatch().getId().equals(matchId)) {
       throw new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER);
+    }
+  }
+
+  private void validateRequest(Long matchId, Message<MatchEventRequest> request) {
+    List<String> errorMessages = new ArrayList<>();
+
+    if (request.getData().getUserId() == null) {
+      errorMessages.add("userId는 필수 입력 값입니다.");
+    }
+
+    if (errorMessages.size() > 0) {
+      DefaultStatus defaultStatus = DefaultStatus.BAD_REQUEST;
+      defaultStatus.setCustomDescription(String.join("\n", errorMessages));
+      throw new ApiException(defaultStatus);
     }
   }
 }

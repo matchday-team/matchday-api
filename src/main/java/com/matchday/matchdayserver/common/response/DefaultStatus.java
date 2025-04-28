@@ -10,12 +10,16 @@ public enum DefaultStatus implements StatusInterface {
 
     private final int httpStatusCode;
     private final int customStatusCode;
-    private final String description;
+    private String description;
 
     DefaultStatus(int httpStatusCode, int customStatusCode, String description) {
         this.httpStatusCode = httpStatusCode;
         this.customStatusCode = customStatusCode;
         this.description = description;
+    }
+
+    public void setCustomDescription(String customDescription) {
+        this.description = this.description + "\n" + customDescription;
     }
 
     @Override
