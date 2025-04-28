@@ -1,7 +1,7 @@
 package com.matchday.matchdayserver.user.controller;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
-import com.matchday.matchdayserver.common.s3.S3PresignedService;
+import com.matchday.matchdayserver.common.s3.Service.S3PresignedService;
 import com.matchday.matchdayserver.common.s3.dto.S3PresignedResponse;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
 import com.matchday.matchdayserver.user.model.dto.request.UserJoinTeamRequest;
@@ -49,7 +49,7 @@ public class UserController {
       @PathVariable Long userId,
       @RequestParam String key
   ) {
-    return ApiResponse.ok(s3PresignedManager.generateReadUrl(userId,key));
+    return ApiResponse.ok(s3PresignedManager.generateReadUrl(FOLDER_NAME, userId,key));
   }
 
 }

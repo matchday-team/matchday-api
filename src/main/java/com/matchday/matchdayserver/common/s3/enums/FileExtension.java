@@ -1,7 +1,7 @@
 package com.matchday.matchdayserver.common.s3.enums;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
-import com.matchday.matchdayserver.common.response.FileExtensionStatus;
+import com.matchday.matchdayserver.common.response.FileStatus;
 import lombok.Getter;
 
 @Getter
@@ -25,6 +25,6 @@ public enum FileExtension { //더 추가 할 확장자 있으면 추가 예정
         return ext;
       }
     }
-    throw new ApiException(FileExtensionStatus.INVALID_FILE_EXTENSION);
+    throw new ApiException(FileStatus.INVALID_FILE_EXTENSION);
   }
 }

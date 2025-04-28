@@ -1,7 +1,7 @@
 package com.matchday.matchdayserver.team.controller;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
-import com.matchday.matchdayserver.common.s3.S3PresignedService;
+import com.matchday.matchdayserver.common.s3.Service.S3PresignedService;
 import com.matchday.matchdayserver.common.s3.dto.S3PresignedResponse;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
 import com.matchday.matchdayserver.team.model.dto.response.TeamResponse;
@@ -48,7 +48,7 @@ public class TeamController {
         @PathVariable Long teamId,
         @RequestParam String key
     ) {
-      return ApiResponse.ok(s3PresignedManager.generateReadUrl(teamId, key));
+      return ApiResponse.ok(s3PresignedManager.generateReadUrl(FOLDER_NAME, teamId, key));
     }
 
 
