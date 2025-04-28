@@ -79,10 +79,6 @@ public class MatchEventSaveService {
       errorMessages.add("userId는 필수 입력 값입니다.");
     }
 
-    if (request.getData().getUserId() != null) {
-      errorMessages.add("userId는 필수 입력 값입니다.");
-    }
-
     if (errorMessages.size() > 0) {
       DefaultStatus defaultStatus = DefaultStatus.BAD_REQUEST;
       defaultStatus.setCustomDescription(String.join("\n", errorMessages));
