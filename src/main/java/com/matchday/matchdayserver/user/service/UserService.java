@@ -63,4 +63,8 @@ public class UserService {
             throw new ApiException(UserStatus.DUPLICATE_USERNAME);
         }
     }
+
+  public boolean existsById(Long userId) {
+    return userRepository.existsById(userId);
+  }
 }

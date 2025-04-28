@@ -75,4 +75,8 @@ public class TeamService {
                 .collect(Collectors.toList());
         return new TeamMemberListResponse(userTeamMembers);
     }
+
+  public boolean existsById(Long teamId) {
+    return teamRepository.existsById(teamId);
+  }
 }
