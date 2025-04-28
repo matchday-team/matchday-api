@@ -72,8 +72,4 @@ public class S3PresignedUrlProvider {
       throw new ApiException(FileStatus.NOTFOUND_FILE);
     }
   }
-
-  public S3Client getS3Client() {
-    return s3Client;
-  }
 }

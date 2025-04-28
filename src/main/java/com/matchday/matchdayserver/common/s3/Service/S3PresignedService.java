@@ -1,7 +1,6 @@
 package com.matchday.matchdayserver.common.s3.Service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
-import com.matchday.matchdayserver.common.response.FileStatus;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.common.s3.S3PresignedUrlProvider;
@@ -11,8 +10,6 @@ import com.matchday.matchdayserver.team.service.TeamService;
 import com.matchday.matchdayserver.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.util.UUID;
 
@@ -51,20 +48,6 @@ public class S3PresignedService {
       if (!teamService.existsById(id)) {
         throw new ApiException(TeamStatus.NOTFOUND_TEAM);
       }
-    }
-  }
-
-  // 파일 존재 여부 확인
-  public void validateFileExists(String key) {
-    try {
-      GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-          .bucket("your-bucket-name") // 버킷 이름
-          .key(key)
-          .build();
-
-      s3PresignedUrlProvider.getS3Client().getObject(getObjectRequest); // S3에서 파일을 읽어오는 시도
-    } catch (S3Exception e) {
-      throw new ApiException(FileStatus.NOTFOUND_FILE); // 파일이 없을 경우 예외 처리
     }
   }
 
