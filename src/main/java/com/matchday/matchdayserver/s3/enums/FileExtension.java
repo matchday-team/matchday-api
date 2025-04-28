@@ -1,4 +1,4 @@
-package com.matchday.matchdayserver.common.s3.enums;
+package com.matchday.matchdayserver.s3.enums;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.FileStatus;

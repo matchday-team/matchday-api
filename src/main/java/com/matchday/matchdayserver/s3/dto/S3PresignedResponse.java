@@ -1,4 +1,4 @@
-package com.matchday.matchdayserver.common.s3.dto;
+package com.matchday.matchdayserver.s3.dto;
 
 
 import lombok.Getter;

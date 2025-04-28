@@ -1,8 +1,8 @@
 package com.matchday.matchdayserver.user.controller;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
-import com.matchday.matchdayserver.common.s3.Service.S3PresignedService;
-import com.matchday.matchdayserver.common.s3.dto.S3PresignedResponse;
+import com.matchday.matchdayserver.s3.Service.S3PresignedService;
+import com.matchday.matchdayserver.s3.dto.S3PresignedResponse;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
 import com.matchday.matchdayserver.user.model.dto.request.UserJoinTeamRequest;
 import com.matchday.matchdayserver.user.service.UserService;

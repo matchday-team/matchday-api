@@ -1,11 +1,11 @@
-package com.matchday.matchdayserver.common.s3.Service;
+package com.matchday.matchdayserver.s3.Service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
-import com.matchday.matchdayserver.common.s3.S3PresignedUrlProvider;
-import com.matchday.matchdayserver.common.s3.dto.S3PresignedResponse;
-import com.matchday.matchdayserver.common.s3.enums.FileExtension;
+import com.matchday.matchdayserver.s3.S3PresignedUrlProvider;
+import com.matchday.matchdayserver.s3.dto.S3PresignedResponse;
+import com.matchday.matchdayserver.s3.enums.FileExtension;
 import com.matchday.matchdayserver.team.service.TeamService;
 import com.matchday.matchdayserver.user.service.UserService;
 import lombok.RequiredArgsConstructor;
