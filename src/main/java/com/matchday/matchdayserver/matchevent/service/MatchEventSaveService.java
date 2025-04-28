@@ -14,14 +14,13 @@ import com.matchday.matchdayserver.user.model.entity.User;
 
 import jakarta.transaction.Transactional;
 
+import java.util.List;
+
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
 import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
-import com.matchday.matchdayserver.team.model.entity.Team;
-import com.matchday.matchdayserver.team.repository.TeamRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,9 +30,8 @@ import lombok.RequiredArgsConstructor;
 public class MatchEventSaveService {
 
   private final MatchUserRepository matchUserRepository;
-  private final MatchEventRepository matchEventRepository;
-  private final TeamRepository teamRepository;
   private final SimpMessagingTemplate messagingTemplate;
+  private final MatchEventStrategy matchEventStrategy;
 
   public void saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
     validateAuthUser(matchId, request.getToken());
@@ -45,15 +43,11 @@ public class MatchEventSaveService {
     User user = matchUser.getUser();
     Match match = matchUser.getMatch();
 
-    Team team = teamRepository.findByMatchIdAndUserId(matchId, user.getId()).orElseThrow(
-        () -> new ApiException(TeamStatus.NOTFOUND_TEAM)
-    );
-
-    MatchEvent matchEvent = MatchEventMapper.toEntity(request.getData(), match, user);
-    matchEventRepository.save(matchEvent);
-
-    MatchEventResponse matchEventResponse = MatchEventMapper.toResponse(matchEvent, team);
-    messagingTemplate.convertAndSend("/topic/match/" + matchId, matchEventResponse);
+    List<MatchEventResponse> matchEventResponse = matchEventStrategy
+        .generateMatchEventLog(request.getData(), match, user);
+    for (MatchEventResponse response : matchEventResponse) {
+      messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
+    }
   }
 
   private void validateAuthUser(Long matchId, String token) {
@@ -63,7 +57,7 @@ public class MatchEventSaveService {
         .findByMatchIdAndUserIdWithFetch(matchId, authId)
         .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
 
-    if(!authUser.getMatch().getId().equals(matchId)) {
+    if (!authUser.getMatch().getId().equals(matchId)) {
       throw new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER);
     }
   }

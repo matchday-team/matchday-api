@@ -34,7 +34,7 @@ public class MatchEventMapper {
         .teamName(team.getName())
         .userId(user.getId())
         .userName(user.getName())
-        .eventLog(MatchEventResponse.generateEventLog(user.getName(), matchEvent.getEventType()))
+        .eventLog(matchEvent.getEventType().value)
         .build();
   }
 
