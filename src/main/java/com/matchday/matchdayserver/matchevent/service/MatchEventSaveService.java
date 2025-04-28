@@ -4,10 +4,13 @@ import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.model.Message;
 import com.matchday.matchdayserver.common.response.DefaultStatus;
 import com.matchday.matchdayserver.common.response.MatchStatus;
+import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
+import com.matchday.matchdayserver.matchevent.mapper.MatchEventMapper;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
+import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
 import com.matchday.matchdayserver.user.model.entity.User;
 
 import jakarta.transaction.Transactional;
@@ -18,8 +21,11 @@ import java.util.List;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
 import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
+import com.matchday.matchdayserver.team.model.entity.Team;
+import com.matchday.matchdayserver.team.repository.TeamRepository;
 
 import lombok.RequiredArgsConstructor;
 
