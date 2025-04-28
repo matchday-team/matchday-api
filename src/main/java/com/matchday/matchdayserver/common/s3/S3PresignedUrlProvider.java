@@ -21,9 +21,7 @@ public class S3PresignedUrlProvider {
   private String bucket;
 
   //Upload Presigned URL 발급
-  public String generateUploadUrl(String key) {
-    String contentType = guessContentType(key);
-
+  public String generateUploadUrl(String key, String contentType) {
     //S3에 업로드할 객체 설정
     PutObjectRequest objectRequest = PutObjectRequest.builder()
         .bucket(bucket)
