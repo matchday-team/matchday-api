@@ -33,7 +33,7 @@ public class TeamController {
         return ApiResponse.ok(teamId);
     }
 
-    @Operation(summary = "팀 프로필 업로드 presigned URL 발급", description = "teamId와 확장자(jpg, jpeg, png, webp)를 넘겨주면 업로드 URL과 저장할 FileName(파일명)을 반환합니다. <br> 반환 받은 파일명을 저장하세요(이미지 조회시 필요)")
+    @Operation(summary = "팀 프로필 업로드 presigned URL 발급", description = "teamId와 확장자(jpg, jpeg, png, webp)를 넘겨주면 이미지 업로드용 URL과 저장할 FileName(파일명)을 반환합니다. <br> 반환 받은 파일명을 저장하세요(이미지 조회시 필요)")
     @GetMapping("/{teamId}/profile/upload-url")
     public ApiResponse<S3PresignedResponse> generateUploadUrl(
         @PathVariable Long teamId,
@@ -42,7 +42,7 @@ public class TeamController {
       return ApiResponse.ok(s3PresignedManager.generateUploadUrl(FOLDER_NAME, teamId, extension));
     }
 
-    @Operation(summary = "팀 프로필 이미지 read presigned URL 조회", description = "team 프로필 업로드에서 반환 받은 파일명(key)을 넘겨주면 read용 URL을 반환합니다")
+    @Operation(summary = "팀 프로필 이미지 read presigned URL 조회", description = "team 프로필 업로드에서 반환 받은 파일명(key)을 넘겨주면 이미지 read용 URL을 반환합니다")
     @GetMapping("/{teamId}/profile/read-url")
     public ApiResponse<S3PresignedResponse> getProfileReadUrl(
         @PathVariable Long teamId,
