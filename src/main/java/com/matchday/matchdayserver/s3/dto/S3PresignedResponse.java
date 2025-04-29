@@ -8,10 +8,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class S3PresignedResponse {
   private final String url;
-  private String fileName;
+  private final String fileName;
 
-  public S3PresignedResponse(String url, String fileName) {
+  //Read용 url 반환
+  public S3PresignedResponse(String url){
     this.url = url;
-    this.fileName = fileName;
+    this.fileName = null;
   }
 }
