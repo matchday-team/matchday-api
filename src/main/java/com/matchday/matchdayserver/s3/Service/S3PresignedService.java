@@ -23,17 +23,27 @@ public class S3PresignedService {
 
   //업로드 Presigned URL 요청
   public S3PresignedResponse generateUploadUrl(String folderName, Long id, String extension) {
-    validateIdExists(folderName, id); // id 유효성 검사
-    FileExtension fileExtension = FileExtension.from(extension); // 파일 확장자 유효성 검사
+    // user or team id 유효성 검사
+    validateIdExists(folderName, id);
+
+    // 파일 확장자 유효성 검사
+    FileExtension fileExtension = FileExtension.from(extension);
+
+    //파일이름 생성
     String key = buildKey(folderName, id, extension);
+
     String uploadUrl = s3PresignedUrlProvider.generateUploadUrl(key, fileExtension.getContentType());
     return new S3PresignedResponse(uploadUrl, key);
   }
 
   //Read용 Presigned URL 응답
   public S3PresignedResponse generateReadUrl(String folderName, Long id, String key) {
-    validateIdExists(folderName, id); // id 유효성 검사
-    s3PresignedUrlProvider.validateFileExists(key); // 파일 존재 여부 확인
+    // user or team id 유효성 검사
+    validateIdExists(folderName, id);
+
+    // S3 저장소 내 파일 존재 여부 확인
+    s3PresignedUrlProvider.validateFileExists(key);
+
     String readUrl = s3PresignedUrlProvider.generateReadUrl(key);
     return new S3PresignedResponse(readUrl);
   }
@@ -61,4 +71,5 @@ public class S3PresignedService {
     String uniqueFileName = createUniqueFileName();
     return String.format("%s/%d/%s.%s", folderName, id, uniqueFileName, extension);
   }
+
 }
