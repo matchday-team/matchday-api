@@ -1,7 +1,7 @@
 package com.matchday.matchdayserver.team.controller;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
-import com.matchday.matchdayserver.s3.Service.S3PresignedService;
+import com.matchday.matchdayserver.s3.service.S3PresignedService;
 import com.matchday.matchdayserver.s3.dto.S3PresignedResponse;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
 import com.matchday.matchdayserver.team.model.dto.response.TeamResponse;

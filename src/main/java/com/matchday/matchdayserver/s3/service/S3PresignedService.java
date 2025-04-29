@@ -1,4 +1,4 @@
-package com.matchday.matchdayserver.s3.Service;
+package com.matchday.matchdayserver.s3.service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
