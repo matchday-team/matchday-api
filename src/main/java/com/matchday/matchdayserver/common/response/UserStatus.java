@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public enum UserStatus implements StatusInterface {
     DUPLICATE_USERNAME(400,4001, "이미 존재하는 유저 이름"),
-    NOTFOUND_USER(400,4002, "해당 유저가 존재하지 않습니다");
+    NOTFOUND_USER(404,4002, "존재하지 않는 유저입니다");
 
 
     private final int httpStatusCode;
