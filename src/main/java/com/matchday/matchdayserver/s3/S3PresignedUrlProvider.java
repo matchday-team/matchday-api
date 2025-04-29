@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -68,8 +69,10 @@ public class S3PresignedUrlProvider {
 
       // S3에서 파일을 읽어오는 시도
       s3Client.getObject(getObjectRequest);
-    } catch (S3Exception e) {
+    } catch (NoSuchKeyException e) {
       throw new ApiException(FileStatus.NOTFOUND_FILE);
+    }catch (S3Exception e) {
+      throw new ApiException(FileStatus.S3_ACCESS_ERROR);
     }
   }
 }
