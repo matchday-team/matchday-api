@@ -6,6 +6,7 @@ import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.s3.S3PresignedUrlProvider;
 import com.matchday.matchdayserver.s3.dto.S3PresignedResponse;
 import com.matchday.matchdayserver.s3.enums.FileExtension;
+import com.matchday.matchdayserver.s3.enums.FolderType;
 import com.matchday.matchdayserver.team.service.TeamService;
 import com.matchday.matchdayserver.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -50,14 +51,18 @@ public class S3PresignedService {
 
   //id 유효성 검사
   private void validateIdExists(String folderName, Long id) {
-    if (folderName.equals("users")) {
-      if (!userService.existsById(id)) {
-        throw new ApiException(UserStatus.NOTFOUND_USER);
-      }
-    } else if (folderName.equals("teams")) {
-      if (!teamService.existsById(id)) {
-        throw new ApiException(TeamStatus.NOTFOUND_TEAM);
-      }
+    FolderType folderType = FolderType.from(folderName);
+    switch (folderType) {
+      case USERS:
+        if (!userService.existsById(id)) {
+          throw new ApiException(UserStatus.NOTFOUND_USER);
+        }
+        break;
+      case TEAMS:
+        if (!teamService.existsById(id)) {
+          throw new ApiException(TeamStatus.NOTFOUND_TEAM);
+        }
+        break;
     }
   }
 
