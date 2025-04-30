@@ -22,6 +22,18 @@ spring:
     init:
       mode: always
 
+  cloud:
+    aws:
+      s3:
+        bucket: ${BUCKET_NAME}         # 변경
+      stack:
+        auto: false
+      region:
+        static: ${AWS_REGION}          # 변경
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}  # 변경
+        secret-key: ${AWS_SECRET_KEY}  # 변경
+
 springdoc:
   api-docs:
     version: "openapi_3_0"
