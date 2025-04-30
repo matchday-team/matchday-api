@@ -26,9 +26,16 @@ public class Team {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private String teamColor;
+    private String teamColor;  //팀 컬러(상의 컬러)
 
-    @Builder
+    @Column(nullable = false)
+    private String bottomColor; //팀 하의 컬러
+
+    @Column(nullable = false)
+    private String stockingColor; //팀 스타킹 컬러
+
+
+  @Builder
     public Team (String name, String teamColor) {
         this.name = name;
         this.teamColor = teamColor;
