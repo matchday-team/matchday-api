@@ -19,3 +19,4 @@ out/
 # 민감정보
 .env
 .DS_Store
+**/application_dev.yml
