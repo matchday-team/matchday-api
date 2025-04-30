@@ -1,8 +1,11 @@
 package com.matchday.matchdayserver.matchuser.service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
+import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.common.response.MatchUserStatus;
+import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
+import com.matchday.matchdayserver.common.response.UserTeamStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.matchevent.service.MatchEventQueryService;
@@ -13,10 +16,12 @@ import com.matchday.matchdayserver.matchuser.model.dto.MatchUserResponse;
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
 import com.matchday.matchdayserver.matchuser.model.mapper.MatchUserMapper;
 import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
+import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.repository.UserRepository;
 import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
 import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +36,7 @@ public class MatchUserService {
     private final MatchRepository matchRepository;
     private final UserRepository userRepository;
     private final MatchEventQueryService matchEventQueryService;
-    private final MatchEventStrategy matchEventStrategy;
+    private final UserTeamRepository userTeamRepository;
 
     @Transactional
     public void create(Long matchId, MatchUserCreateRequest request){
@@ -45,44 +50,36 @@ public class MatchUserService {
     }
 
     //매치에 속한 선수들의 정보들을 조회
-    public List<MatchUserResponse> getMatchUser(Long matchId){
-      List<MatchUserResponse> matchUserResponses = new ArrayList<>();
-      //매치에 속한 유저 정보를 받아온다
-      List<MatchUser> matchUsers = matchUserRepository.findByMatchId(matchId);
-      //해당 유저의 id를 이용해 유저별 이벤트 통계를 조회해 추가해서 matchUserResponses 만든다
-      for(MatchUser matchUser: matchUsers){
+    public List<MatchUserResponse> getMatchUsers(Long matchId,Long teamId){
+      //검증
+      Match match = matchRepository.findById(matchId).orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCH));
+      validateTeamParticipation(match, teamId);
 
-        // User
-        Long userId=matchUser.getUser().getId();//선수 고유 아이디//todo: N+1 문제 발생 fetch join 해주기
-        String userName=matchUser.getUser().getName();//선수 이름
+      //매치에 속한 유저들의 정보 받아온다
+      List<MatchUser> matchUsers = matchUserRepository.findByMatchId(matchId);
+
+      //해당 유저의 id를 이용해 유저별 이벤트 통계를 조회해 추가해서 matchUserResponses 만든다
+      List<MatchUserResponse> matchUserResponses = new ArrayList<>();
+      for(MatchUser matchUser: matchUsers){
+        Long userId=matchUser.getUser().getId();//선수 고유 아이디 todo: N+1 문제 발생시 fetch join 해주기
 
         // userTeam
-        Long TeamId=matchUser.getMatch().getId().get
-        UserTeam userTeam=matchEventStrategy.findByMatchIdAndUserIdOrThrow
-        Integer number=userTeam.getNumber();// 등번호 number
+        Optional<UserTeam> userTeamOpt = userTeamRepository.findByUserIdAndTeamId(userId, teamId);
+        if (userTeamOpt.isEmpty()) continue; // 팀에 해당하는 유저가 아니면 pass
 
         // MatchUserEventStat
-        MatchUserEventStat matchUserEventStat=matchEventQueryService.getMatchUserEventStat(matchId,userId);
-        int goals=matchUserEventStat.getGoals();// 해당 경기에서 누적 득점
-        int assists=matchUserEventStat.getAssists();// 해당 경기에서 누적 어시스트
-        int fouls=matchUserEventStat.getFouls();// 해당 경기에서 누적 파울
-
-        // matchUser
-        String matchPosistion=matchUser.getMatchPosition();// 경기 포지션 matchPosition
-        String matchGrid=matchUser.getMatchGrid();// 경기 세부 위치 matchGrid
-
-        MatchUserResponse matchUserResponse=MatchUserResponse.builder().
-            id(userId).
-            name(userName).
-            number(number).
-            goals(goals).
-            assists(assists).
-            fouls(fouls).
-            matchPosition(matchPosistion).
-            matchGrid(matchGrid).
-            build();
-        matchUserResponses.add(matchUserResponse);
+        MatchUserEventStat stat=matchEventQueryService.getMatchUserEventStat(matchId,userId);
+        // MatchUser + UserTeam + MatchUserEventStat → MatchUserResponse (DTO)변환
+        matchUserResponses.add(MatchUserMapper.toMatchUserResponse(matchUser,userTeamOpt.get(),stat));
       }
       return matchUserResponses;
+    }
+
+    private void validateTeamParticipation(Match match, Long teamId) {//입력한 teamId가 홈팀,어웨이팀중 하나가 맞는지 검증
+      boolean isParticipant = teamId.equals(match.getHomeTeam().getId()) ||
+          teamId.equals(match.getAwayTeam().getId());
+      if (!isParticipant) {
+        throw new ApiException(MatchStatus.TEAM_NOT_PARTICIPATING);
+      }
     }
 }

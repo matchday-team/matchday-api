@@ -25,10 +25,11 @@ public class MatchUserController {
         return ApiResponse.ok("매치 유저 등록 완료");
     }
 
-    @GetMapping("/{matchId}/participants")
-    public ApiResponse<List<MatchUserResponse>> getMatchUsers(@PathVariable Long matchId,@RequestParam Long teamId,@RequestParam String role) {
+    @Operation(summary = "매치에 출전한 선수들 조회", description = "경기 id 와 조회할 팀 id를 요청받습니다")
+    @GetMapping("/{matchId}/players")
+    public ApiResponse<List<MatchUserResponse>> getMatchUsers(@PathVariable Long matchId,@RequestParam Long teamId) {
       //todo 특정 role에 대해서만 조회 teamid 어떻게 할지
-      ApiResponse<List<MatchUserResponse>> = matchUserService.getMatchUser(matchId);
-
+      List<MatchUserResponse> MatchUserResponses =  matchUserService.getMatchUsers(matchId,teamId);
+      return ApiResponse.ok(MatchUserResponses);
     }
 }
