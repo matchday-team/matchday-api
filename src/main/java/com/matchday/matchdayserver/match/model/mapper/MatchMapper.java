@@ -4,7 +4,6 @@ import com.matchday.matchdayserver.match.model.dto.response.MatchInfoResponse;
 import com.matchday.matchdayserver.match.model.entity.Match;
 
 public class MatchMapper {
-  //Match -> MatchInfoResponse 변환
   public static MatchInfoResponse toResponse(Match match) {
     return MatchInfoResponse.builder()
         .id(match.getId())
@@ -18,6 +17,8 @@ public class MatchMapper {
         .fourthReferee(match.getFourthReferee())
         .firstHalfStartTime(match.getFirstHalfStartTime())
         .secondHalfStartTime(match.getSecondHalfStartTime())
+        .homeTeamId(match.getHomeTeam().getId()) // 추가
+        .awayTeamId(match.getAwayTeam().getId()) // 추가
         .build();
   }
 }

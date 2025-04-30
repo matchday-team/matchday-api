@@ -13,6 +13,12 @@ public class MatchInfoResponse {
   @Schema(description = "id", example = "매치 id")
   private Long id;
 
+  @Schema(description = "홈팀 ID")
+  private Long homeTeamId;
+
+  @Schema(description = "어웨이팀 ID")
+  private Long awayTeamId;
+
   //장소
   @Schema(description = "장소", example = "경기 장소")
   private String stadium;
@@ -54,7 +60,8 @@ public class MatchInfoResponse {
   public MatchInfoResponse(Long id, String stadium, LocalDate matchDate, LocalTime startTime,
       LocalTime endTime, String mainRefereeName, String assistantReferee1,
       String assistantReferee2, String fourthReferee,
-      LocalTime firstHalfStartTime, LocalTime secondHalfStartTime) {
+      LocalTime firstHalfStartTime, LocalTime secondHalfStartTime,
+      Long homeTeamId, Long awayTeamId) {
     this.id = id;
     this.stadium = stadium;
     this.matchDate = matchDate;
@@ -66,5 +73,7 @@ public class MatchInfoResponse {
     this.fourthReferee = fourthReferee;
     this.firstHalfStartTime = firstHalfStartTime;
     this.secondHalfStartTime = secondHalfStartTime;
+    this.homeTeamId = homeTeamId;
+    this.awayTeamId = awayTeamId;
   }
 }
