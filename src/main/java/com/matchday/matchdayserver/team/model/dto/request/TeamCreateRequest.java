@@ -20,7 +20,7 @@ public class TeamCreateRequest {
     @NotBlank(message = "팀 하의 컬러는 필수입니다.")
     private String bottomColor; //팀 하의 컬러
 
-    @Schema(description = "팀 스타킹 컬러)", example = "#FFFFFF", required = true)
-    @NotBlank(message = "팀 스타킹 컬리는 필수입니다.")
+    @Schema(description = "팀 스타킹 컬러", example = "#FFFFFF", required = true)
+    @NotBlank(message = "팀 스타킹 컬러는 필수입니다.")
     private String stockingColor; //팀 스타킹 컬러
 }
