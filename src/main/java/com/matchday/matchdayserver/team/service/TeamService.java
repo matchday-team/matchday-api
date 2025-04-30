@@ -26,7 +26,7 @@ public class TeamService {
     //팀 생성
     public Long create(TeamCreateRequest request){
         validateDuplicateTeamName(request.getName());
-        Team team = new Team(request.getName(), request.getTeamColor());
+        Team team = new Team(request.getName(), request.getTeamColor(), request.getBottomColor(), request.getStockingColor());
         teamRepository.save(team);
         return team.getId();
     }
@@ -75,4 +75,8 @@ public class TeamService {
                 .collect(Collectors.toList());
         return new TeamMemberListResponse(userTeamMembers);
     }
+
+  public boolean existsById(Long teamId) {
+    return teamRepository.existsById(teamId);
+  }
 }

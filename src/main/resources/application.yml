@@ -25,14 +25,15 @@ spring:
   cloud:
     aws:
       s3:
-        bucket: ${BUCKET_NAME}         # 변경
+
+        bucket: ${BUCKET_NAME}
       stack:
         auto: false
       region:
-        static: ${AWS_REGION}          # 변경
+        static: ${AWS_REGION}
       credentials:
-        access-key: ${AWS_ACCESS_KEY}  # 변경
-        secret-key: ${AWS_SECRET_KEY}  # 변경
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
 
 springdoc:
   api-docs:
