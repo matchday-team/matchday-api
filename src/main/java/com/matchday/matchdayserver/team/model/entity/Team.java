@@ -36,9 +36,11 @@ public class Team {
 
 
   @Builder
-    public Team (String name, String teamColor) {
+    public Team (String name, String teamColor, String bottomColor, String stockingColor) {
         this.name = name;
         this.teamColor = teamColor;
+        this.bottomColor = bottomColor;
+        this.stockingColor = stockingColor;
     }
 
     public void updateName(String name) {
