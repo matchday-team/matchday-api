@@ -26,7 +26,7 @@ public class TeamController {
     private final S3PresignedService s3PresignedManager;
     private static final String FOLDER_NAME = "teams";
 
-    @Operation(summary = "팀 생성", description = "팀 생성 API입니다. ")
+    @Operation(summary = "팀 생성", description = "팀 생성 API입니다. <br> 컬러는 모두 Hex Code로 입력 해주세요.")
     @PostMapping
     public ApiResponse<Long> createTeam(@RequestBody @Valid TeamCreateRequest request) {
         Long teamId = teamService.create(request);
