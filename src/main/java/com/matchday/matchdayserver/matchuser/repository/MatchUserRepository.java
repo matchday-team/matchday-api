@@ -13,4 +13,7 @@ public interface MatchUserRepository extends JpaRepository<MatchUser, Long> {
       "JOIN FETCH mu.user u " +
       "WHERE mu.match.id = :matchId AND mu.user.id = :userId")
   Optional<MatchUser> findByMatchIdAndUserIdWithFetch(@Param("matchId") Long matchId, @Param("userId") Long userId);
+
+  //특정 매치에 특정 유저가 존재하는지 여부
+  boolean existsByMatchIdAndUserId(Long matchId, Long userId);
 }
