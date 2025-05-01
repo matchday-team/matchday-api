@@ -33,7 +33,7 @@ public class MatchUserService {
                 .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCH));
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
-        Team team = teamRepository.findByTeamIdAndUserId(matchId, request.getTeamId())
+        Team team = teamRepository.findByTeamIdAndUserId(request.getTeamId(), request.getTeamId())
                 .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
 
         if(match.getHomeTeam().getId() != team.getId() && match.getAwayTeam().getId() != team.getId()){
