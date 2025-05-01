@@ -29,7 +29,7 @@ public class MatchUserService {
     private final TeamRepository teamRepository;
 
     @Transactional
-    public void create(Long matchId, MatchUserCreateRequest request){
+    public Long create(Long matchId, MatchUserCreateRequest request) {
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCH));
         User user = userRepository.findById(request.getUserId())
@@ -49,5 +49,6 @@ public class MatchUserService {
 
         MatchUser matchUser = MatchUserMapper.toMatchUser(match, user, team, request);
         matchUserRepository.save(matchUser);
+        return matchUser.getId();
     }
 }
