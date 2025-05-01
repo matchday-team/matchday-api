@@ -29,6 +29,11 @@ public class MatchUserService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
 
+        //중복 등록 여부 확인
+        if (matchUserRepository.existsByMatchIdAndUserId(matchId, request.getUserId())) {
+          throw new ApiException(MatchUserStatus.ALREADY_REGISTERED);
+        }
+
         MatchUser matchUser = MatchUserMapper.toMatchUser(match, user, request);
         matchUserRepository.save(matchUser);
     }
