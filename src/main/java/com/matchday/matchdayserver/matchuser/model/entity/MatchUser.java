@@ -1,6 +1,7 @@
 package com.matchday.matchdayserver.matchuser.model.entity;
 
 import com.matchday.matchdayserver.match.model.entity.Match;
+import com.matchday.matchdayserver.matchuser.model.enums.MatchUserRole;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.user.model.entity.User;
 import jakarta.persistence.*;
@@ -34,15 +35,11 @@ public class MatchUser {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private MatchUserRole role;
 
     @Column(name = "match_position") // 감독 고려하여 null 허용
     private String matchPosition;
 
     @Column(name = "match_grid") // 감독 고려하여 null 허용
     private String matchGrid;
-
-    public enum Role {
-        ADMIN, START_PLAYER, SUB_PLAYER, ARCHIVES // 감독, 선발선수, 후발선수, 기록관
-    }
 }
