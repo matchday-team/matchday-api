@@ -46,11 +46,10 @@ public class MatchEventSaveService {
         .findByMatchIdAndUserIdWithFetch(matchId, request.getData().getUserId())
         .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
-    User user = matchUser.getUser();
     Match match = matchUser.getMatch();
 
     List<MatchEventResponse> matchEventResponse = matchEventStrategy
-        .generateMatchEventLog(request.getData(), match, user);
+        .generateMatchEventLog(request.getData(), match, matchUser);
     for (MatchEventResponse response : matchEventResponse) {
       messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
     }

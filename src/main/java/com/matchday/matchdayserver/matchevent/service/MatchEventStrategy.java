@@ -3,6 +3,7 @@ package com.matchday.matchdayserver.matchevent.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
 import org.springframework.stereotype.Component;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
@@ -39,20 +40,20 @@ public class MatchEventStrategy {
   private final MatchEventRepository matchEventRepository;
   private final TeamRepository teamRepository;
 
-  public List<MatchEventResponse> generateMatchEventLog(MatchEventRequest request, Match match, User user) {
-    return generateMatchEvent(request, match, user);
+  public List<MatchEventResponse> generateMatchEventLog(MatchEventRequest request, Match match, MatchUser matchUser) {
+    return generateMatchEvent(request, match, matchUser);
   }
 
-  private List<MatchEventResponse> generateMatchEvent(MatchEventRequest request, Match match, User user) {
+  private List<MatchEventResponse> generateMatchEvent(MatchEventRequest request, Match match, MatchUser matchUser) {
     switch (request.getEventType()) {
       case GOAL:
-        return generateGoalEvent(request, match, user);
+        return generateGoalEvent(request, match, matchUser);
       case OFFSIDE:
-        return generateOffsideEvent(request, match, user);
+        return generateOffsideEvent(request, match, matchUser);
       case VALID_SHOT:
-        return generateValidShotEvent(request, match, user);
+        return generateValidShotEvent(request, match, matchUser);
       default:
-        return generateDefaultEvent(request, match, user);
+        return generateDefaultEvent(request, match, matchUser);
     }
   }
 
@@ -69,17 +70,16 @@ public class MatchEventStrategy {
    * @param user    이벤트를 기록한 사용자
    * @return 생성된 이벤트들의 응답 리스트 (골, 슛, 유효슛)
    */
-  private List<MatchEventResponse> generateGoalEvent(MatchEventRequest request, Match match, User user) {
+  private List<MatchEventResponse> generateGoalEvent(MatchEventRequest request, Match match, MatchUser user) {
     MatchEvent goalEvent = MatchEventMapper.toEntity(request, match, user);
     MatchEvent shotEvent = goalEvent.copyWith(MatchEventType.SHOT);
     MatchEvent validShotEvent = goalEvent.copyWith(MatchEventType.VALID_SHOT);
     matchEventRepository.saveAll(List.of(goalEvent, shotEvent, validShotEvent));
 
     List<MatchEventResponse> matchEventResponses = new ArrayList<>();
-    Team team = findByMatchIdAndUserIdOrThrow(match, user);
-    matchEventResponses.add(MatchEventMapper.toResponse(goalEvent, team));
-    matchEventResponses.add(MatchEventMapper.toResponse(shotEvent, team));
-    matchEventResponses.add(MatchEventMapper.toResponse(validShotEvent, team));
+    matchEventResponses.add(MatchEventMapper.toResponse(goalEvent));
+    matchEventResponses.add(MatchEventMapper.toResponse(shotEvent));
+    matchEventResponses.add(MatchEventMapper.toResponse(validShotEvent));
 
     return matchEventResponses;
   }
@@ -94,17 +94,16 @@ public class MatchEventStrategy {
    * 
    * @param request 오프사이드 이벤트 요청 정보
    * @param match   해당 경기 정보
-   * @param user    이벤트를 기록한 사용자
+   * @param matchUser    이벤트를 기록한 사용자
    * @return 생성된 이벤트들의 응답 리스트 (오프사이드, 파울)
    */
-  private List<MatchEventResponse> generateOffsideEvent(MatchEventRequest request, Match match, User user) {
-    MatchEvent offsideEvent = MatchEventMapper.toEntity(request, match, user);
+  private List<MatchEventResponse> generateOffsideEvent(MatchEventRequest request, Match match, MatchUser matchUser) {
+    MatchEvent offsideEvent = MatchEventMapper.toEntity(request, match, matchUser);
     MatchEvent foulEvent = offsideEvent.copyWith(MatchEventType.FOUL);
     matchEventRepository.saveAll(List.of(offsideEvent, foulEvent));
-    Team team = findByMatchIdAndUserIdOrThrow(match, user);
     return List.of(
-        MatchEventMapper.toResponse(offsideEvent, team),
-        MatchEventMapper.toResponse(foulEvent, team));
+        MatchEventMapper.toResponse(offsideEvent),
+        MatchEventMapper.toResponse(foulEvent));
   }
 
   /**
@@ -117,17 +116,16 @@ public class MatchEventStrategy {
    * 
    * @param request 유효슛 이벤트 요청 정보
    * @param match   해당 경기 정보
-   * @param user    이벤트를 기록한 사용자
+   * @param matchUser    이벤트를 기록한 사용자
    * @return 생성된 이벤트들의 응답 리스트 (유효슛, 슛)
    */
-  private List<MatchEventResponse> generateValidShotEvent(MatchEventRequest request, Match match, User user) {
-    MatchEvent validShotEvent = MatchEventMapper.toEntity(request, match, user);
+  private List<MatchEventResponse> generateValidShotEvent(MatchEventRequest request, Match match, MatchUser matchUser) {
+    MatchEvent validShotEvent = MatchEventMapper.toEntity(request, match, matchUser);
     MatchEvent shotEvent = validShotEvent.copyWith(MatchEventType.SHOT);
     matchEventRepository.saveAll(List.of(validShotEvent, shotEvent));
-    Team team = findByMatchIdAndUserIdOrThrow(match, user);
     return List.of(
-        MatchEventMapper.toResponse(validShotEvent, team),
-        MatchEventMapper.toResponse(shotEvent, team));
+        MatchEventMapper.toResponse(validShotEvent),
+        MatchEventMapper.toResponse(shotEvent));
   }
 
   /**
@@ -139,19 +137,12 @@ public class MatchEventStrategy {
    * 
    * @param request 기타 이벤트 요청 정보
    * @param match   해당 경기 정보
-   * @param user    이벤트를 기록한 사용자
+   * @param matchUser    이벤트를 기록한 사용자
    * @return 생성된 이벤트의 응답 리스트 (단일 이벤트)
    */
-  private List<MatchEventResponse> generateDefaultEvent(MatchEventRequest request, Match match, User user) {
-    MatchEvent matchEvent = MatchEventMapper.toEntity(request, match, user);
+  private List<MatchEventResponse> generateDefaultEvent(MatchEventRequest request, Match match, MatchUser matchUser) {
+    MatchEvent matchEvent = MatchEventMapper.toEntity(request, match, matchUser);
     matchEventRepository.save(matchEvent);
-    Team team = findByMatchIdAndUserIdOrThrow(match, user);
-    return List.of(MatchEventMapper.toResponse(matchEvent, team));
-  }
-
-  private Team findByMatchIdAndUserIdOrThrow(Match match, User user) {
-    Team team = teamRepository.findByMatchIdAndUserId(match.getId(), user.getId()).orElseThrow(
-        () -> new ApiException(TeamStatus.NOTFOUND_TEAM));
-    return team;
+    return List.of(MatchEventMapper.toResponse(matchEvent));
   }
 }

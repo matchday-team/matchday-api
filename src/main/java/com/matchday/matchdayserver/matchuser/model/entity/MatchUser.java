@@ -1,6 +1,7 @@
 package com.matchday.matchdayserver.matchuser.model.entity;
 
 import com.matchday.matchdayserver.match.model.entity.Match;
+import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
 import com.matchday.matchdayserver.matchuser.model.enums.MatchUserRole;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.user.model.entity.User;
@@ -10,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,7 +32,7 @@ public class MatchUser {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "team_id")
     private Team team;
 
     @Enumerated(EnumType.STRING)
@@ -42,4 +44,7 @@ public class MatchUser {
 
     @Column(name = "match_grid") // 감독 고려하여 null 허용
     private String matchGrid;
+
+    @OneToMany(mappedBy = "matchUser", cascade = CascadeType.REMOVE)
+    private List<MatchEvent> matchEvents;
 }
