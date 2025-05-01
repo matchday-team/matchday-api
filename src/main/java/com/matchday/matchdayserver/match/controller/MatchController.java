@@ -25,9 +25,9 @@ public class MatchController {
 
     @Operation(summary = "매치 생성")
     @PostMapping
-    public ApiResponse<String> createMatch(@RequestBody MatchCreateRequest request) {
-        matchCreateService.create(request);
-        return ApiResponse.ok("매치 생성 완료");
+    public ApiResponse<Long> createMatch(@RequestBody MatchCreateRequest request) {
+        Long id = matchCreateService.create(request);
+        return ApiResponse.ok(id);
     }
 
     @GetMapping("/{matchId}")
