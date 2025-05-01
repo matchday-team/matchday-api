@@ -6,8 +6,6 @@ import java.util.List;
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
 import org.springframework.stereotype.Component;
 
-import com.matchday.matchdayserver.common.exception.ApiException;
-import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.matchevent.mapper.MatchEventMapper;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
@@ -15,9 +13,7 @@ import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
 import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
-import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
-import com.matchday.matchdayserver.user.model.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +34,6 @@ import lombok.RequiredArgsConstructor;
 public class MatchEventStrategy {
 
   private final MatchEventRepository matchEventRepository;
-  private final TeamRepository teamRepository;
 
   public List<MatchEventResponse> generateMatchEventLog(MatchEventRequest request, Match match, MatchUser matchUser) {
     return generateMatchEvent(request, match, matchUser);
