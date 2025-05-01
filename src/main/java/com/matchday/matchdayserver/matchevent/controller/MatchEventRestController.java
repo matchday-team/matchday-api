@@ -18,7 +18,7 @@ public class MatchEventRestController {
 
   private final MatchEventDeleteService matchEventDeleteService;
 
-  @Operation(summary = "이벤트 전체 삭제" , description = "matchId 해당하는 matchEvent 전체삭제")
+  @Operation(summary = "이벤트 전체 삭제" , description = "matchId 해당하는 matchEvent 전체삭제 <br>삭제 후 \"/topic/match-delete-events\" 채널로 Websocket 메시지 전송합니다")
   @DeleteMapping("/{matchId}")
   public ApiResponse<Long> deleteAllEvents(@PathVariable Long matchId) {
     return ApiResponse.ok(matchEventDeleteService.deleteAllEvents(matchId));
