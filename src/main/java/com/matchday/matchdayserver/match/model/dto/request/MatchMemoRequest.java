@@ -1,4 +1,4 @@
-package com.matchday.matchdayserver.matchmemo.model.dto;
+package com.matchday.matchdayserver.match.model.dto.request;
 
 import lombok.Getter;
 
