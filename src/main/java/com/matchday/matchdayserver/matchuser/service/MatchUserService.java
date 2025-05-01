@@ -18,6 +18,7 @@ import com.matchday.matchdayserver.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,8 @@ public class MatchUserService {
         Team team = teamRepository.findByTeamIdAndUserId(request.getTeamId(), request.getTeamId())
                 .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
 
-        if(match.getHomeTeam().getId() != team.getId() && match.getAwayTeam().getId() != team.getId()){
+        if (!Objects.equals(match.getHomeTeam().getId(), team.getId()) &&
+            !Objects.equals(match.getAwayTeam().getId(), team.getId())) {
             throw new ApiException(MatchStatus.NOTFOUND_MATCH);
         }
 
