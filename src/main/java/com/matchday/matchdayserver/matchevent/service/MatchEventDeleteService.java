@@ -24,7 +24,7 @@ public class MatchEventDeleteService {
     matchRepository.findById(matchId).orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
     matchEventRepository.deleteByMatchId(matchId);
     MatchEventDeleteResponse response= new MatchEventDeleteResponse(matchId);
-    simpMessagingTemplate.convertAndSend("/topic/matchevents", response);
+    simpMessagingTemplate.convertAndSend("/topic/match-delete-events", response);
     return matchId;
   }
 }
