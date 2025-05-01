@@ -14,7 +14,7 @@ public class MatchUserCreateRequest {
     @Schema(description = "팀 ID", example = "1")
     private Long teamId;
 
-    @Schema(description = "매치에서의 역할", example = "PLAYER")
+    @Schema(description = "매치에서의 역할", example = "START_PLAYER")
     private MatchUserRole role;
 
     @Schema(description = "매치에서의 포지션", example = "FW")
