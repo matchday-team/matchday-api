@@ -11,6 +11,7 @@ public enum MatchStatus implements StatusInterface {
     NOT_PARTICIPATING_PLAYER(400, 6008, "경기에 참여중이지 않은 선수입니다"),
     UNAUTHORIZED_RECORD(403, 6009, "기록할 수 없는 유저입니다"),
     SOCKET_ERROR(500, 6010, "웹소켓 오류"),
+    TEAM_NOT_PARTICIPATING(400, 6011, "해당 팀은 입력받은 경기의 홈팀도, 어웨이팀도 아닙니다."),
     MEMO_NOT_FOUND(404, 6012, "존재하지 않는 매모 입니다"),
     ;
 
