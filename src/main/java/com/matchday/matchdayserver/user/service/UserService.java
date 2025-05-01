@@ -21,6 +21,7 @@ import com.matchday.matchdayserver.userteam.model.mapper.UserTeamMapper;
 import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -71,18 +72,19 @@ public class UserService {
         }
     }
 
-  public boolean existsById(Long userId) {
-    return userRepository.existsById(userId);
-  }
+    public boolean existsById(Long userId) {
+      return userRepository.existsById(userId);
+    }
 
-  public UserInfoResponse getUserInfo(Long userId){
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
+    @Transactional(readOnly = true)
+    public UserInfoResponse getUserInfo(Long userId){
+      User user = userRepository.findById(userId)
+          .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
 
-    List<Long> teamIds = userTeamRepository.findActiveTeamIdsByUserId(userId);
-    List<Long> matchIds = matchUserRepository.findMatchIdsByUserId(userId);
-    return UserMapper.userInfoResponse(user, teamIds, matchIds);
-  }
+      List<Long> teamIds = userTeamRepository.findActiveTeamIdsByUserId(userId);
+      List<Long> matchIds = matchUserRepository.findMatchIdsByUserId(userId);
+      return UserMapper.userInfoResponse(user, teamIds, matchIds);
+    }
 }
 
 
