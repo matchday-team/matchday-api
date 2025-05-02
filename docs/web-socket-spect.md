@@ -2,16 +2,17 @@
 
 ## 목차
 
-1. [WebSocket 연결 및 엔드포인트](#1-websocket-연결-및-엔드포인트)
-2. [메시지 송신 (이벤트 기록)](#2-메시지-송신-이벤트-기록)
-3. [메시지 수신 (이벤트 구독)](#3-메시지-수신-이벤트-구독)
-4. [이벤트 전체 삭제 알림](#4-이벤트-전체-삭제-알림)
-5. [이벤트 저장 및 검증 로직](#5-이벤트-저장-및-검증-로직)
-6. [Validation 상세](#6-validation-상세)
-7. [전체 플로우 요약](#7-전체-플로우-요약)
-8. [기타 참고사항](#8-기타-참고사항)
+1. [WebSocket 연결 및 엔드포인트](#websocket-연결-및-엔드포인트)
+2. [메시지 송신 (이벤트 기록)](#메시지-송신-이벤트-기록)
+3. [선수 교체 요청](#선수-교체-요청)
+4. [메시지 수신 (이벤트 구독)](#메시지-수신-이벤트-구독)
+5. [이벤트 전체 삭제 알림](#이벤트-전체-삭제-알림)
+6. [이벤트 저장 및 검증 로직](#이벤트-저장-및-검증-로직)
+7. [Validation 상세](#validation-상세)
+8. [전체 플로우 요약](#전체-플로우-요약)
+9. [기타 참고사항](#기타-참고사항)
 
-## 1. WebSocket 연결 및 엔드포인트
+## WebSocket 연결 및 엔드포인트
 
 ```javascript
 const socket = new SockJS("http://localhost:8080/ws");
@@ -48,7 +49,7 @@ const client = new Client({
 -   STOMP 메시지 송신 경로: `/app/match/{matchId}`
 -   STOMP 구독 경로: `/topic/match/{matchId}`
 
-## 2. 메시지 송신 (이벤트 기록)
+## 메시지 송신 (이벤트 기록)
 
 ### 요청 메시지 구조
 
@@ -83,9 +84,9 @@ const client = new Client({
 -   RED_CARD (레드카드/퇴장)
 -   OWN_GOAL (자책골)
 
-### 선수 교체 요청
+## 선수 교체 요청
 
-#### 메시지 구조
+### 메시지 구조
 
 ```json
 {
@@ -104,7 +105,7 @@ const client = new Client({
     -   **toUserId**: 교체될 선수의 유저 아이디
     -   **message**: 교체 사유 등 (선택)
 
-#### 선수 교체 요청 엔드포인트
+### 선수 교체 요청 엔드포인트
 
 -   STOMP 메시지 송신 경로: `/app/match/{matchId}/exchange`
 -   STOMP 구독 경로: `/topic/match/{matchId}`
@@ -114,7 +115,7 @@ const client = new Client({
 -   SUB_IN: 교체 입장 선수에 대한 이벤트
 -   SUB_OUT: 교체 퇴장 선수에 대한 이벤트
 
-## 3. 메시지 수신 (이벤트 구독)
+## 메시지 수신 (이벤트 구독)
 
 ### 구독 경로
 
@@ -134,7 +135,7 @@ const client = new Client({
 }
 ```
 
-## 4. 이벤트 전체 삭제 알림
+## 이벤트 전체 삭제 알림
 
 경기 ID에 해당하는 모든 이벤트가 삭제되었을 경우, 백엔드에서는 해당 내용을 WebSocket 메시지로 알립니다.
 
@@ -152,7 +153,7 @@ const client = new Client({
 
 **설명**: DELETE `/api/v1/match-event/{matchId}` API 호출 시, 해당 matchId에 연결된 모든 이벤트가 삭제되며, 그 결과로 위 채널로 삭제 완료 메시지가 전송됩니다. 프론트에서는 이 메시지를 수신하여 관련 UI를 갱신하거나 알림을 띄울 수 있습니다.
 
-## 5. 이벤트 저장 및 검증 로직
+## 이벤트 저장 및 검증 로직
 
 ### 인증 및 권한 검증
 
@@ -179,7 +180,7 @@ const client = new Client({
 
 각 이벤트는 DB에 저장되고, 구독자에게 각각 개별적으로 전송됨
 
-## 6. Validation 상세
+## Validation 상세
 
 -   token이 유효한지, MatchUserRole 등록할 때 기록관(Archieves)로 등록된 유저인지 검증
 -   userId가 해당 matchId에 실제로 참가 중인지 검증
@@ -188,7 +189,7 @@ const client = new Client({
 
 위 조건 중 하나라도 위반 시 예외 발생 및 저장/전송 불가
 
-## 7. 전체 플로우 요약
+## 전체 플로우 요약
 
 1. 클라이언트가 `/app/match/{matchId}`로 이벤트 메시지 전송
 2. 서버에서 인증/권한/유효성 검증
@@ -196,6 +197,6 @@ const client = new Client({
 4. 각 이벤트별로 `/topic/match/{matchId}`로 구독자에게 전송
 5. 클라이언트는 실시간으로 이벤트 수신 및 UI 반영
 
-## 8. 기타 참고사항
+## 기타 참고사항
 
 -   현재 token에는 userId가 들어가고 있지만 추후 Security 구현에 따라서 token이 사라질 수도 아니면 JWT Token이 들어가야 할 수도 있습니다.
