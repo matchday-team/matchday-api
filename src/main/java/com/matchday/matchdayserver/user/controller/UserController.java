@@ -5,6 +5,7 @@ import com.matchday.matchdayserver.s3.service.S3PresignedService;
 import com.matchday.matchdayserver.s3.dto.S3PresignedResponse;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
 import com.matchday.matchdayserver.user.model.dto.request.UserJoinTeamRequest;
+import com.matchday.matchdayserver.user.model.dto.response.UserInfoResponse;
 import com.matchday.matchdayserver.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,4 +53,9 @@ public class UserController {
     return ApiResponse.ok(s3PresignedManager.generateReadUrl(FOLDER_NAME, userId,key));
   }
 
+  @Operation(summary = "유저 정보 조회", description = "유저 정보 조회 API입니다. <br> 특정 유저의 이름, 소속팀 id, 참여한 매치 id를 반환합니다. ")
+  @GetMapping("/{userId}")
+  public ApiResponse<UserInfoResponse> getUserInfo(@PathVariable Long userId){
+    return ApiResponse.ok(userService.getUserInfo(userId));
+  }
 }

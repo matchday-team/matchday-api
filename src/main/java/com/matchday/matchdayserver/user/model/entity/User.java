@@ -17,7 +17,7 @@
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @Column(nullable = false, length = 30, unique = true)
+        @Column(nullable = false, length = 30)
         private String name;
 
         @Builder
@@ -31,7 +31,4 @@
 
         @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
         private List<UserTeam> userTeams;
-
-        @OneToMany(mappedBy = "user") // cascade = CascadeType.REMOVE 안한 이유 : 유저의 과거 기록은 남겨두는게 좋을듯?
-        private List<MatchEvent> matchEvents;
     }

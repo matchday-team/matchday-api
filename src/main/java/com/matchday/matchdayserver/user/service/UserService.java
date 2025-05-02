@@ -3,12 +3,17 @@ package com.matchday.matchdayserver.user.service;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
+import com.matchday.matchdayserver.match.model.entity.Match;
+import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
+import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.team.service.TeamService;
 import com.matchday.matchdayserver.user.model.dto.request.UserJoinTeamRequest;
+import com.matchday.matchdayserver.user.model.dto.response.UserInfoResponse;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
+import com.matchday.matchdayserver.user.model.mapper.UserMapper;
 import com.matchday.matchdayserver.user.repository.UserRepository;
 import com.matchday.matchdayserver.userteam.model.dto.JoinUserTeamResponse;
 import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
@@ -16,6 +21,8 @@ import com.matchday.matchdayserver.userteam.model.mapper.UserTeamMapper;
 import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +32,7 @@ public class UserService {
     private final TeamService teamService;
     private final TeamRepository teamRepository;
     private final UserTeamRepository userTeamRepository;
+    private final MatchUserRepository matchUserRepository;
 
     public Long createUser(UserCreateRequest request){
         validateDuplicateUser(request.getName());
@@ -64,7 +72,19 @@ public class UserService {
         }
     }
 
-  public boolean existsById(Long userId) {
-    return userRepository.existsById(userId);
-  }
+    public boolean existsById(Long userId) {
+      return userRepository.existsById(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public UserInfoResponse getUserInfo(Long userId){
+      User user = userRepository.findById(userId)
+          .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
+
+      List<Long> teamIds = userTeamRepository.findActiveTeamIdsByUserId(userId);
+      List<Long> matchIds = matchUserRepository.findMatchIdsByUserId(userId);
+      return UserMapper.userInfoResponse(user, teamIds, matchIds);
+    }
 }
+
+

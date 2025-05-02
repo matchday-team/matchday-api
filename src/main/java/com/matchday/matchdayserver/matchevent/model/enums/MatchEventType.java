@@ -13,6 +13,9 @@ public enum MatchEventType {
     @Schema(description = "슛")
     SHOT("슛"),
 
+    @Schema(description = "코너킥")
+    CORNER_KICK("코너킥"),
+
     @Schema(description = "유효슛")
     VALID_SHOT("유효슛"),
 

@@ -2,7 +2,7 @@ package com.matchday.matchdayserver.matchevent.model.entity;
 
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
-import com.matchday.matchdayserver.user.model.entity.User;
+import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -43,15 +43,15 @@ public class MatchEvent {
     private Match match;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "match_user_id", nullable = false)
+    private MatchUser matchUser;
 
     public MatchEvent copyWith(MatchEventType eventType) {
         return MatchEvent.builder()
                 .eventType(eventType)
                 .description(this.description)
                 .match(this.match)
-                .user(this.user)
+                .matchUser(this.matchUser)
                 .build();
     }
 }

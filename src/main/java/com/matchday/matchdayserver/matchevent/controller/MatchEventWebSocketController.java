@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-public class MatchEventController {
+public class MatchEventWebSocketController {
 
   private final MatchEventSaveService matchEventSaveService;
 
