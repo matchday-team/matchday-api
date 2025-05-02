@@ -1,5 +1,7 @@
 package com.matchday.matchdayserver.match.model.dto.response;
 
+import com.matchday.matchdayserver.common.exception.ApiException;
+import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.matchevent.model.dto.ScoreResponse;
 import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,6 +38,8 @@ public class MatchScoreResponse {
             updateScore(homeScore, eventType);
         } else if (teamId.equals(this.awayTeamId)) {
             updateScore(awayScore, eventType);
+        } else {
+            throw new ApiException(MatchStatus.NOTFOUND_TEAM);
         }
     }
 
