@@ -22,4 +22,5 @@ public interface MatchUserRepository extends JpaRepository<MatchUser, Long> {
   @Query("SELECT mu.match.id FROM MatchUser mu WHERE mu.user.id = :userId")
   List<Long> findMatchIdsByUserId(@Param("userId") Long userId);
 
+  List<MatchUser> findByMatchId(Long matchId);
 }
