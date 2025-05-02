@@ -6,32 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TeamRepository extends JpaRepository<Team, Long> {
-    boolean existsByName(String name);
 
-    // ngram 기반 검색
-    @Query(value = "SELECT * FROM team WHERE MATCH(name) AGAINST(:keyword IN NATURAL LANGUAGE MODE)", nativeQuery = true)
-    List<Team> searchByKeyword(@Param("keyword") String keyword);
+  boolean existsByName(String name);
 
-    @Query("""
-                SELECT t FROM Team t
-                WHERE (t.id = (SELECT m.homeTeam.id FROM Match m WHERE m.id = :matchId)
-                OR t.id = (SELECT m.awayTeam.id FROM Match m WHERE m.id = :matchId))
-                AND t.id = (SELECT ut.team.id FROM UserTeam ut WHERE ut.user.id = :userId)
-            """)
-    Optional<Team> findByMatchIdAndUserId(@Param("matchId") Long matchId, @Param("userId") Long userId);
-
-    @Query("""
-            SELECT t FROM Team t
-            WHERE t.id = :teamId
-            AND EXISTS (
-                SELECT 1 FROM UserTeam ut
-                WHERE ut.team.id = t.id
-                AND ut.user.id = :userId
-                AND ut.isActive = true
-            )
-            """)
-    Optional<Team> findByTeamIdAndUserId(@Param("teamId") Long teamId, @Param("userId") Long userId);
+  // ngram 기반 검색
+  @Query(value = "SELECT * FROM team WHERE MATCH(name) AGAINST(:keyword IN NATURAL LANGUAGE MODE)", nativeQuery = true)
+  List<Team> searchByKeyword(@Param("keyword") String keyword);
 }
