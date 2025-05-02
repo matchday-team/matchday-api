@@ -69,8 +69,22 @@ public class Match {
     @Column(name = "fourth_referee")
     private String fourthReferee;  //대기심
 
-  public enum MatchType {
+    @Column(name = "home_team_memo", nullable = true)
+    private String homeTeamMemo;  //홈팀 메모
+
+    @Column(name = "away_team_memo", nullable = true)
+    private String awayTeamMemo;  //홈팀 메모
+
+    public enum MatchType {
         리그, 대회, 친선경기
+    }
+
+    public void updateHomeTeamMemo(String memo) {
+    this.homeTeamMemo = memo;
+    }
+
+    public void updateAwayTeamMemo(String memo) {
+    this.awayTeamMemo = memo;
     }
 
     @Builder
