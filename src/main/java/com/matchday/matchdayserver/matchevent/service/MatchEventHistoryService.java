@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.matchevent.service;
 
+import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.matchevent.mapper.MatchEventMapper;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
@@ -13,12 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MatchEventHistoryService {
 
-  private final MatchEventRepository matchEventRepository;
+    private final MatchEventRepository matchEventRepository;
+    private final MatchRepository matchRepository;
 
-  public List<MatchEventResponse> findAllHistoryByMatchId(Long matchId) {
-    return matchEventRepository.findByMatchIdFetchMatchUserAndMatch(matchId)
-        .stream()
-        .map(MatchEventMapper::toResponse)
-        .toList();
-  }
+    public List<MatchEventResponse> findAllHistoryByMatchId(Long matchId) {
+        return matchEventRepository.findByMatchIdFetchMatchUserAndMatch(matchId)
+            .stream()
+            .map(MatchEventMapper::toResponse)
+            .toList();
+    }
 }
