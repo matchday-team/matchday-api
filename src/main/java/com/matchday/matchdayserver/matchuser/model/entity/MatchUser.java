@@ -62,10 +62,12 @@ public class MatchUser {
         if (!toMatchUser.getTeam().getId().equals(this.team.getId())) {
             throw new ApiException(MatchStatus.DIFFERENT_TEAM_EXCHANGE);
         }
+        String originalPosition = toMatchUser.getMatchPosition();
+        String originalGrid = toMatchUser.getMatchGrid();
         toMatchUser.updateMatchPosition(this.matchPosition);
         toMatchUser.updateMatchGrid(this.matchGrid);
 
-        this.matchPosition = null;
-        this.matchGrid = null;
+        this.matchPosition = originalPosition;
+        this.matchGrid = originalGrid;
     }
 }
