@@ -1,5 +1,7 @@
 package com.matchday.matchdayserver.matchuser.model.entity;
 
+import com.matchday.matchdayserver.common.exception.ApiException;
+import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
 import com.matchday.matchdayserver.matchuser.model.enums.MatchUserRole;
@@ -47,4 +49,23 @@ public class MatchUser {
 
     @OneToMany(mappedBy = "matchUser", cascade = CascadeType.REMOVE)
     private List<MatchEvent> matchEvents;
+
+    public void updateMatchPosition(String matchPosition) {
+        this.matchPosition = matchPosition;
+    }
+
+    public void updateMatchGrid(String matchGrid) {
+        this.matchGrid = matchGrid;
+    }
+
+    public void exchange(MatchUser toMatchUser) {
+        if (!toMatchUser.getTeam().getId().equals(this.team.getId())) {
+            throw new ApiException(MatchStatus.DIFFERENT_TEAM_EXCHANGE);
+        }
+        toMatchUser.updateMatchPosition(this.matchPosition);
+        toMatchUser.updateMatchGrid(this.matchGrid);
+
+        this.matchPosition = null;
+        this.matchGrid = null;
+    }
 }
