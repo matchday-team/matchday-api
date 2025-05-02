@@ -9,11 +9,13 @@ import java.util.List;
 
 public interface MatchEventRepository extends JpaRepository<MatchEvent, Long> {
 
-  @Query("""
-          select me from MatchEvent me
-          join fetch me.matchUser as mu
-          join fetch me.match as m
-          where m.id = :id
-      """)
-  List<MatchEvent> findByMatchIdFetchMatchUserAndMatch(@Param("id") Long matchId);
+    @Query("""
+            select me from MatchEvent me
+            join fetch me.matchUser as mu
+            join fetch me.match as m
+            where m.id = :id
+        """)
+    List<MatchEvent> findByMatchIdFetchMatchUserAndMatch(@Param("id") Long matchId);
+
+    List<MatchEvent> findByMatchId(Long matchId);
 }
