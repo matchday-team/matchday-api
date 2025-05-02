@@ -18,4 +18,6 @@ public interface MatchEventRepository extends JpaRepository<MatchEvent, Long> {
     List<MatchEvent> findByMatchIdFetchMatchUserAndMatch(@Param("id") Long matchId);
 
     List<MatchEvent> findByMatchId(Long matchId);
+           
+    void deleteByMatchId(Long matchId);
 }
