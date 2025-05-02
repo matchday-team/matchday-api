@@ -13,12 +13,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MatchEventHistoryService {
 
-  private final MatchEventRepository matchEventRepository;
+    private final MatchEventRepository matchEventRepository;
 
-  public List<MatchEventResponse> findAllHistoryByMatchId(Long matchId) {
-    return matchEventRepository.findByMatchIdFetchMatchUserAndMatch(matchId)
-        .stream()
-        .map(MatchEventMapper::toResponse)
-        .toList();
-  }
+    public List<MatchEventResponse> findAllHistoryByMatchId(Long matchId) {
+        return matchEventRepository.findByMatchIdFetchMatchUserAndMatch(matchId)
+            .stream()
+            .map(MatchEventMapper::toResponse)
+            .toList();
+    }
 }

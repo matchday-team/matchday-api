@@ -18,11 +18,11 @@ import java.util.List;
 @RequestMapping("/api/v1/matches")
 public class MatchEventHistoryController {
 
-  private final MatchEventHistoryService matchEventHistoryService;
+    private final MatchEventHistoryService matchEventHistoryService;
 
-  @GetMapping("/{matchId}/history")
-  @Operation(summary = "매치 이벤트 이력 조회")
-  public ApiResponse<List<MatchEventResponse>> getMatchEventHistory(@PathVariable Long matchId) {
-    return ApiResponse.ok(matchEventHistoryService.findAllHistoryByMatchId(matchId));
-  }
+    @GetMapping("/{matchId}/history")
+    @Operation(summary = "매치 이벤트 이력 조회")
+    public ApiResponse<List<MatchEventResponse>> getMatchEventHistory(@PathVariable Long matchId) {
+        return ApiResponse.ok(matchEventHistoryService.findAllHistoryByMatchId(matchId));
+    }
 }
