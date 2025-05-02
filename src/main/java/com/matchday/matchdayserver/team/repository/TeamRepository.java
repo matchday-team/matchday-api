@@ -22,4 +22,16 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
                 AND t.id = (SELECT ut.team.id FROM UserTeam ut WHERE ut.user.id = :userId)
             """)
     Optional<Team> findByMatchIdAndUserId(@Param("matchId") Long matchId, @Param("userId") Long userId);
+
+    @Query("""
+            SELECT t FROM Team t
+            WHERE t.id = :teamId
+            AND EXISTS (
+                SELECT 1 FROM UserTeam ut
+                WHERE ut.team.id = t.id
+                AND ut.user.id = :userId
+                AND ut.isActive = true
+            )
+            """)
+    Optional<Team> findByTeamIdAndUserId(@Param("teamId") Long teamId, @Param("userId") Long userId);
 }
