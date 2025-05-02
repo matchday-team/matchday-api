@@ -75,8 +75,17 @@ public class Match {
     @Column(name = "away_team_memo", nullable = true)
     private String awayTeamMemo;  //홈팀 메모
 
+    @Column(name = "match_status")
+    private MatchStatus matchStatus;  //경기 상태 (시작 전, 진행 중, 종료)
+
     public enum MatchType {
         리그, 대회, 친선경기
+    }
+
+    public enum MatchStatus {
+        SCHEDULED,  // 경기 전
+        IN_PLAY,    // 진행 중
+        FINISHED    //경기 종료
     }
 
     public void updateHomeTeamMemo(String memo) {
