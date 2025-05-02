@@ -49,6 +49,9 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    //p6spy
+    implementation 'p6spy:p6spy:3.9.1'
 }
 
 tasks.named('test') {
