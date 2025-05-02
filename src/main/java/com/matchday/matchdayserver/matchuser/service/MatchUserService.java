@@ -107,6 +107,8 @@ public class MatchUserService {
             } else if (teamId.equals(awayTeamId)) {
                 awayTeamResponses.add(response);
             }
+            // teamId가 null이거나 홈팀/어웨이팀이 아닌 경우 처리가 필요하다면 여기에 추가
+            // ex 기록원,심판
         }
 
         return MatchUserGroupResponse.builder()
