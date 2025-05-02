@@ -68,6 +68,8 @@ public class MatchUserService {
     return matchUser.getId();
   }
 
+
+  @Transactional
     public MatchUserGroupResponse getGroupedMatchUsers(Long matchId) {
         List<MatchUser> matchUsers = matchUserRepository.findByMatchId(matchId);
 
