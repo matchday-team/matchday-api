@@ -37,8 +37,8 @@ public class MatchUserExchangeService {
         validateRequest(request);
         validateAuthUser(matchId, request.getToken());
 
-        MatchUser fromMatchUser = matchUserRepository.findById(
-                request.getData().getFromMatchUserId())
+        MatchUser fromMatchUser = matchUserRepository
+            .findByMatchIdAndUserIdWithFetch(matchId, request.getData().getFromMatchUserId())
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
         MatchUser toMatchUser = matchUserRepository
