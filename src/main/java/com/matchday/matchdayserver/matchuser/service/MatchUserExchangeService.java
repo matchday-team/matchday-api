@@ -42,7 +42,7 @@ public class MatchUserExchangeService {
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
         MatchUser toMatchUser = matchUserRepository
-            .findByMatchIdAndUserIdWithFetch(matchId, request.getData().getToUserId())
+            .findByMatchIdAndUserIdWithFetch(matchId, request.getData().getToMatchUserId())
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
         // Dirty Checking으로 자동 저장
@@ -93,7 +93,7 @@ public class MatchUserExchangeService {
         }
 
         if (request.getData().getFromMatchUserId() == null
-            || request.getData().getToUserId() == null) {
+            || request.getData().getToMatchUserId() == null) {
             errorMessages.add("fromMatchUserId, toUserId는 필수 입력 값입니다.");
         }
 

@@ -13,7 +13,7 @@ public class MatchUserExchangeRequest {
   @Schema(description = "교체할 선수의 매치 유저 아이디")
   private Long fromMatchUserId;
   @Schema(description = "교체할 선수의 유저 아이디")
-  private Long toUserId;
+  private Long toMatchUserId;
   @Schema(description = "교체 사유 등")
   private String message;
 }
