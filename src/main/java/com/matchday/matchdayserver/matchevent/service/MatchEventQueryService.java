@@ -34,7 +34,7 @@ public class MatchEventQueryService {
             } else if ("ASSISTS".equals(eventType)) {
                 assists = count.intValue();
             } else if ("YELLOW_CARD".equals(eventType)||"RED_CARD".equals(eventType)) {
-                cards = count.intValue();
+                cards += count.intValue();
             }
         }
 
