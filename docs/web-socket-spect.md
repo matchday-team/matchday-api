@@ -83,6 +83,37 @@ const client = new Client({
 -   RED_CARD (레드카드/퇴장)
 -   OWN_GOAL (자책골)
 
+### 선수 교체 요청
+
+#### 메시지 구조
+
+```json
+{
+    "token": "string", // 현재는 Archives로 등록된 user의 ID
+    "data": {
+        "fromMatchUserId": 1, // 교체할 선수의 매치 유저 아이디
+        "toUserId": 2, // 교체할 선수의 유저 아이디
+        "message": "부상으로 인한 교체" // 교체 사유 등
+    }
+}
+```
+
+-   **token**: 사용자 인증을 위한 토큰(숫자 ID 또는 JWT 등)
+-   **data**: 교체 데이터
+    -   **fromMatchUserId**: 교체될 선수의 매치 유저 아이디
+    -   **toUserId**: 교체될 선수의 유저 아이디
+    -   **message**: 교체 사유 등 (선택)
+
+#### 선수 교체 요청 엔드포인트
+
+-   STOMP 메시지 송신 경로: `/app/match/{matchId}/exchange`
+-   STOMP 구독 경로: `/topic/match/{matchId}`
+
+교체 요청 시 자동으로 생성되는 이벤트:
+
+-   SUB_IN: 교체 입장 선수에 대한 이벤트
+-   SUB_OUT: 교체 퇴장 선수에 대한 이벤트
+
 ## 3. 메시지 수신 (이벤트 구독)
 
 ### 구독 경로
@@ -168,4 +199,3 @@ const client = new Client({
 ## 8. 기타 참고사항
 
 -   현재 token에는 userId가 들어가고 있지만 추후 Security 구현에 따라서 token이 사라질 수도 아니면 JWT Token이 들어가야 할 수도 있습니다.
--   선수 교체는 추가적으로 구현이 필요할 것 같습니다.
