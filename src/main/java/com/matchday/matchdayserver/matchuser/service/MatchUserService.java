@@ -7,7 +7,12 @@ import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
+import com.matchday.matchdayserver.matchevent.service.MatchEventQueryService;
+import com.matchday.matchdayserver.matchevent.service.MatchEventStrategy;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserCreateRequest;
+import com.matchday.matchdayserver.matchuser.model.dto.MatchUserEventStat;
+import com.matchday.matchdayserver.matchuser.model.dto.MatchUserGroupResponse;
+import com.matchday.matchdayserver.matchuser.model.dto.MatchUserResponse;
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
 import com.matchday.matchdayserver.matchuser.model.enums.MatchUserRole;
 import com.matchday.matchdayserver.matchuser.model.mapper.MatchUserMapper;
@@ -16,9 +21,13 @@ import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.repository.UserRepository;
+import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
+import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -29,6 +38,8 @@ public class MatchUserService {
   private final MatchRepository matchRepository;
   private final UserRepository userRepository;
   private final TeamRepository teamRepository;
+  private final MatchEventQueryService matchEventQueryService;
+  private final UserTeamRepository userTeamRepository;
 
   @Transactional
   public Long create(Long matchId, MatchUserCreateRequest request) {
@@ -56,6 +67,57 @@ public class MatchUserService {
     matchUserRepository.save(matchUser);
     return matchUser.getId();
   }
+
+
+  @Transactional
+    public MatchUserGroupResponse getGroupedMatchUsers(Long matchId) {
+        List<MatchUser> matchUsers = matchUserRepository.findByMatchId(matchId);
+
+        // 홈팀/어웨이팀 ID 조회
+        Match match = matchRepository.findById(matchId)
+            .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
+        Long homeTeamId = match.getHomeTeam().getId();
+        Long awayTeamId = match.getAwayTeam().getId();
+
+        List<MatchUserResponse> homeTeamResponses = new ArrayList<>();
+        List<MatchUserResponse> awayTeamResponses = new ArrayList<>();
+
+        for (MatchUser matchUser : matchUsers) {
+            Long userId = matchUser.getUser().getId();
+            String userName = matchUser.getUser().getName();
+
+            Long teamId = matchUser.getTeam().getId();
+            UserTeam userTeam = userTeamRepository.findByUserIdAndTeamId(userId, teamId);
+            Integer number = userTeam.getNumber();
+
+            MatchUserEventStat stat = matchEventQueryService.getMatchUserEventStat(matchId, matchUser.getId());
+
+            MatchUserResponse response = MatchUserResponse.builder()
+                .id(userId)
+                .name(userName)
+                .number(number)
+                .goals(stat.getGoals())
+                .assists(stat.getAssists())
+                .cards(stat.getCards())
+                .matchPosition(matchUser.getMatchPosition())
+                .matchGrid(matchUser.getMatchGrid())
+                .build();
+
+            // 홈팀/어웨이팀 분류
+            if (teamId.equals(homeTeamId)) {
+                homeTeamResponses.add(response);
+            } else if (teamId.equals(awayTeamId)) {
+                awayTeamResponses.add(response);
+            }
+            // teamId가 null이거나 홈팀/어웨이팀이 아닌 경우 처리가 필요하다면 여기에 추가
+            // ex 기록원,심판
+        }
+
+        return MatchUserGroupResponse.builder()
+            .homeTeam(homeTeamResponses)
+            .awayTeam(awayTeamResponses)
+            .build();
+    }
 
   /**
    * 팀이 매치에 포함되어 있지 않은지 확인하는 메서드

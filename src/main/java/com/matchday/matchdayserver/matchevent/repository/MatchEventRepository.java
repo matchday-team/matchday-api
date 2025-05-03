@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.matchevent.repository;
 
+import com.matchday.matchdayserver.matchevent.model.dto.EventTypeCount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
@@ -20,4 +21,18 @@ public interface MatchEventRepository extends JpaRepository<MatchEvent, Long> {
     List<MatchEvent> findByMatchId(Long matchId);
            
     void deleteByMatchId(Long matchId);
+
+    @Query(value = """
+    SELECT 
+      event_type AS eventType,
+      COUNT(*) AS count
+    FROM match_event
+    WHERE match_user_id = :matchUserId
+      AND match_id = :matchId
+    GROUP BY event_type
+    """, nativeQuery = true)
+    List<EventTypeCount> countEventTypesByMatchUserAndMatch(
+        @Param("matchUserId") Long matchUserId,
+        @Param("matchId") Long matchId
+    );
 }

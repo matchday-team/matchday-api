@@ -21,6 +21,8 @@ public class MatchMapper {
         .fourthReferee(match.getFourthReferee())
         .firstHalfStartTime(match.getFirstHalfStartTime())
         .secondHalfStartTime(match.getSecondHalfStartTime())
+        .homeTeamId(match.getHomeTeam().getId()) // 추가
+        .awayTeamId(match.getAwayTeam().getId()) // 추가
         .build();
   }
 
