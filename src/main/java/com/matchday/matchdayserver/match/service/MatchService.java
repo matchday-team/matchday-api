@@ -82,15 +82,13 @@ public class MatchService {
       teamRepository.findById(teamId)
           .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
 
-      List<Match> matches = matchRepository.findAll();
+      List<Match> matches = matchRepository.findByHomeTeamIdOrAwayTeamId(teamId, teamId);
 
-      // 특정 팀이 홈팀 또는 원정팀으로 속한 매치만 필터링
       return matches.stream()
-          .filter(match -> match.getHomeTeam().getId().equals(teamId) || match.getAwayTeam().getId().equals(teamId))
           .map(match -> {
               MatchScoreResponse scoreRes = matchScoreService.getMatchScore(match.getId());
               return MatchMapper.toMatchListResponse(match, scoreRes);
           })
           .collect(Collectors.toList());
-    }
+  }
 }
