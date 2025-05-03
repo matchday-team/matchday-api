@@ -4,21 +4,29 @@ import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.match.model.dto.response.MatchInfoResponse;
+import com.matchday.matchdayserver.match.model.dto.response.MatchListResponse;
+import com.matchday.matchdayserver.match.model.dto.response.MatchScoreResponse;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.match.model.mapper.MatchMapper;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.match.model.dto.request.MatchMemoRequest;
 import com.matchday.matchdayserver.match.model.dto.response.MatchMemoResponse;
+import com.matchday.matchdayserver.team.repository.TeamRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MatchService {
   private final MatchRepository matchRepository;
+  private final MatchMapper matchMapper;
+  private final MatchScoreService matchScoreService;
+    private final TeamRepository teamRepository;
 
-  public MatchInfoResponse getMatchInfo(Long matchId) {
+    public MatchInfoResponse getMatchInfo(Long matchId) {
     Match match = matchRepository.findById(matchId)
         .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
     return MatchMapper.toResponse(match);
@@ -71,4 +79,19 @@ public class MatchService {
     }
   }
 
+  public List<MatchListResponse> getMatchListByTeam(Long teamId) {
+      teamRepository.findById(teamId)
+          .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
+
+      List<Match> matches = matchRepository.findAll();
+
+      // 특정 팀이 홈팀 또는 원정팀으로 속한 매치만 필터링
+      return matches.stream()
+          .filter(match -> match.getHomeTeam().getId().equals(teamId) || match.getAwayTeam().getId().equals(teamId))
+          .map(match -> {
+              MatchScoreResponse scoreRes = matchScoreService.getMatchScore(match.getId());
+              return matchMapper.toMatchListResponse(match, scoreRes);
+          })
+          .collect(Collectors.toList());
+    }
 }
