@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MatchService {
   private final MatchRepository matchRepository;
-  private final MatchMapper matchMapper;
   private final MatchScoreService matchScoreService;
     private final TeamRepository teamRepository;
 
@@ -90,7 +89,7 @@ public class MatchService {
           .filter(match -> match.getHomeTeam().getId().equals(teamId) || match.getAwayTeam().getId().equals(teamId))
           .map(match -> {
               MatchScoreResponse scoreRes = matchScoreService.getMatchScore(match.getId());
-              return matchMapper.toMatchListResponse(match, scoreRes);
+              return MatchMapper.toMatchListResponse(match, scoreRes);
           })
           .collect(Collectors.toList());
     }
