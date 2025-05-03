@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.match.model.entity;
 
+import com.matchday.matchdayserver.match.model.enums.MatchStatus;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import jakarta.persistence.*;
@@ -75,17 +76,12 @@ public class Match {
     @Column(name = "away_team_memo", nullable = true)
     private String awayTeamMemo;  //홈팀 메모
 
-    @Column(name = "match_status")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "match_status", nullable = false, columnDefinition = "VARCHAR(50) DEFAULT 'SCHEDULED'")
     private MatchStatus matchStatus;  //경기 상태 (시작 전, 진행 중, 종료)
 
     public enum MatchType {
         리그, 대회, 친선경기
-    }
-
-    public enum MatchStatus {
-        SCHEDULED,  // 경기 전
-        IN_PLAY,    // 진행 중
-        FINISHED    //경기 종료
     }
 
     public void updateHomeTeamMemo(String memo) {
@@ -98,7 +94,7 @@ public class Match {
 
     @Builder
     public Match(String title, Team homeTeam, Team awayTeam, MatchType matchType, String stadium, LocalDate matchDate,
-        LocalTime startTime, LocalTime endTime, LocalTime firstHalfStartTime, LocalTime secondHalfStartTime, String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee) {
+        LocalTime startTime, LocalTime endTime, LocalTime firstHalfStartTime, LocalTime secondHalfStartTime, String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee, MatchStatus matchStatus) {
       this.title = title;
       this.homeTeam = homeTeam;
       this.awayTeam = awayTeam;
@@ -113,6 +109,7 @@ public class Match {
       this.assistantReferee1 = assistantReferee1;
       this.assistantReferee2 = assistantReferee2;
       this.fourthReferee = fourthReferee;
+      this.matchStatus = matchStatus;
     }
 
     @OneToMany(mappedBy = "match",cascade = CascadeType.REMOVE)
