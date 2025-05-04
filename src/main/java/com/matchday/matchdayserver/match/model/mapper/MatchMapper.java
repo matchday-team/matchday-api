@@ -1,7 +1,10 @@
 package com.matchday.matchdayserver.match.model.mapper;
 
 import com.matchday.matchdayserver.match.model.dto.response.MatchInfoResponse;
+import com.matchday.matchdayserver.match.model.dto.response.MatchListResponse;
+import com.matchday.matchdayserver.match.model.dto.response.MatchScoreResponse;
 import com.matchday.matchdayserver.match.model.entity.Match;
+import org.springframework.stereotype.Component;
 
 public class MatchMapper {
   //Match -> MatchInfoResponse 변환
@@ -22,4 +25,21 @@ public class MatchMapper {
         .awayTeamId(match.getAwayTeam().getId()) // 추가
         .build();
   }
+
+  public static MatchListResponse toMatchListResponse(Match match, MatchScoreResponse scoreResponse) {
+      return MatchListResponse.builder()
+          .matchId(match.getId())
+          .homeTeamId(match.getHomeTeam().getId())
+          .homeTeamName(match.getHomeTeam().getName())
+          .awayTeamId(match.getAwayTeam().getId())
+          .awayTeamName(match.getAwayTeam().getName())
+          .matchTitle(match.getTitle())
+          .matchStartTime(match.getStartTime())
+          .matchEndTime(match.getEndTime())
+          .stadium(match.getStadium())
+          .homeScore(scoreResponse.getHomeScore().getGoalCount())
+          .awayScore(scoreResponse.getAwayScore().getGoalCount())
+          .matchStatus(match.getMatchStatus())
+          .build();
+    }
 }

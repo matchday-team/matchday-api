@@ -3,7 +3,9 @@ package com.matchday.matchdayserver.match.controller;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.match.model.dto.request.MatchCreateRequest;
 import com.matchday.matchdayserver.match.model.dto.request.MatchMemoRequest;
+import com.matchday.matchdayserver.match.model.dto.request.MatchHalfTimeRequest;
 import com.matchday.matchdayserver.match.model.dto.response.MatchInfoResponse;
+import com.matchday.matchdayserver.match.model.dto.response.MatchListResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchScoreResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchMemoResponse;
 import com.matchday.matchdayserver.match.service.MatchCreateService;
@@ -14,11 +16,14 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.time.LocalTime;
+import java.util.List;
 
 @Tag(name = "matches", description = "매치 관련 API")
 @RestController
@@ -66,5 +71,18 @@ public class MatchController {
         @Parameter(description = "경기 ID") @PathVariable Long matchId,
         @Parameter(description = "팀 ID") @PathVariable Long teamId) {
       return ApiResponse.ok(matchService.get(matchId, teamId));
+    }
+
+    @Operation(summary = "매치 리스트 조회", description = "특정 팀이 속한 매치 리스트를 조회합니다. <br> 경기 상태(matchStatus) 값은 SCHEDULED(경기 전), IN_PLAY(경기중), FINISHED(경기 종료) 입니다.")
+    @GetMapping("/teams/{teamId}")
+    public ApiResponse<List<MatchListResponse>> getMatchList(@PathVariable Long teamId) {
+        return ApiResponse.ok(matchService.getMatchListByTeam(teamId));
+    }
+
+    @Operation(summary = "전/후반 시간 등록", description = "특정 매치의 전/후반 시작/종료 시간을 등록합니다. <br> halfType은 전반 `first`, 후반 `second` 입니다.<br>각 시간 단건 등록 가능합니다.")
+    @PatchMapping("/{matchId}/{halfType}-time")
+    public ApiResponse<String> updateHalfTime(@PathVariable Long matchId, @PathVariable String halfType, @RequestBody MatchHalfTimeRequest matchHalfTimeRequest) {
+        matchService.setHalfTime(matchId, halfType, matchHalfTimeRequest);
+        return ApiResponse.ok("시간 등록 완료");
     }
 }

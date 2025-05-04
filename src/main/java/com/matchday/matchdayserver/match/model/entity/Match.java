@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.match.model.entity;
 
+import com.matchday.matchdayserver.match.model.enums.MatchStatus;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import jakarta.persistence.*;
@@ -41,7 +42,6 @@ public class Match {
     @Column(length = 50, nullable = false)
     private String stadium;
 
-    @FutureOrPresent(message = "과거 일자는 등록할 수 없습니다.") //과거 일자 등록 못하게 제약
     @Column(nullable = false)
     private LocalDate matchDate;
 
@@ -54,8 +54,14 @@ public class Match {
     @Column(name = "first_half_start_time")
     private LocalTime firstHalfStartTime; // 전반 시작 시간
 
+    @Column(name = "first_half_end_time")
+    private LocalTime firstHalfEndTime; // 전반 종료 시간
+
     @Column(name = "second_half_start_time")
     private LocalTime secondHalfStartTime; // 후반 시작 시간
+
+    @Column(name = "second_half_end_time")
+    private LocalTime secondHalfEndTime; // 후반 종료 시간
 
     @Column(name = "main_referee")
     private String mainRefereeName; //주심
@@ -75,6 +81,10 @@ public class Match {
     @Column(name = "away_team_memo", nullable = true)
     private String awayTeamMemo;  //홈팀 메모
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "match_status", nullable = false, length = 50, columnDefinition = "VARCHAR(50) DEFAULT 'SCHEDULED'")
+    private MatchStatus matchStatus;  //경기 상태 (시작 전, 진행 중, 종료)
+
     public enum MatchType {
         리그, 대회, 친선경기
     }
@@ -87,9 +97,23 @@ public class Match {
     this.awayTeamMemo = memo;
     }
 
+    public void setFirstHalfStartTime(LocalTime time) {
+        this.firstHalfStartTime = time;
+    }
+    public void setFirstHalfEndTime(LocalTime time) {
+        this.firstHalfEndTime = time;
+    }
+    public void setSecondHalfStartTime(LocalTime time) {
+        this.secondHalfStartTime = time;
+    }
+    public void setSecondHalfEndTime(LocalTime time) {
+        this.secondHalfEndTime = time;
+    }
+
+
     @Builder
     public Match(String title, Team homeTeam, Team awayTeam, MatchType matchType, String stadium, LocalDate matchDate,
-        LocalTime startTime, LocalTime endTime, LocalTime firstHalfStartTime, LocalTime secondHalfStartTime, String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee) {
+        LocalTime startTime, LocalTime endTime, LocalTime firstHalfStartTime, LocalTime firstHalfEndTime, LocalTime secondHalfStartTime, LocalTime secondHalfEndTime, String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee, MatchStatus matchStatus) {
       this.title = title;
       this.homeTeam = homeTeam;
       this.awayTeam = awayTeam;
@@ -99,11 +123,14 @@ public class Match {
       this.startTime = startTime;
       this.endTime = endTime;
       this.firstHalfStartTime = firstHalfStartTime;
+      this.firstHalfEndTime = firstHalfEndTime;
       this.secondHalfStartTime = secondHalfStartTime;
+      this.secondHalfEndTime = secondHalfEndTime;
       this.mainRefereeName = mainRefereeName;
       this.assistantReferee1 = assistantReferee1;
       this.assistantReferee2 = assistantReferee2;
       this.fourthReferee = fourthReferee;
+      this.matchStatus = matchStatus;
     }
 
     @OneToMany(mappedBy = "match",cascade = CascadeType.REMOVE)

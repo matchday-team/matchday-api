@@ -86,7 +86,7 @@ public class MatchCreateService {
     //시작시간이 종료시간 보다 늦으면 예외 발생
     private void validateTime(LocalTime startTime, LocalTime endTime) {
         if (startTime.isAfter(endTime)) {
-            throw new ApiException(MatchStatus.INVALID_TIME);  // 시작 시간이 종료 시간보다 늦을 경우
+            throw new ApiException(MatchStatus.TIME_ORDER_INVALID);  // 시작 시간이 종료 시간보다 늦을 경우
         }
     }
 }
