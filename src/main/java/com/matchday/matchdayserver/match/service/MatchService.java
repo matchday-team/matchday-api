@@ -104,6 +104,7 @@ public class MatchService {
             validateFirstHalfTime(match, halfTimeRequest);
             if (halfTimeRequest.getStartTime() != null) {
                 match.setFirstHalfStartTime(halfTimeRequest.getStartTime());
+                match.setMatchState(MatchState.IN_PLAY);
             }
             if (halfTimeRequest.getEndTime() != null) {
                 match.setFirstHalfEndTime(halfTimeRequest.getEndTime());
@@ -115,6 +116,7 @@ public class MatchService {
             }
             if (halfTimeRequest.getEndTime() != null) {
                 match.setSecondHalfEndTime(halfTimeRequest.getEndTime());
+                match.setMatchState(MatchState.FINISHED);
             }
         } else {
             throw new ApiException(MatchStatus.INVALID_HALF_TYPE);
