@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -86,8 +87,12 @@ public class MatchUserService {
             String userName = matchUser.getUser().getName();
             Long teamId = matchUser.getTeam().getId();
 
-            UserTeam userTeam = userTeamRepository.findByUserIdAndTeamId(userId, teamId);
-            Integer number = userTeam.getNumber();
+            Optional<UserTeam> optionalUserTeam = userTeamRepository.findActiveUserTeamByUserIdAndTeamId(userId, teamId);
+            if (optionalUserTeam.isEmpty()) {
+                continue; // 활동 중이 아니거나 기록이 없으면 무시
+            }
+
+            Integer number = optionalUserTeam.get().getNumber();
 
             MatchUserEventStat stat = matchEventQueryService.getMatchUserEventStat(matchId, matchUser.getId());
 
