@@ -39,7 +39,7 @@ public class MatchMapper {
           .stadium(match.getStadium())
           .homeScore(scoreResponse.getHomeScore().getGoalCount())
           .awayScore(scoreResponse.getAwayScore().getGoalCount())
-          .matchStatus(match.getMatchStatus())
+          .matchState(match.getMatchState())
           .build();
     }
 }

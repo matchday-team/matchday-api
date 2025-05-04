@@ -8,6 +8,7 @@ import com.matchday.matchdayserver.match.model.dto.response.MatchInfoResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchListResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchScoreResponse;
 import com.matchday.matchdayserver.match.model.entity.Match;
+import com.matchday.matchdayserver.match.model.enums.MatchState;
 import com.matchday.matchdayserver.match.model.mapper.MatchMapper;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.match.model.dto.request.MatchMemoRequest;
@@ -98,57 +99,64 @@ public class MatchService {
     public void setHalfTime(Long id, String halfType, MatchHalfTimeRequest halfTimeRequest) {
         Match match = matchRepository.findById(id)
             .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
-        // 전반/후반 구분 처리
-        if ("first".equalsIgnoreCase(halfType)) {
-            LocalTime currentFirstHalfStart = match.getFirstHalfStartTime();
-            LocalTime newFirstHalfStart   = halfTimeRequest.getStartTime();
-            LocalTime newFirstHalfEnd     = halfTimeRequest.getEndTime();
 
-            // 시작 시간만 업데이트하는 경우 종료 시간과의 관계 검증
-            if (newFirstHalfStart != null && match.getFirstHalfEndTime() != null &&
-                newFirstHalfStart.isAfter(match.getFirstHalfEndTime())) {
-                throw new ApiException(MatchStatus.TIME_ORDER_INVALID);
+        if ("first".equalsIgnoreCase(halfType)) {
+            validateFirstHalfTime(match, halfTimeRequest);
+            if (halfTimeRequest.getStartTime() != null) {
+                match.setFirstHalfStartTime(halfTimeRequest.getStartTime());
+                match.setMatchState(MatchState.IN_PLAY);
             }
-            // 종료 시간만 업데이트하는 경우 시작 시간과의 관계 검증
-            if (newFirstHalfEnd != null && currentFirstHalfStart != null &&
-                newFirstHalfEnd.isBefore(currentFirstHalfStart)) {
-                throw new ApiException(MatchStatus.INVALID_TIME_RANGE);
-            }
-            if (newFirstHalfStart != null) {
-                match.setFirstHalfStartTime(newFirstHalfStart);
-            }
-            if (newFirstHalfEnd != null) {
-                match.setFirstHalfEndTime(newFirstHalfEnd);
+            if (halfTimeRequest.getEndTime() != null) {
+                match.setFirstHalfEndTime(halfTimeRequest.getEndTime());
             }
         } else if ("second".equalsIgnoreCase(halfType)) {
-            LocalTime currentSecondHalfStart = match.getSecondHalfStartTime();
-            LocalTime newSecondHalfStart     = halfTimeRequest.getStartTime();
-            LocalTime newSecondHalfEnd       = halfTimeRequest.getEndTime();
-            // 시작 시간만 업데이트하는 경우 종료 시간과의 관계 검증
-            if (newSecondHalfStart != null && match.getSecondHalfEndTime() != null &&
-                newSecondHalfStart.isAfter(match.getSecondHalfEndTime())) {
-                throw new ApiException(MatchStatus.TIME_ORDER_INVALID);
+            validateSecondHalfTime(match, halfTimeRequest);
+            if (halfTimeRequest.getStartTime() != null) {
+                match.setSecondHalfStartTime(halfTimeRequest.getStartTime());
             }
-            // 종료 시간만 업데이트하는 경우 시작 시간과의 관계 검증
-            if (newSecondHalfEnd != null && currentSecondHalfStart != null &&
-                newSecondHalfEnd.isBefore(currentSecondHalfStart)) {
-                throw new ApiException(MatchStatus.INVALID_TIME_RANGE);
-            }
-            // 후반 시작 시간이 전반 종료 시간보다 늦은지 검증
-            if (newSecondHalfStart != null && match.getFirstHalfEndTime() != null &&
-                newSecondHalfStart.isBefore(match.getFirstHalfEndTime())) {
-                throw new ApiException(MatchStatus.SECOND_HALF_TIME_ERROR);
-            }
-            if (newSecondHalfStart != null) {
-                match.setSecondHalfStartTime(newSecondHalfStart);
-            }
-            if (newSecondHalfEnd != null) {
-                match.setSecondHalfEndTime(newSecondHalfEnd);
+            if (halfTimeRequest.getEndTime() != null) {
+                match.setSecondHalfEndTime(halfTimeRequest.getEndTime());
+                match.setMatchState(MatchState.FINISHED);
             }
         } else {
             throw new ApiException(MatchStatus.INVALID_HALF_TYPE);
         }
+
         matchRepository.save(match);
     }
 
+    private void validateFirstHalfTime(Match match, MatchHalfTimeRequest request) {
+        LocalTime currentFirstHalfEnd = match.getFirstHalfEndTime();
+        LocalTime currentFirstHalfStart = match.getFirstHalfStartTime();
+        LocalTime newStart = request.getStartTime();
+        LocalTime newEnd = request.getEndTime();
+
+        if (newStart != null && currentFirstHalfEnd != null && newStart.isAfter(currentFirstHalfEnd)) {
+            throw new ApiException(MatchStatus.TIME_ORDER_INVALID);
+        }
+
+        if (newEnd != null && currentFirstHalfStart != null && newEnd.isBefore(currentFirstHalfStart)) {
+            throw new ApiException(MatchStatus.INVALID_TIME_RANGE);
+        }
+    }
+
+    private void validateSecondHalfTime(Match match, MatchHalfTimeRequest request) {
+        LocalTime currentSecondHalfEnd = match.getSecondHalfEndTime();
+        LocalTime currentSecondHalfStart = match.getSecondHalfStartTime();
+        LocalTime newStart = request.getStartTime();
+        LocalTime newEnd = request.getEndTime();
+        LocalTime firstHalfEnd = match.getFirstHalfEndTime();
+
+        if (newStart != null && currentSecondHalfEnd != null && newStart.isAfter(currentSecondHalfEnd)) {
+            throw new ApiException(MatchStatus.TIME_ORDER_INVALID);
+        }
+
+        if (newEnd != null && currentSecondHalfStart != null && newEnd.isBefore(currentSecondHalfStart)) {
+            throw new ApiException(MatchStatus.INVALID_TIME_RANGE);
+        }
+
+        if (newStart != null && firstHalfEnd != null && newStart.isBefore(firstHalfEnd)) {
+            throw new ApiException(MatchStatus.SECOND_HALF_TIME_ERROR);
+        }
+    }
 }
