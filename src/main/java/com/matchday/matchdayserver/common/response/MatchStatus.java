@@ -13,7 +13,8 @@ public enum MatchStatus implements StatusInterface {
     SOCKET_ERROR(500, 6010, "웹소켓 오류"),
     TEAM_NOT_PARTICIPATING(400, 6011, "해당 팀은 입력받은 경기의 홈팀도, 어웨이팀도 아닙니다."),
     MEMO_NOT_FOUND(404, 6012, "존재하지 않는 매모 입니다"),
-    DIFFERENT_TEAM_EXCHANGE(400, 6013, "서로 다른 팀의 선수는 교체할 수 없습니다")
+    DIFFERENT_TEAM_EXCHANGE(400, 6013, "서로 다른 팀의 선수는 교체할 수 없습니다"),
+    INVALID_HALF_TYPE(400, 6014,"잘못된 HALF 타입입니다")
     ;
 
     private final int httpStatusCode;
