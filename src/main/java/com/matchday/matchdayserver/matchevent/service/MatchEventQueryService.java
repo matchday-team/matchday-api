@@ -18,31 +18,26 @@ public class MatchEventQueryService {
      * 특정 경기에서 특정 선수에 대한 득점,어시스트,파울 개수를 조회합니다
      * <p>
      */
-    public MatchUserEventStat getMatchUserEventStat(Long matchId,Long matchUserId) {
-        int goals=0;
-        int assists=0;
-        int cards=0;
+    public MatchUserEventStat getMatchUserEventStat(Long matchId, Long matchUserId) {
+        int goals = 0, assists = 0, yellowCards = 0, redCards = 0;
 
-        //쿼리 결과 받아서 변수에 대입
-        List<EventTypeCount> eventTypeCounts= matchEventRepository.countEventTypesByMatchUserAndMatch(matchId,matchUserId);
-        for (EventTypeCount eventTypeCount : eventTypeCounts) {
-            String eventType = eventTypeCount.getEventType();
-            Long count = eventTypeCount.getCount();
-
-            if ("GOALS".equals(eventType)) {
-                goals = count.intValue();
-            } else if ("ASSISTS".equals(eventType)) {
-                assists = count.intValue();
-            } else if ("YELLOW_CARD".equals(eventType)||"RED_CARD".equals(eventType)) {
-                cards += count.intValue();
+        List<EventTypeCount> counts = matchEventRepository.countEventTypesByMatchUserAndMatch(matchId, matchUserId);
+        for (EventTypeCount c : counts) {
+            switch (c.getEventType()) {
+                case "GOALS" -> goals = c.getCount().intValue();
+                case "ASSISTS" -> assists = c.getCount().intValue();
+                case "YELLOW_CARD" -> yellowCards = c.getCount().intValue();
+                case "RED_CARD" -> redCards = c.getCount().intValue();
             }
         }
 
-        //쿼리로 얻은 변수로 DTO 만들어 결과값으로 리턴
-        return MatchUserEventStat.builder().
-            goals(goals).
-            assists(assists).
-            cards(cards).
-            build();
+        return MatchUserEventStat.builder()
+            .goals(goals)
+            .assists(assists)
+            .yellowCards(yellowCards)
+            .redCards(redCards)
+            .caution(yellowCards)                 // caution == yellowCards
+            .sentOff(yellowCards >= 2 || redCards >= 1)  // 퇴장 판단
+            .build();
     }
 }

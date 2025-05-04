@@ -7,15 +7,22 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MatchUserEventStat {
-    //MatchEventQueryService에서 MatchUserService로 선수별 주요 이벤트 통계 데이터 전달 시 사용합니다
     private Integer goals;
     private Integer assists;
-    private Integer cards;
+    private Integer yellowCards;
+    private Integer redCards;
+    private Integer caution;   // == yellowCards
+    private boolean sentOff;   // 퇴장 여부
 
     @Builder
-    public MatchUserEventStat(Integer goals, Integer assists, Integer cards) {
+    public MatchUserEventStat(Integer goals, Integer assists,
+        Integer yellowCards, Integer redCards,
+        Integer caution, boolean sentOff) {
         this.goals = goals;
         this.assists = assists;
-        this.cards = cards;
+        this.yellowCards = yellowCards;
+        this.redCards = redCards;
+        this.caution = caution;
+        this.sentOff = sentOff;
     }
 }
