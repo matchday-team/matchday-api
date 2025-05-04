@@ -113,7 +113,7 @@ public class Match {
 
     @Builder
     public Match(String title, Team homeTeam, Team awayTeam, MatchType matchType, String stadium, LocalDate matchDate,
-        LocalTime startTime, LocalTime endTime, LocalTime firstHalfStartTime, LocalTime secondHalfStartTime, String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee, MatchStatus matchStatus) {
+        LocalTime startTime, LocalTime endTime, LocalTime firstHalfStartTime, LocalTime firstHalfEndTime, LocalTime secondHalfStartTime, LocalTime secondHalfEndTime, String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee, MatchStatus matchStatus) {
       this.title = title;
       this.homeTeam = homeTeam;
       this.awayTeam = awayTeam;
@@ -123,7 +123,9 @@ public class Match {
       this.startTime = startTime;
       this.endTime = endTime;
       this.firstHalfStartTime = firstHalfStartTime;
+      this.firstHalfEndTime = firstHalfEndTime;
       this.secondHalfStartTime = secondHalfStartTime;
+      this.secondHalfEndTime = secondHalfEndTime;
       this.mainRefereeName = mainRefereeName;
       this.assistantReferee1 = assistantReferee1;
       this.assistantReferee2 = assistantReferee2;
