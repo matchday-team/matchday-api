@@ -7,6 +7,7 @@ import com.matchday.matchdayserver.matchuser.model.dto.MatchUserResponse;
 import com.matchday.matchdayserver.matchuser.model.mapper.MatchUserMapper;
 import com.matchday.matchdayserver.matchuser.service.MatchUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +28,20 @@ public class MatchUserController {
         return ApiResponse.ok(id);
     }
 
-    @Operation(summary = "매치에 출전한 선수들 조회", description = "경기 id를 입력받아 hometeam/awayteam 으로 그룹핑하여 응답합니다")
+    @Operation(
+        summary = "매치 참가 선수 목록 조회",
+        description = """
+            경기 ID를 기반으로 출전 선수 정보를 홈팀/어웨이팀으로 그룹핑하여 반환합니다. 
+            각 팀은 선발(starters)과 교체(substitutes) 선수 목록으로 구분되며, 
+            선수별로 득점, 어시스트, 옐로카드/레드카드 수, 경고 누적 수(caution), 퇴장 여부(sentOff) 정보가 포함됩니다.
+            FIFA 룰 기반 카드 처리 기준을 따릅니다. 경고 누적 수는 옐로 카드로만 결정되며 레드카드 받았을 시 경고가 누적되지 않고 바로 퇴장입니다
+        """
+    )
     @GetMapping("/{matchId}/players")
-    public ApiResponse<MatchUserGroupResponse> getGroupedMatchUsers(@PathVariable Long matchId) {
+    public ApiResponse<MatchUserGroupResponse> getGroupedMatchUsers(
+        @Parameter(description = "매치 ID", example = "1", required = true)
+        @PathVariable Long matchId
+    ) {
         MatchUserGroupResponse groupedUsers = matchUserService.getGroupedMatchUsers(matchId);
         return ApiResponse.ok(groupedUsers);
     }
