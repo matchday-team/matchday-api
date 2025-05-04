@@ -1,6 +1,6 @@
 package com.matchday.matchdayserver.match.model.dto.response;
 
-import com.matchday.matchdayserver.match.model.enums.MatchStatus;
+import com.matchday.matchdayserver.match.model.enums.MatchState;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +8,6 @@ import java.time.LocalTime;
 
 @Getter
 public class MatchListResponse {
-  //매치 id, 팀id, 매치 시간, 제목, 장소, 팀, 스코어, 진행 여부
     @Schema(description = "매치 ID", example = "1")
     private Long matchId;
 
@@ -43,14 +42,14 @@ public class MatchListResponse {
     private int awayScore;
 
     @Schema(description = "경기 진행 여부", example = "FINISHED")
-     private MatchStatus matchStatus;  //경기 상태 (시작 전, 진행 중, 종료)
+     private MatchState matchState;  //경기 상태 (시작 전, 진행 중, 종료)
 
     @Builder
     public MatchListResponse(Long matchId, Long homeTeamId, String homeTeamName,
         Long awayTeamId, String awayTeamName, String matchTitle,
         LocalTime matchStartTime, LocalTime matchEndTime, String stadium,
         int homeScore, int awayScore,
-        MatchStatus matchStatus) {
+        MatchState matchState) {
         this.matchId = matchId;
         this.homeTeamId = homeTeamId;
         this.homeTeamName = homeTeamName;
@@ -62,6 +61,6 @@ public class MatchListResponse {
         this.stadium = stadium;
         this.homeScore = homeScore;
         this.awayScore = awayScore;
-        this.matchStatus = matchStatus;
+        this.matchState = matchState;
     }
 }
