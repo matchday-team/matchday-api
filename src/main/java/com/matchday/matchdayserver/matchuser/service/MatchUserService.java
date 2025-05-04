@@ -8,7 +8,6 @@ import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.matchevent.service.MatchEventQueryService;
-import com.matchday.matchdayserver.matchevent.service.MatchEventStrategy;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserCreateRequest;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserEventStat;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserGroupResponse;
@@ -69,24 +68,24 @@ public class MatchUserService {
   }
 
 
-  @Transactional
+    @Transactional
     public MatchUserGroupResponse getGroupedMatchUsers(Long matchId) {
         List<MatchUser> matchUsers = matchUserRepository.findByMatchId(matchId);
-
-        // 홈팀/어웨이팀 ID 조회
         Match match = matchRepository.findById(matchId)
             .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
         Long homeTeamId = match.getHomeTeam().getId();
         Long awayTeamId = match.getAwayTeam().getId();
 
-        List<MatchUserResponse> homeTeamResponses = new ArrayList<>();
-        List<MatchUserResponse> awayTeamResponses = new ArrayList<>();
+        List<MatchUserResponse> homeStarters = new ArrayList<>();
+        List<MatchUserResponse> homeSubstitutes = new ArrayList<>();
+        List<MatchUserResponse> awayStarters = new ArrayList<>();
+        List<MatchUserResponse> awaySubstitutes = new ArrayList<>();
 
         for (MatchUser matchUser : matchUsers) {
             Long userId = matchUser.getUser().getId();
             String userName = matchUser.getUser().getName();
-
             Long teamId = matchUser.getTeam().getId();
+
             UserTeam userTeam = userTeamRepository.findByUserIdAndTeamId(userId, teamId);
             Integer number = userTeam.getNumber();
 
@@ -96,28 +95,43 @@ public class MatchUserService {
                 .id(userId)
                 .name(userName)
                 .number(number)
-                .goals(stat.getGoals())
-                .assists(stat.getAssists())
-                .cards(stat.getCards())
                 .matchPosition(matchUser.getMatchPosition())
                 .matchGrid(matchUser.getMatchGrid())
+                .goals(stat.getGoals())
+                .assists(stat.getAssists())
+                .yellowCards(stat.getYellowCards())
+                .redCards(stat.getRedCards())
+                .caution(stat.getCaution())
+                .sentOff(stat.isSentOff())  // 퇴장 여부 추가
                 .build();
 
-            // 홈팀/어웨이팀 분류
             if (teamId.equals(homeTeamId)) {
-                homeTeamResponses.add(response);
+                if (matchUser.getRole() == MatchUserRole.START_PLAYER) {
+                    homeStarters.add(response);
+                } else if (matchUser.getRole() == MatchUserRole.SUB_PLAYER) {
+                    homeSubstitutes.add(response);
+                }
             } else if (teamId.equals(awayTeamId)) {
-                awayTeamResponses.add(response);
+                if (matchUser.getRole() == MatchUserRole.START_PLAYER) {
+                    awayStarters.add(response);
+                } else if (matchUser.getRole() == MatchUserRole.SUB_PLAYER) {
+                    awaySubstitutes.add(response);
+                }
             }
-            // teamId가 null이거나 홈팀/어웨이팀이 아닌 경우 처리가 필요하다면 여기에 추가
-            // ex 기록원,심판
         }
 
         return MatchUserGroupResponse.builder()
-            .homeTeam(homeTeamResponses)
-            .awayTeam(awayTeamResponses)
+            .homeTeam(MatchUserGroupResponse.TeamGroupedUsers.builder()
+                .starters(homeStarters)
+                .substitutes(homeSubstitutes)
+                .build())
+            .awayTeam(MatchUserGroupResponse.TeamGroupedUsers.builder()
+                .starters(awayStarters)
+                .substitutes(awaySubstitutes)
+                .build())
             .build();
     }
+
 
   /**
    * 팀이 매치에 포함되어 있지 않은지 확인하는 메서드
