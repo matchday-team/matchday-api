@@ -3,6 +3,7 @@ package com.matchday.matchdayserver.match.service;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.common.response.TeamStatus;
+import com.matchday.matchdayserver.match.model.dto.request.MatchHalfTimeRequest;
 import com.matchday.matchdayserver.match.model.dto.response.MatchInfoResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchListResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchScoreResponse;
@@ -91,4 +92,32 @@ public class MatchService {
           })
           .collect(Collectors.toList());
   }
+
+    @Transactional
+    public void setHalfTime(Long id, String halfType, MatchHalfTimeRequest halfTimeRequest) {
+        Match match = matchRepository.findById(id)
+            .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
+
+        // 전반/후반 구분 처리
+        if ("first".equalsIgnoreCase(halfType)) {
+            if (halfTimeRequest.getStartTime() != null) {
+                match.setFirstHalfStartTime(halfTimeRequest.getStartTime());
+            }
+            if (halfTimeRequest.getEndTime() != null) {
+                match.setFirstHalfEndTime(halfTimeRequest.getEndTime());
+            }
+        } else if ("second".equalsIgnoreCase(halfType)) {
+            if (halfTimeRequest.getStartTime() != null) {
+                match.setSecondHalfStartTime(halfTimeRequest.getStartTime());
+            }
+            if (halfTimeRequest.getEndTime() != null) {
+                match.setSecondHalfEndTime(halfTimeRequest.getEndTime());
+            }
+        } else {
+            throw new ApiException(MatchStatus.INVALID_HALF_TYPE);
+        }
+
+        matchRepository.save(match);
+    }
+
 }
