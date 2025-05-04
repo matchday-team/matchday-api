@@ -137,7 +137,7 @@ public class MatchService {
             // 후반 시작 시간이 전반 종료 시간보다 늦은지 검증
             if (newSecondHalfStart != null && match.getFirstHalfEndTime() != null &&
                 newSecondHalfStart.isBefore(match.getFirstHalfEndTime())) {
-                throw new ApiException(MatchStatus.SECOND_HALF_TIME_ERRO);
+                throw new ApiException(MatchStatus.SECOND_HALF_TIME_ERROR);
             }
             if (newSecondHalfStart != null) {
                 match.setSecondHalfStartTime(newSecondHalfStart);
