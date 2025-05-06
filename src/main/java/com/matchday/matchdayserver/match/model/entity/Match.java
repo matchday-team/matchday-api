@@ -74,11 +74,8 @@ public class Match {
     @Column(name = "fourth_referee")
     private String fourthReferee;  //대기심
 
-    @Column(name = "home_team_memo", nullable = true)
-    private String homeTeamMemo;  //홈팀 메모
-
-    @Column(name = "away_team_memo", nullable = true)
-    private String awayTeamMemo;  //홈팀 메모
+    @Column(name = "memo", nullable = true)
+    private String memo;  //경기 메모
 
     @Enumerated(EnumType.STRING)
     @Column(name = "match_state", nullable = false, length = 50, columnDefinition = "VARCHAR(50) DEFAULT 'SCHEDULED'")
@@ -88,12 +85,8 @@ public class Match {
         리그, 대회, 친선경기
     }
 
-    public void updateHomeTeamMemo(String memo) {
-    this.homeTeamMemo = memo;
-    }
-
-    public void updateAwayTeamMemo(String memo) {
-    this.awayTeamMemo = memo;
+    public void updateMemo(String memo) {
+    this.memo = memo;
     }
 
     public void setFirstHalfStartTime(LocalTime time) {
