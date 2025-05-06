@@ -8,7 +8,5 @@ import lombok.Setter;
 @Setter
 @Builder
 public class MatchMemoResponse {
-  private Long matchId;
-  private Long teamId;
   private String memo;
 }

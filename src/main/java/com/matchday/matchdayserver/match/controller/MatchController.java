@@ -55,22 +55,20 @@ public class MatchController {
         return ApiResponse.ok(response);
     }
 
-    @Operation(summary = "매치 팀 메모 등록/수정", description = "특정 경기의 특정 팀에 대한 메모를 생성하거나 수정합니다 null 값 입력시 메모 초기화.")
-    @PostMapping("{matchId}/teams/{teamId}/memo")
+    @Operation(summary = "매치 메모 등록/수정", description = "특정 경기에 대한 메모를 생성하거나 수정합니다 null 값 입력시 메모 초기화.")
+    @PostMapping("{matchId}/memo")
     public ApiResponse<String> createOrUpdate(
         @Parameter(description = "경기 ID") @PathVariable Long matchId,
-        @Parameter(description = "팀 ID") @PathVariable Long teamId,
         @RequestBody MatchMemoRequest request) {
-      matchService.createOrUpdate(matchId, teamId, request);
+      matchService.createOrUpdate(matchId, request);
       return ApiResponse.ok("메모 변경 완료");
     }
 
-    @Operation(summary = "매치 팀 메모 조회", description = "특정 경기의 특정 팀에 대한 메모를 조회합니다.")
-    @GetMapping("{matchId}/teams/{teamId}/memo")
-    public ApiResponse<MatchMemoResponse> get(
-        @Parameter(description = "경기 ID") @PathVariable Long matchId,
-        @Parameter(description = "팀 ID") @PathVariable Long teamId) {
-      return ApiResponse.ok(matchService.get(matchId, teamId));
+    @Operation(summary = "매치 메모 조회", description = "특정 경기의 메모를 조회합니다.")
+    @GetMapping("{matchId}/memo")
+    public ApiResponse<MatchMemoResponse> getMemo(
+        @Parameter(description = "경기 ID") @PathVariable Long matchId) {
+      return ApiResponse.ok(matchService.get(matchId));
     }
 
     @Operation(summary = "매치 리스트 조회", description = "특정 팀이 속한 매치 리스트를 조회합니다. <br> 경기 상태(matchStatus) 값은 SCHEDULED(경기 전), IN_PLAY(경기중), FINISHED(경기 종료) 입니다.")
