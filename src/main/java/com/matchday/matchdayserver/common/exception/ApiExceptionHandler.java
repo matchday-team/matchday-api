@@ -24,15 +24,19 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+    public ApiResponse<List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<String> errorMessageList = ex.getFieldErrors()
+            .stream()
+            .map(
+                objectError -> {
+                    String format = "%s : { %s } 은 %s";
+                    return String.format(format, objectError.getField(),
+                        objectError.getRejectedValue(), objectError.getDefaultMessage());
+                })
+            .toList();
 
-        String errorMessage = fieldErrors.stream()
-                .map(fieldError -> fieldError.getDefaultMessage())
-                .reduce((msg1, msg2) -> msg1 + ", " + msg2)
-                .orElse("유효성 검사 실패");
-
-        return ApiResponse.error(DefaultStatus.BAD_REQUEST, errorMessage); //400 에러 발생 후 각 검증 어노테이션에서 설정한 msg 출력
+        return ApiResponse.error(DefaultStatus.BAD_REQUEST,
+            errorMessageList); //400 에러 발생 후 각 검증 어노테이션에서 설정한 msg 출력
     }
 
     @ExceptionHandler(Exception.class)
