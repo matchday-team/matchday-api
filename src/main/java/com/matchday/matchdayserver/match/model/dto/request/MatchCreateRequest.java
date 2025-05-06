@@ -1,6 +1,7 @@
 package com.matchday.matchdayserver.match.model.dto.request;
 
 import com.matchday.matchdayserver.match.model.entity.Match;
+import com.matchday.matchdayserver.match.model.enums.MatchState;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
@@ -44,4 +45,7 @@ public class MatchCreateRequest {
 
   @Schema(description = "대기심", example = "대기심 이름")
     private String fourthReferee;
+
+    @Schema(description = "경기 상태 (SCHEDULED, ONGOING, FINISHED)", example = "SCHEDULED")
+    private MatchState matchState;
 }
