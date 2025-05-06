@@ -64,7 +64,7 @@ public class MatchController {
       return ApiResponse.ok("메모 변경 완료");
     }
 
-    @Operation(summary = "매치 팀 메모 조회", description = "특정 경기의 특정 팀에 대한 메모를 조회합니다.")
+    @Operation(summary = "매치 메모 조회", description = "특정 경기의 메모를 조회합니다.")
     @GetMapping("{matchId}/memo")
     public ApiResponse<MatchMemoResponse> getMemo(
         @Parameter(description = "경기 ID") @PathVariable Long matchId) {
