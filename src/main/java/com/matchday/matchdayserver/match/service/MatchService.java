@@ -35,40 +35,20 @@ public class MatchService {
   }
 
   @Transactional
-  public void createOrUpdate(Long matchId, Long teamId, MatchMemoRequest request) {
+  public void createOrUpdate(Long matchId, MatchMemoRequest request) {
     Match match = matchRepository.findById(matchId)
         .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
-    validateTeamParticipation(match, teamId);
 
-    if(teamId.equals(match.getAwayTeam().getId())){
-      match.updateAwayTeamMemo(request.getMemo());
-    }
-    else if(teamId.equals(match.getHomeTeam().getId())){
-      match.updateHomeTeamMemo(request.getMemo());
-    }
-
+    match.updateMemo(request.getMemo());
     matchRepository.save(match);
   }
 
-  public MatchMemoResponse get(Long matchId, Long teamId) {
+  public MatchMemoResponse get(Long matchId) {
     Match match = matchRepository.findById(matchId)
         .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
 
-    validateTeamParticipation(match, teamId);
-
-    String memo;
-    if (teamId.equals(match.getAwayTeam().getId())) {
-      memo = match.getAwayTeamMemo();
-    } else if (teamId.equals(match.getHomeTeam().getId())) {
-      memo = match.getHomeTeamMemo();
-    } else {
-      throw new ApiException(TeamStatus.NOTFOUND_TEAM);
-    }
-
     return MatchMemoResponse.builder()
-        .matchId(matchId)
-        .teamId(teamId)
-        .memo(memo)
+        .memo(match.getMemo())
         .build();
   }
 
