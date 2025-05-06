@@ -4,7 +4,7 @@ import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.common.response.DefaultStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.FieldError;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,8 +17,9 @@ import java.util.List;
 public class ApiExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
-    public ApiResponse<ApiExceptionInterface> handleApiException(Exception ex, ApiException apiException) {
-        return ApiResponse.error(apiException.getStatus());
+    public ResponseEntity<ApiResponse<ApiExceptionInterface>> handleApiException(Exception ex, ApiException apiException) {
+        return ResponseEntity.status(apiException.getStatus().getHttpStatusCode())
+                .body(ApiResponse.error(apiException.getStatus()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
