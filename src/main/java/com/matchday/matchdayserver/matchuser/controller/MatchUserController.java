@@ -23,7 +23,7 @@ public class MatchUserController {
     @Operation(summary = "매치 유저 등록", description = "{matchID}에 사용자(user)가 등록됩니다.")
     @PostMapping("/{matchId}/users")
     public ApiResponse<Long> createMatch(@PathVariable Long matchId,
-                                           @RequestBody MatchUserCreateRequest request) {
+                                           @RequestBody @Valid MatchUserCreateRequest request) {
         Long id = matchUserService.create(matchId, request);
         return ApiResponse.ok(id);
     }
