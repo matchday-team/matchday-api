@@ -172,11 +172,10 @@ public class MatchUserService {
   }
 
   @Transactional
-  public Long matchUserDelete(Long matchUserId) {
+  public void matchUserDelete(Long matchUserId) {
       MatchUser matchUser = matchUserRepository.findById(matchUserId)
           .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCHUSER));
 
       matchUserRepository.deleteById(matchUserId);
-      return matchUserId;
   }
 }
