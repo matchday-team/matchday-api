@@ -2,13 +2,13 @@ package com.matchday.matchdayserver.matchuser.controller;
 
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserCreateRequest;
+import com.matchday.matchdayserver.matchuser.model.dto.MatchUserGridUpdateRequest;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserGroupResponse;
-import com.matchday.matchdayserver.matchuser.model.dto.MatchUserResponse;
-import com.matchday.matchdayserver.matchuser.model.mapper.MatchUserMapper;
 import com.matchday.matchdayserver.matchuser.service.MatchUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -44,5 +44,15 @@ public class MatchUserController {
     ) {
         MatchUserGroupResponse groupedUsers = matchUserService.getGroupedMatchUsers(matchId);
         return ApiResponse.ok(groupedUsers);
+    }
+
+    @Operation(summary = "매치유저 그리드 좌표 변경", description = "그리드 좌표 값은 0~29 사이의 값이어야합니다.")
+    @PatchMapping("/{matchUserId}/grid")
+    public ApiResponse<String> updateMatchUserGrid(
+        @PathVariable Long matchUserId,
+        @RequestBody @Valid MatchUserGridUpdateRequest request
+    ) {
+        matchUserService.updateMatchUserGrid(matchUserId, request);
+        return ApiResponse.ok("그리드 수정 완료");
     }
 }

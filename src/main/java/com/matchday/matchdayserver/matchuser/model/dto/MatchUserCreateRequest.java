@@ -20,6 +20,9 @@ public class MatchUserCreateRequest {
     @Schema(description = "매치에서의 포지션", example = "FW")
     private String matchPosition;
 
-    @Schema(description = "매치에서의 그리드 위치", example = "A1")
-    private String matchGrid;
+    @Schema(description = "매치에서의 선수 그리드 X좌표", example = "1")
+    private int matchGridX;
+
+    @Schema(description = "매치에서의 선수 그리드 Y좌표", example = "2")
+    private int matchGridY;
 }

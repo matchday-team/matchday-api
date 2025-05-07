@@ -10,6 +10,7 @@ import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.matchevent.service.MatchEventQueryService;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserCreateRequest;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserEventStat;
+import com.matchday.matchdayserver.matchuser.model.dto.MatchUserGridUpdateRequest;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserGroupResponse;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserResponse;
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
@@ -68,6 +69,14 @@ public class MatchUserService {
     return matchUser.getId();
   }
 
+  @Transactional
+  public void updateMatchUserGrid(Long matchUserId, MatchUserGridUpdateRequest matchUserGridUpdateRequest){
+      MatchUser matchUser = matchUserRepository.findById(matchUserId)
+          .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCHUSER));
+
+      matchUser.updateMatchGrid(matchUserGridUpdateRequest.getMatchGridX(), matchUserGridUpdateRequest.getMatchGridY());
+     matchUserRepository.save(matchUser);
+  }
 
     @Transactional
     public MatchUserGroupResponse getGroupedMatchUsers(Long matchId) {
@@ -101,7 +110,8 @@ public class MatchUserService {
                 .name(userName)
                 .number(number)
                 .matchPosition(matchUser.getMatchPosition())
-                .matchGrid(matchUser.getMatchGrid())
+                .matchGridX(matchUser.getMatchGridX())
+                .matchGridY(matchUser.getMatchGridY())
                 .goals(stat.getGoals())
                 .assists(stat.getAssists())
                 .yellowCards(stat.getYellowCards())
