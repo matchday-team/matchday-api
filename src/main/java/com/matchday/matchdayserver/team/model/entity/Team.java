@@ -34,16 +34,17 @@ public class Team {
     @Column(nullable = false)
     private String stockingColor; //팀 스타킹 컬러
 
-    @Column(name = "team_img")
+    @Column(name = "team_img", length = 512, nullable = true)
     private String teamImg;
 
 
   @Builder
-    public Team (String name, String teamColor, String bottomColor, String stockingColor) {
+    public Team (String name, String teamColor, String bottomColor, String stockingColor, String teamImg) {
         this.name = name;
         this.teamColor = teamColor;
         this.bottomColor = bottomColor;
         this.stockingColor = stockingColor;
+        this.teamImg = teamImg;
     }
 
     public void updateName(String name) {
