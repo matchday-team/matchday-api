@@ -48,13 +48,13 @@ public class MatchUser {
 
     @Min(0)
     @Max(29)
-    @Column(name = "match_grid_x", nullable = false) // 감독 고려하여 null 허용
-    private int matchGridX;
+    @Column(name = "match_grid_x") // 감독 고려하여 null 허용
+    private Integer matchGridX;
 
     @Min(0)
     @Max(29)
-    @Column(name = "match_grid_y", nullable = false) // 감독 고려하여 null 허용
-    private int matchGridY;
+    @Column(name = "match_grid_y") // 감독 고려하여 null 허용
+    private Integer matchGridY;
 
     @OneToMany(mappedBy = "matchUser", cascade = CascadeType.REMOVE)
     private List<MatchEvent> matchEvents;
