@@ -22,11 +22,8 @@ public class MatchUserResponse {
     @Schema(description = "매치 포지션", example = "MF")
     private String matchPosition;
 
-    @Schema(description = "선수 그리드 X좌표", example = "1")
-    private int matchGridX;
-
-    @Schema(description = "선수 그리드 Y좌표", example = "2")
-    private int matchGridY;
+    @Schema(description = "선수 그리드 좌표", example = "1")
+    private Integer matchGrid;
 
     @Schema(description = "득점 수", example = "2")
     private Integer goals;
@@ -47,15 +44,14 @@ public class MatchUserResponse {
     private boolean sentOff;
 
     @Builder
-    public MatchUserResponse(Long id, String name, Integer number, String matchPosition, int matchGridX, int matchGridY,
+    public MatchUserResponse(Long id, String name, Integer number, String matchPosition, Integer matchGrid,
         Integer goals, Integer assists,
         Integer yellowCards, Integer redCards, Integer caution, boolean sentOff) {
         this.id = id;
         this.name = name;
         this.number = number;
         this.matchPosition = matchPosition;
-        this.matchGridX = matchGridX;
-        this.matchGridY = matchGridY;
+        this.matchGrid = matchGrid;
         this.goals = goals;
         this.assists = assists;
         this.yellowCards = yellowCards;

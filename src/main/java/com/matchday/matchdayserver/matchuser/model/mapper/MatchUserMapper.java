@@ -15,8 +15,7 @@ public class MatchUserMapper {
                 .team(team)
                 .role(request.getRole())
                 .matchPosition(request.getMatchPosition())
-                .matchGridX(request.getMatchGridX())
-                .matchGridY(request.getMatchGridY())
+                .matchGrid(request.getMatchGrid())
                 .build();
     }
 }

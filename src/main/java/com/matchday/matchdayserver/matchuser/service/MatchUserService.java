@@ -74,7 +74,7 @@ public class MatchUserService {
       MatchUser matchUser = matchUserRepository.findById(matchUserId)
           .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCHUSER));
 
-      matchUser.updateMatchGrid(matchUserGridUpdateRequest.getMatchGridX(), matchUserGridUpdateRequest.getMatchGridY());
+      matchUser.updateMatchGrid(matchUserGridUpdateRequest.getMatchGrid());
      matchUserRepository.save(matchUser);
   }
 
@@ -110,8 +110,7 @@ public class MatchUserService {
                 .name(userName)
                 .number(number)
                 .matchPosition(matchUser.getMatchPosition())
-                .matchGridX(matchUser.getMatchGridX())
-                .matchGridY(matchUser.getMatchGridY())
+                .matchGrid(matchUser.getMatchGrid())
                 .goals(stat.getGoals())
                 .assists(stat.getAssists())
                 .yellowCards(stat.getYellowCards())
