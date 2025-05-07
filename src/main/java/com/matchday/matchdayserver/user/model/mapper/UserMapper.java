@@ -12,6 +12,7 @@ public class UserMapper {
         .userName(user.getName())
         .teamIds(teamIds)
         .matchIds(matchIds)
+        .profileImg(user.getProfileImg())
         .build();
   }
 }

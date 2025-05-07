@@ -8,14 +8,16 @@ import java.util.List;
 public class UserInfoResponse {
   private Long userId;
   private String userName;
+  private String profileImg;
   private List<Long> teamIds;
   private List<Long> matchIds;
 
   @Builder
-  public UserInfoResponse(Long userId, String userName ,List<Long> teamIds, List<Long> matchIds) {
+  public UserInfoResponse(Long userId, String userName, String profileImg ,List<Long> teamIds, List<Long> matchIds) {
     this.userId = userId;
     this.userName = userName;
     this.teamIds = teamIds;
     this.matchIds = matchIds;
+    this.profileImg = profileImg;
   }
 }
