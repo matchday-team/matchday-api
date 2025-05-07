@@ -170,4 +170,13 @@ public class MatchUserService {
   private boolean canIgnoreTeamConstraints(MatchUserRole matchUserRole) {
     return matchUserRole == MatchUserRole.ADMIN || matchUserRole == MatchUserRole.ARCHIVES;
   }
+
+  @Transactional
+  public Long matchUserDelete(Long matchUserId) {
+      MatchUser matchUser = matchUserRepository.findById(matchUserId)
+          .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCHUSER));
+
+      matchUserRepository.deleteById(matchUserId);
+      return matchUserId;
+  }
 }
