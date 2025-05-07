@@ -7,10 +7,13 @@ import com.matchday.matchdayserver.s3.S3PresignedUrlProvider;
 import com.matchday.matchdayserver.s3.dto.S3PresignedResponse;
 import com.matchday.matchdayserver.s3.enums.FileExtension;
 import com.matchday.matchdayserver.s3.enums.FolderType;
-import com.matchday.matchdayserver.team.service.TeamService;
-import com.matchday.matchdayserver.user.service.UserService;
+import com.matchday.matchdayserver.team.model.entity.Team;
+import com.matchday.matchdayserver.team.repository.TeamRepository;
+import com.matchday.matchdayserver.user.model.entity.User;
+import com.matchday.matchdayserver.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -19,25 +22,40 @@ import java.util.UUID;
 public class S3PresignedService {
 
   private final S3PresignedUrlProvider s3PresignedUrlProvider;
-  private final UserService userService;
-  private final TeamService teamService;
+  private final UserRepository userRepository;
+  private final TeamRepository teamRepository;
 
-  //업로드 Presigned URL 요청
-  public S3PresignedResponse generateUploadUrl(String folderName, Long id, String extension) {
-    // user or team id 유효성 검사
-    validateIdExists(folderName, id);
+    // 업로드 Presigned URL 요청
+    @Transactional
+    public S3PresignedResponse generateUploadUrl(String folderName, Long id, String extension) {
+        FolderType folderType = FolderType.from(folderName);
 
-    // 파일 확장자 유효성 검사
-    FileExtension fileExtension = FileExtension.from(extension);
+        // 파일 확장자 유효성 검사
+        FileExtension fileExtension = FileExtension.from(extension);
 
-    //파일이름 생성
-    String key = buildKey(folderName, id, extension);
+        // 파일 이름 생성
+        String key = buildKey(folderName, id, extension);
 
-    String uploadUrl = s3PresignedUrlProvider.generateUploadUrl(key, fileExtension.getContentType());
-    return new S3PresignedResponse(uploadUrl, key);
-  }
+        String uploadUrl = s3PresignedUrlProvider.generateUploadUrl(key, fileExtension.getContentType());
 
-  //Read용 Presigned URL 응답
+        switch (folderType) {
+            case USERS -> {
+                User user = userRepository.findById(id)
+                    .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
+                user.updateProfileImg(key);
+                userRepository.save(user);
+            }
+            case TEAMS -> {
+                Team team = teamRepository.findById(id)
+                    .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
+                team.updateTeamImg(key);
+                teamRepository.save(team);
+            }
+        }
+        return new S3PresignedResponse(uploadUrl, key);
+    }
+
+    //Read용 Presigned URL 응답
   public S3PresignedResponse generateReadUrl(String folderName, Long id, String key) {
     // user or team id 유효성 검사
     validateIdExists(folderName, id);
@@ -51,22 +69,21 @@ public class S3PresignedService {
 
   //id 유효성 검사
   private void validateIdExists(String folderName, Long id) {
-    FolderType folderType = FolderType.from(folderName);
-    switch (folderType) {
-      case USERS:
-        if (!userService.existsById(id)) {
-          throw new ApiException(UserStatus.NOTFOUND_USER);
-        }
-        break;
-      case TEAMS:
-        if (!teamService.existsById(id)) {
-          throw new ApiException(TeamStatus.NOTFOUND_TEAM);
-        }
-        break;
-    }
+      FolderType folderType = FolderType.from(folderName);
+      boolean exists = switch (folderType) {
+          case USERS -> userRepository.existsById(id);
+          case TEAMS -> teamRepository.existsById(id);
+      };
+      if (!exists) {
+          throw switch (folderType) {
+              case USERS -> new ApiException(UserStatus.NOTFOUND_USER);
+              case TEAMS -> new ApiException(TeamStatus.NOTFOUND_TEAM);
+          };
+      }
   }
 
-  //UUID 생성
+
+    //UUID 생성
   private String createUniqueFileName() {
     return UUID.randomUUID().toString();
   }

@@ -22,7 +22,7 @@ public class UserController {
     private final S3PresignedService s3PresignedManager;
     private static final String FOLDER_NAME = "users";
 
-    @Operation(summary = "임시 유저 생성" , description = "생성된 user의 Id 값 반환")
+    @Operation(summary = "임시 유저 생성" , description = "생성된 user의 Id 값 반환 <br> profileImg는 선택 사항입니다.")
     @PostMapping
     public ApiResponse<Long> createUser(@RequestBody UserCreateRequest request) {
         Long userId=userService.createUser(request);

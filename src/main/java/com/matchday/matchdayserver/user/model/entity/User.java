@@ -20,13 +20,21 @@
         @Column(nullable = false, length = 30)
         private String name;
 
+        @Column(name = "profile_img", length = 512, nullable = true)
+        private String profileImg;
+
         @Builder
-        public User (String name) {
+        public User (String name, String profileImg) {
             this.name = name;
+            this.profileImg = profileImg;
         }
 
         public void updateName(String name) {
             this.name = name;
+        }
+
+        public void updateProfileImg(String key) {
+            this.profileImg = key;
         }
 
         @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
