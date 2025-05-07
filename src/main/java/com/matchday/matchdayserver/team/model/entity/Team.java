@@ -34,6 +34,9 @@ public class Team {
     @Column(nullable = false)
     private String stockingColor; //팀 스타킹 컬러
 
+    @Column(name = "team_img")
+    private String teamImg;
+
 
   @Builder
     public Team (String name, String teamColor, String bottomColor, String stockingColor) {
@@ -45,6 +48,10 @@ public class Team {
 
     public void updateName(String name) {
         this.name = name;
+    }
+
+    public void updateTeamImg(String key) {
+        this.teamImg = key;
     }
 
     @OneToMany(mappedBy = "team" , cascade = CascadeType.REMOVE)

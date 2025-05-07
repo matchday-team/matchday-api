@@ -20,6 +20,9 @@
         @Column(nullable = false, length = 30)
         private String name;
 
+        @Column(name = "profile_img")
+        private String profileImg;
+
         @Builder
         public User (String name) {
             this.name = name;
@@ -27,6 +30,10 @@
 
         public void updateName(String name) {
             this.name = name;
+        }
+
+        public void updateProfileImg(String key) {
+            this.profileImg = key;
         }
 
         @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
