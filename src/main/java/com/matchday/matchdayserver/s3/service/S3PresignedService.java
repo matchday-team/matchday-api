@@ -9,12 +9,11 @@ import com.matchday.matchdayserver.s3.enums.FileExtension;
 import com.matchday.matchdayserver.s3.enums.FolderType;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
-import com.matchday.matchdayserver.team.service.TeamService;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.repository.UserRepository;
-import com.matchday.matchdayserver.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -23,12 +22,11 @@ import java.util.UUID;
 public class S3PresignedService {
 
   private final S3PresignedUrlProvider s3PresignedUrlProvider;
-  private final UserService userService;
-  private final TeamService teamService;
   private final UserRepository userRepository;
   private final TeamRepository teamRepository;
 
     // 업로드 Presigned URL 요청
+    @Transactional
     public S3PresignedResponse generateUploadUrl(String folderName, Long id, String extension) {
         FolderType folderType = FolderType.from(folderName);
 
