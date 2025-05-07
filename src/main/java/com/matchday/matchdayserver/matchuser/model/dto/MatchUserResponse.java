@@ -43,10 +43,13 @@ public class MatchUserResponse {
     @Schema(description = "퇴장 여부 (옐로 2장 이상 또는 레드 1장 이상)", example = "false")
     private boolean sentOff;
 
+    @Schema(description = "프로필 이미지 url", example = "users/1/0f3578b1-c4e6-4f6f-2222-567f3f48648a.webp")
+    private String profileImg;
+
     @Builder
     public MatchUserResponse(Long id, String name, Integer number, String matchPosition, Integer matchGrid,
         Integer goals, Integer assists,
-        Integer yellowCards, Integer redCards, Integer caution, boolean sentOff) {
+        Integer yellowCards, Integer redCards, Integer caution, boolean sentOff, String profileImg) {
         this.id = id;
         this.name = name;
         this.number = number;
@@ -58,5 +61,6 @@ public class MatchUserResponse {
         this.redCards = redCards;
         this.caution = caution;
         this.sentOff = sentOff;
+        this.profileImg = profileImg;
     }
 }

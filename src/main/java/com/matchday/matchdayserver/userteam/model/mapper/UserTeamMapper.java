@@ -26,6 +26,7 @@ public class UserTeamMapper {
                 .number(userTeam.getNumber())
                 .defaultPosition(userTeam.getDefaultPosition())
                 .isActive(userTeam.getIsActive())
+                .imageUrl(user.getProfileImg())
                 .build();
     }
 }
