@@ -8,6 +8,8 @@ import com.matchday.matchdayserver.matchuser.model.enums.MatchUserRole;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.user.model.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,8 +46,15 @@ public class MatchUser {
     @Column(name = "match_position") // 감독 고려하여 null 허용
     private String matchPosition;
 
-    @Column(name = "match_grid") // 감독 고려하여 null 허용
-    private String matchGrid;
+    @Min(0)
+    @Max(29)
+    @Column(name = "match_grid_x") // 감독 고려하여 null 허용
+    private int matchGridX;
+
+    @Min(0)
+    @Max(29)
+    @Column(name = "match_grid_y") // 감독 고려하여 null 허용
+    private int matchGridY;
 
     @OneToMany(mappedBy = "matchUser", cascade = CascadeType.REMOVE)
     private List<MatchEvent> matchEvents;
@@ -54,8 +63,9 @@ public class MatchUser {
         this.matchPosition = matchPosition;
     }
 
-    public void updateMatchGrid(String matchGrid) {
-        this.matchGrid = matchGrid;
+    public void updateMatchGrid(int matchGridX, int matchGridY) {
+        this.matchGridX = matchGridX;
+        this.matchGridY = matchGridY;
     }
 
     public void exchange(MatchUser toMatchUser) {
@@ -63,11 +73,13 @@ public class MatchUser {
             throw new ApiException(MatchStatus.DIFFERENT_TEAM_EXCHANGE);
         }
         String originalPosition = toMatchUser.getMatchPosition();
-        String originalGrid = toMatchUser.getMatchGrid();
+        int originalGridX = toMatchUser.getMatchGridX();
+        int originalGridY = toMatchUser.getMatchGridY();
         toMatchUser.updateMatchPosition(this.matchPosition);
-        toMatchUser.updateMatchGrid(this.matchGrid);
+        toMatchUser.updateMatchGrid(this.matchGridX, this.matchGridY);
 
         this.matchPosition = originalPosition;
-        this.matchGrid = originalGrid;
+        this.matchGridX = originalGridX;
+        this.matchGridY = originalGridY;
     }
 }
