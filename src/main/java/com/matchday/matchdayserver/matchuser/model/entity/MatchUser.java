@@ -46,15 +46,10 @@ public class MatchUser {
     @Column(name = "match_position") // 감독 고려하여 null 허용
     private String matchPosition;
 
-    @Min(0)
-    @Max(29)
-    @Column(name = "match_grid_x") // 감독 고려하여 null 허용
-    private Integer matchGridX;
-
-    @Min(0)
-    @Max(29)
-    @Column(name = "match_grid_y") // 감독 고려하여 null 허용
-    private Integer matchGridY;
+    @Min(value = 0)
+    @Max(value = 29)
+    @Column(name = "match_grid") // 감독 고려하여 null 허용
+    private Integer matchGrid;
 
     @OneToMany(mappedBy = "matchUser", cascade = CascadeType.REMOVE)
     private List<MatchEvent> matchEvents;
@@ -63,9 +58,8 @@ public class MatchUser {
         this.matchPosition = matchPosition;
     }
 
-    public void updateMatchGrid(int matchGridX, int matchGridY) {
-        this.matchGridX = matchGridX;
-        this.matchGridY = matchGridY;
+    public void updateMatchGrid(int matchGrid) {
+        this.matchGrid = matchGrid;
     }
 
     public void exchange(MatchUser toMatchUser) {
@@ -73,13 +67,11 @@ public class MatchUser {
             throw new ApiException(MatchStatus.DIFFERENT_TEAM_EXCHANGE);
         }
         String originalPosition = toMatchUser.getMatchPosition();
-        int originalGridX = toMatchUser.getMatchGridX();
-        int originalGridY = toMatchUser.getMatchGridY();
+        int originalGrid = toMatchUser.getMatchGrid();
         toMatchUser.updateMatchPosition(this.matchPosition);
-        toMatchUser.updateMatchGrid(this.matchGridX, this.matchGridY);
+        toMatchUser.updateMatchGrid(this.matchGrid);
 
         this.matchPosition = originalPosition;
-        this.matchGridX = originalGridX;
-        this.matchGridY = originalGridY;
+        this.matchGrid = originalGrid;
     }
 }

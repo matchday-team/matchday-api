@@ -8,15 +8,9 @@ import lombok.Getter;
 
 @Getter
 public class MatchUserGridUpdateRequest {
-    @NotNull
-    @Min(0)
-    @Max(29)
-    @Schema(description = "그리드 X 좌표", example = "1")
-    private int matchGridX;
+    @Min(value = 0, message = "0이상의 값이어야 합니다.")
+    @Max(value = 29, message = "29 이하의 값이어야 합니다.")
+    @Schema(description = "매치에서의 선수 그리드 좌표", example = "1")
+    private Integer matchGrid;
 
-    @NotNull
-    @Min(0)
-    @Max(29)
-    @Schema(description = "그리드 X 좌표", example = "2")
-    private int matchGridY;
 }
