@@ -36,7 +36,7 @@ public class UserService {
 
     public Long createUser(UserCreateRequest request){
         validateDuplicateUser(request.getName());
-        User user = new User(request.getName());
+        User user = new User(request.getName(), request.getProfileImg());
         userRepository.save(user);
         return user.getId();
     }
