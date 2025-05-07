@@ -117,6 +117,7 @@ public class MatchUserService {
                 .redCards(stat.getRedCards())
                 .caution(stat.getCaution())
                 .sentOff(stat.isSentOff())  // 퇴장 여부 추가
+                .profileImg(matchUser.getUser().getProfileImg()) // 이미지 url 추가
                 .build();
 
             if (teamId.equals(homeTeamId)) {
