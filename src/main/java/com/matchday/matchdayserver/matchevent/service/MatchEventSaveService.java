@@ -55,7 +55,9 @@ public class MatchEventSaveService {
             || MatchEventType.OFFSIDE.equals(matchEventType)
             || MatchEventType.YELLOW_CARD.equals(matchEventType)
             || MatchEventType.RED_CARD.equals(matchEventType)
-            || MatchEventType.VALID_SHOT.equals(matchEventType);
+            || MatchEventType.SUB_IN.equals(matchEventType)
+            || MatchEventType.SUB_OUT.equals(matchEventType)
+            ;
     }
 
     private void validateAuthUser(Long matchId, String token) {
