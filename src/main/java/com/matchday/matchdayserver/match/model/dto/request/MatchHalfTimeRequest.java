@@ -8,9 +8,9 @@ import java.time.LocalTime;
 @Getter
 @NoArgsConstructor
 public class MatchHalfTimeRequest {
-    @Schema(description = "시작 시간")
+    @Schema(description = "시작 시간", nullable = true)
     private LocalTime startTime;
 
-    @Schema(description = "종료 시간")
+    @Schema(description = "종료 시간", nullable = true)
     private LocalTime endTime;
 }
