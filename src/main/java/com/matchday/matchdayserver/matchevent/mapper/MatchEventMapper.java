@@ -13,36 +13,37 @@ import java.time.LocalDateTime;
 
 public class MatchEventMapper {
 
-  public static MatchEvent toEntity(MatchEventRequest request, Match match, MatchUser matchUser) {
-    return MatchEvent.builder()
-        .eventType(request.getEventType())
-        .description(request.getDescription())
-        .match(match)
-        .matchUser(matchUser)
-        .build();
-  }
+    public static MatchEvent toEntity(MatchEventRequest request, Match match, MatchUser matchUser) {
+        return MatchEvent.builder()
+            .eventType(request.getEventType())
+            .description(request.getDescription())
+            .match(match)
+            .matchUser(matchUser)
+            .build();
+    }
 
-  public static MatchEventResponse toResponse(MatchEvent matchEvent) {
-    Match match = matchEvent.getMatch();
-    Long elapsedMinutes = calculateElapsedMinutes(match.getStartTime().atDate(match.getMatchDate()),
-        matchEvent.getEventTime());
-    User user = matchEvent.getMatchUser().getUser();
-    Team team = matchEvent.getMatchUser().getTeam();
+    public static MatchEventResponse toResponse(MatchEvent matchEvent) {
+        Match match = matchEvent.getMatch();
+        Long elapsedMinutes = calculateElapsedMinutes(
+            match.getStartTime().atDate(match.getMatchDate()),
+            matchEvent.getEventTime());
+        User user = matchEvent.getMatchUser().getUser();
+        Team team = matchEvent.getMatchUser().getTeam();
 
-    return MatchEventResponse.builder()
-        .id(matchEvent.getId())
-        .elapsedMinutes(elapsedMinutes)
-        .teamId(team.getId())
-        .teamName(team.getName())
-        .userId(user.getId())
-        .userName(user.getName())
-        .eventLog(matchEvent.getEventType().name())
-        .build();
-  }
+        return MatchEventResponse.builder()
+            .id(matchEvent.getId())
+            .elapsedMinutes(elapsedMinutes)
+            .teamId(team.getId())
+            .teamName(team.getName())
+            .userId(user.getId())
+            .userName(user.getName())
+            .eventLog(matchEvent.getEventType().name())
+            .build();
+    }
 
-  private static Long calculateElapsedMinutes(LocalDateTime matchStartTime,
-      LocalDateTime eventTime) {
-    long minutes = Duration.between(matchStartTime, eventTime).toMinutes();
-    return minutes < 0 ? 0L : minutes; // 음수인 경우 0으로 처리
-  }
+    private static Long calculateElapsedMinutes(LocalDateTime matchStartTime,
+        LocalDateTime eventTime) {
+        long minutes = Duration.between(matchStartTime, eventTime).toMinutes();
+        return minutes < 0 ? 0L : minutes; // 음수인 경우 0으로 처리
+    }
 }
