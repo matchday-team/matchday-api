@@ -112,7 +112,7 @@ public class MatchEventStrategy {
     /**
      * 카드(옐로카드/레드카드) 이벤트 기록 시 호출됩니다.
      * <ul>
-     * <li>카드 이벤트(offsideEvent)를 생성합니다.</li>
+     * <li>카드 이벤트(cardEvent)를 생성합니다.</li>
      * <li>카드 이벤트를 기반으로 경고(warningEvent), 파울(foulEvent) 이벤트를 각각 복사 생성합니다.</li>
      * <li>세 이벤트를 모두 저장하고, 각각의 응답 객체를 반환합니다.</li>
      * </ul>
@@ -124,12 +124,12 @@ public class MatchEventStrategy {
      */
     private List<MatchEventResponse> generateCardEvent(MatchEventRequest request, Match match,
         MatchUser matchUser) {
-        MatchEvent offsideEvent = MatchEventMapper.toEntity(request, match, matchUser);
-        MatchEvent warningEvent = offsideEvent.copyWith(MatchEventType.WARNING);
-        MatchEvent foulEvent = offsideEvent.copyWith(MatchEventType.FOUL);
-        matchEventRepository.saveAll(List.of(offsideEvent, warningEvent, foulEvent));
+        MatchEvent cardEvent = MatchEventMapper.toEntity(request, match, matchUser);
+        MatchEvent warningEvent = cardEvent.copyWith(MatchEventType.WARNING);
+        MatchEvent foulEvent = cardEvent.copyWith(MatchEventType.FOUL);
+        matchEventRepository.saveAll(List.of(cardEvent, warningEvent, foulEvent));
         return List.of(
-            MatchEventMapper.toResponse(offsideEvent),
+            MatchEventMapper.toResponse(cardEvent),
             MatchEventMapper.toResponse(warningEvent),
             MatchEventMapper.toResponse(foulEvent));
     }
