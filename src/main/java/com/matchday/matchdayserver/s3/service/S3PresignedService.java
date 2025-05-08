@@ -52,7 +52,7 @@ public class S3PresignedService {
                 teamRepository.save(team);
             }
         }
-        return new S3PresignedResponse(uploadUrl, key);
+        return new S3PresignedResponse(uploadUrl);
     }
 
     //Read용 Presigned URL 응답
