@@ -24,6 +24,6 @@ public class TeamCreateRequest {
     @NotBlank(message = "팀 스타킹 컬러는 필수입니다.")
     private String stockingColor; //팀 스타킹 컬러
 
-    @Schema(description = "팀 이미지명", example = "teams/1/597feb0b-0e44-48e6-aefdfdsfdsf.png", required = false)
+    @Schema(description = "팀 이미지명", example = "teams/1/597feb0b-0e44-48e6-aefdfdsfdsf.png", required = false, nullable = true)
     private String teamImg;
 }
