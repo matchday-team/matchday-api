@@ -43,10 +43,17 @@ public class MatchUserResponse {
     @Schema(description = "퇴장 여부 (옐로 2장 이상 또는 레드 1장 이상)", example = "false")
     private boolean sentOff;
 
+    @Schema(description = "교체인 여부", example = "true")
+    private boolean subIn;
+
+    @Schema(description = "교체아웃 여부", example = "false")
+    private boolean subOut;
+
     @Builder
     public MatchUserResponse(Long id, String name, Integer number, String matchPosition, Integer matchGrid,
         Integer goals, Integer assists,
-        Integer yellowCards, Integer redCards, Integer caution, boolean sentOff) {
+        Integer yellowCards, Integer redCards, Integer caution, boolean sentOff,
+        boolean subIn, boolean subOut) {
         this.id = id;
         this.name = name;
         this.number = number;
@@ -58,5 +65,7 @@ public class MatchUserResponse {
         this.redCards = redCards;
         this.caution = caution;
         this.sentOff = sentOff;
+        this.subIn = subIn;
+        this.subOut = subOut;
     }
 }
