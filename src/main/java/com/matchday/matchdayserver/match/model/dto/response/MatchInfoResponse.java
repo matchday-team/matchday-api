@@ -27,11 +27,11 @@ public class MatchInfoResponse {
   private LocalDate matchDate;
 
   //시작 시간
-  @Schema(description = "시작 시간")
+  @Schema(description = "시작 예정 시간")
   private LocalTime plannedStartTime;
 
   //종료 시간
-  @Schema(description = "종료 시간")
+  @Schema(description = "종료 예정 시간")
   private LocalTime plannedEndTime;
 
   //주심
