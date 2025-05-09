@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.match.model.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@Schema(description = "매치별 메모 응답 객체")
 public class MatchMemoResponse {
-  private String memo;
+
+    @Schema(description = "메모", nullable = true)
+    private String memo;
 }
