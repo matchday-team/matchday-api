@@ -33,12 +33,12 @@ public class TeamResponse {
     private String teamImg;
 
     @Builder
-    public TeamResponse(Long id, String name, String teamColor, String bottomColor, String stockingColor, String teamImage) {
+    public TeamResponse(Long id, String name, String teamColor, String bottomColor, String stockingColor, String teamImg) {
         this.id = id;
         this.name = name;
         this.teamColor = teamColor;
         this.bottomColor = bottomColor;
         this.stockingColor = stockingColor;
-        this.teamImg = teamImage;
+        this.teamImg = teamImg;
     }
 }

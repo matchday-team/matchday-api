@@ -11,7 +11,7 @@ import java.util.List;
 public class UserInfoResponse {
     @NotNull
     @Schema(description = "유저 ID")
-    private long userId;
+    private Long userId;
 
     @NotNull
     @Schema(description = "유저 이름")
