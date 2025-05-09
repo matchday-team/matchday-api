@@ -7,6 +7,8 @@ import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
+import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
+import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
 import com.matchday.matchdayserver.matchevent.service.MatchEventQueryService;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserCreateRequest;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserEventStat;
@@ -41,6 +43,7 @@ public class MatchUserService {
   private final TeamRepository teamRepository;
   private final MatchEventQueryService matchEventQueryService;
   private final UserTeamRepository userTeamRepository;
+  private final MatchEventRepository matchEventRepository;
 
   @Transactional
   public Long create(Long matchId, MatchUserCreateRequest request) {
@@ -105,6 +108,9 @@ public class MatchUserService {
 
             MatchUserEventStat stat = matchEventQueryService.getMatchUserEventStat(matchId, matchUser.getId());
 
+            boolean subIn = matchEventRepository.existsByMatchUserIdAndEventType(matchUser.getId(), MatchEventType.SUB_IN);
+            boolean subOut = matchEventRepository.existsByMatchUserIdAndEventType(matchUser.getId(), MatchEventType.SUB_OUT);
+
             MatchUserResponse response = MatchUserResponse.builder()
                 .id(userId)
                 .name(userName)
@@ -117,6 +123,8 @@ public class MatchUserService {
                 .redCards(stat.getRedCards())
                 .caution(stat.getCaution())
                 .sentOff(stat.isSentOff())  // 퇴장 여부 추가
+                .subIn(subIn)
+                .subOut(subOut)
                 .build();
 
             if (teamId.equals(homeTeamId)) {
