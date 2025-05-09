@@ -1,6 +1,7 @@
 package com.matchday.matchdayserver.matchevent.repository;
 
 import com.matchday.matchdayserver.matchevent.model.dto.EventTypeCount;
+import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
@@ -35,4 +36,7 @@ public interface MatchEventRepository extends JpaRepository<MatchEvent, Long> {
         @Param("matchUserId") Long matchUserId,
         @Param("matchId") Long matchId
     );
+
+    boolean existsByMatchUserIdAndEventType(Long matchUserId, MatchEventType eventType);
+
 }
