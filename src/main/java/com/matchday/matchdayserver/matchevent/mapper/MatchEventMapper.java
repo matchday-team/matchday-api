@@ -25,7 +25,7 @@ public class MatchEventMapper {
     public static MatchEventResponse toResponse(MatchEvent matchEvent) {
         Match match = matchEvent.getMatch();
         Long elapsedMinutes = calculateElapsedMinutes(
-            match.getStartTime().atDate(match.getMatchDate()),
+            match.getPlannedStartTime().atDate(match.getMatchDate()),
             matchEvent.getEventTime());
         User user = matchEvent.getMatchUser().getUser();
         Team team = matchEvent.getMatchUser().getTeam();
