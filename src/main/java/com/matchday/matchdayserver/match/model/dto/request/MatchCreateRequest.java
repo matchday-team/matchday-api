@@ -29,21 +29,21 @@ public class MatchCreateRequest {
   private LocalDate matchDate;
 
   @Schema(description = "경기 시작 시간", example = "14:00:00")
-  private LocalTime startTime;
+  private LocalTime plannedStartTime;
 
   @Schema(description = "경기 종료 시간", example = "16:00:00")
-  private LocalTime endTime;
+  private LocalTime plannedEndTime;
 
-  @Schema(description = "주심", example = "주심 이름")
+  @Schema(description = "주심", example = "주심 이름", nullable = true)
   private String mainRefereeName;
 
-  @Schema(description = "부심1", example = "부심1 이름")
+  @Schema(description = "부심1", example = "부심1 이름", nullable = true)
   private String assistantReferee1;
 
-  @Schema(description = "부심2", example = "부심2 이름")
+  @Schema(description = "부심2", example = "부심2 이름", nullable = true)
   private String assistantReferee2;
 
-  @Schema(description = "대기심", example = "대기심 이름")
+  @Schema(description = "대기심", example = "대기심 이름", nullable = true)
     private String fourthReferee;
 
     @Schema(description = "경기 상태 (SCHEDULED, ONGOING, FINISHED)", example = "SCHEDULED")

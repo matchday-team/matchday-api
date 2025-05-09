@@ -55,4 +55,11 @@ public class MatchUserController {
         matchUserService.updateMatchUserGrid(matchUserId, request);
         return ApiResponse.ok("그리드 수정 완료");
     }
+
+    @Operation(summary = "매치 유저 삭제")
+    @DeleteMapping("/{matchUserId}")
+    public ApiResponse<String> deleteMatchUser(@PathVariable Long matchUserId) {
+        matchUserService.matchUserDelete(matchUserId);
+        return ApiResponse.ok("매치 유저 삭제 완료");
+    }
 }

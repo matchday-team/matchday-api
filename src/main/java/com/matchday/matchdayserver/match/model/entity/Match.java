@@ -44,11 +44,11 @@ public class Match {
     @Column(nullable = false)
     private LocalDate matchDate;
 
-    @Column(nullable = false)
-    private LocalTime startTime;
+    @Column(name = "planned_start_time", nullable = false)
+    private LocalTime plannedStartTime;
 
-    @Column(nullable = false)
-    private LocalTime endTime;
+    @Column(name = "planned_end_time", nullable = false)
+    private LocalTime plannedEndTime;
 
     @Column(name = "first_half_start_time")
     private LocalTime firstHalfStartTime; // 전반 시작 시간
@@ -112,15 +112,15 @@ public class Match {
 
     @Builder
     public Match(String title, Team homeTeam, Team awayTeam, MatchType matchType, String stadium, LocalDate matchDate,
-        LocalTime startTime, LocalTime endTime, LocalTime firstHalfStartTime, LocalTime firstHalfEndTime, LocalTime secondHalfStartTime, LocalTime secondHalfEndTime, String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee, MatchState matchState) {
+        LocalTime plannedStartTime, LocalTime plannedEndTime, LocalTime firstHalfStartTime, LocalTime firstHalfEndTime, LocalTime secondHalfStartTime, LocalTime secondHalfEndTime, String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee, MatchState matchState) {
       this.title = title;
       this.homeTeam = homeTeam;
       this.awayTeam = awayTeam;
       this.matchType = matchType;
       this.stadium = stadium;
       this.matchDate = matchDate;
-      this.startTime = startTime;
-      this.endTime = endTime;
+      this.plannedStartTime = plannedStartTime;
+      this.plannedEndTime = plannedEndTime;
       this.firstHalfStartTime = firstHalfStartTime;
       this.firstHalfEndTime = firstHalfEndTime;
       this.secondHalfStartTime = secondHalfStartTime;
