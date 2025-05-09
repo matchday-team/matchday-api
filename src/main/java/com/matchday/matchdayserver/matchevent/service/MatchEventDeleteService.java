@@ -27,6 +27,9 @@ public class MatchEventDeleteService {
     matchEventRepository.deleteByMatchId(matchId);
     MatchEventDeleteResponse response= new MatchEventDeleteResponse(matchId);
     match.setFirstHalfStartTime(null);
+    match.setFirstHalfEndTime(null);
+    match.setSecondHalfStartTime(null);
+    match.setSecondHalfEndTime(null);
     matchRepository.save(match);//@Transactional이라 굳이 없어도 됨
     simpMessagingTemplate.convertAndSend("/topic/match-delete-events", response);
     return matchId;
