@@ -2,6 +2,7 @@ package com.matchday.matchdayserver.matchevent.service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.MatchStatus;
+import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventDeleteResponse;
 import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
@@ -21,9 +22,12 @@ public class MatchEventDeleteService {
 
   @Transactional
   public Long deleteAllEvents(Long matchId){
-    matchRepository.findById(matchId).orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
+  Match match = matchRepository.findById(matchId)
+          .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
     matchEventRepository.deleteByMatchId(matchId);
     MatchEventDeleteResponse response= new MatchEventDeleteResponse(matchId);
+    match.setFirstHalfStartTime(null);
+    matchRepository.save(match);//@Transactional이라 굳이 없어도 됨
     simpMessagingTemplate.convertAndSend("/topic/match-delete-events", response);
     return matchId;
   }
