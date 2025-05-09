@@ -117,6 +117,7 @@ public class MatchUserService {
                 .redCards(stat.getRedCards())
                 .caution(stat.getCaution())
                 .sentOff(stat.isSentOff())  // 퇴장 여부 추가
+                .profileImg(matchUser.getUser().getProfileImg()) // 이미지 url 추가
                 .build();
 
             if (teamId.equals(homeTeamId)) {
@@ -169,5 +170,13 @@ public class MatchUserService {
 
   private boolean canIgnoreTeamConstraints(MatchUserRole matchUserRole) {
     return matchUserRole == MatchUserRole.ADMIN || matchUserRole == MatchUserRole.ARCHIVES;
+  }
+
+  @Transactional
+  public void matchUserDelete(Long matchUserId) {
+      MatchUser matchUser = matchUserRepository.findById(matchUserId)
+          .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCHUSER));
+
+      matchUserRepository.deleteById(matchUserId);
   }
 }

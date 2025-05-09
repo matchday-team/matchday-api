@@ -34,50 +34,50 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MatchEventSaveService {
 
-  private final MatchUserRepository matchUserRepository;
-  private final SimpMessagingTemplate messagingTemplate;
-  private final MatchEventStrategy matchEventStrategy;
+    private final MatchUserRepository matchUserRepository;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final MatchEventStrategy matchEventStrategy;
 
-  public void saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
-    validateRequest(matchId, request);
-    validateAuthUser(matchId, request.getToken());
+    public void saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
+        validateRequest(matchId, request);
+        validateAuthUser(matchId, request.getToken());
 
-    MatchUser matchUser = matchUserRepository
-        .findByMatchIdAndUserIdWithFetch(matchId, request.getData().getUserId())
-        .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
+        MatchUser matchUser = matchUserRepository
+            .findByMatchIdAndUserIdWithFetch(matchId, request.getData().getUserId())
+            .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
-    Match match = matchUser.getMatch();
+        Match match = matchUser.getMatch();
 
-    List<MatchEventResponse> matchEventResponse = matchEventStrategy
-        .generateMatchEventLog(request.getData(), match, matchUser);
-    for (MatchEventResponse response : matchEventResponse) {
-      messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
-    }
-  }
-
-  private void validateAuthUser(Long matchId, String token) {
-    Long authId = Long.parseLong(token);
-
-    MatchUser authUser = matchUserRepository
-        .findByMatchIdAndUserIdWithFetch(matchId, authId)
-        .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
-
-    if (!authUser.getMatch().getId().equals(matchId)) {
-      throw new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER);
-    }
-  }
-
-  private void validateRequest(Long matchId, Message<MatchEventRequest> request) {
-    List<String> errorMessages = new ArrayList<>();
-
-    if (request.getData().getUserId() == null) {
-      errorMessages.add("userId는 필수 입력 값입니다.");
+        List<MatchEventResponse> matchEventResponse = matchEventStrategy
+            .generateMatchEventLog(request.getData(), match, matchUser);
+        for (MatchEventResponse response : matchEventResponse) {
+            messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
+        }
     }
 
-    if (errorMessages.size() > 0) {
-      DefaultStatus defaultStatus = DefaultStatus.BAD_REQUEST;
-      defaultStatus.setCustomDescription(String.join("\n", errorMessages));
-      throw new ApiException(defaultStatus);
+    private void validateAuthUser(Long matchId, String token) {
+        Long authId = Long.parseLong(token);
+
+        MatchUser authUser = matchUserRepository
+            .findByMatchIdAndUserIdWithFetch(matchId, authId)
+            .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
+
+        if (!authUser.getMatch().getId().equals(matchId)) {
+            throw new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER);
+        }
     }
-  }
+
+    private void validateRequest(Long matchId, Message<MatchEventRequest> request) {
+        List<String> errorMessages = new ArrayList<>();
+
+        if (request.getData().getUserId() == null) {
+            errorMessages.add("userId는 필수 입력 값입니다.");
+        }
+
+        if (errorMessages.size() > 0) {
+            DefaultStatus defaultStatus = DefaultStatus.BAD_REQUEST;
+            defaultStatus.setCustomDescription(String.join("\n", errorMessages));
+            throw new ApiException(defaultStatus);
+        }
+    }
 }

@@ -28,7 +28,7 @@ public class MatchCreateService {
         validateTeamsAreDifferent(homeTeam, awayTeam);
         validateStadium(request.getStadium());
         validateDate(request.getMatchDate());
-        validateTime(request.getStartTime(), request.getEndTime());
+        validateTime(request.getPlannedStartTime(), request.getPlannedEndTime());
 
         Match match = Match.builder()
                 .title(request.getTitle())
@@ -37,8 +37,8 @@ public class MatchCreateService {
                 .matchType(Match.MatchType.valueOf(request.getMatchType().name()))
                 .stadium(request.getStadium())
                 .matchDate(request.getMatchDate())
-                .startTime(request.getStartTime())
-                .endTime(request.getEndTime())
+                .plannedStartTime(request.getPlannedStartTime())
+                .plannedEndTime(request.getPlannedEndTime())
                 .mainRefereeName(request.getMainRefereeName())
                 .assistantReferee1(request.getAssistantReferee1())
                 .assistantReferee2(request.getAssistantReferee2())

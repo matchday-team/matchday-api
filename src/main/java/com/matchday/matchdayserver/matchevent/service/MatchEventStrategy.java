@@ -33,111 +33,117 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MatchEventStrategy {
 
-  private final MatchEventRepository matchEventRepository;
+    private final MatchEventRepository matchEventRepository;
 
-  public List<MatchEventResponse> generateMatchEventLog(MatchEventRequest request, Match match, MatchUser matchUser) {
-    return generateMatchEvent(request, match, matchUser);
-  }
-
-  private List<MatchEventResponse> generateMatchEvent(MatchEventRequest request, Match match, MatchUser matchUser) {
-    switch (request.getEventType()) {
-      case GOAL:
-        return generateGoalEvent(request, match, matchUser);
-      case OFFSIDE:
-        return generateOffsideEvent(request, match, matchUser);
-      case VALID_SHOT:
-        return generateValidShotEvent(request, match, matchUser);
-      default:
-        return generateDefaultEvent(request, match, matchUser);
+    public List<MatchEventResponse> generateMatchEventLog(MatchEventRequest request, Match match,
+        MatchUser matchUser) {
+        return generateMatchEvent(request, match, matchUser);
     }
-  }
 
-  /**
-   * 골 이벤트 기록 시 호출됩니다.
-   * <ul>
-   * <li>실제 골 이벤트(goalEvent)를 생성합니다.</li>
-   * <li>골 이벤트를 기반으로 슛(shotEvent), 유효슛(validShotEvent) 이벤트를 각각 복사 생성합니다.</li>
-   * <li>세 이벤트를 모두 저장하고, 각각의 응답 객체를 반환합니다.</li>
-   * </ul>
-   * 
-   * @param request 골 이벤트 요청 정보
-   * @param match   해당 경기 정보
-   * @param user    이벤트를 기록한 사용자
-   * @return 생성된 이벤트들의 응답 리스트 (골, 슛, 유효슛)
-   */
-  private List<MatchEventResponse> generateGoalEvent(MatchEventRequest request, Match match, MatchUser user) {
-    MatchEvent goalEvent = MatchEventMapper.toEntity(request, match, user);
-    MatchEvent shotEvent = goalEvent.copyWith(MatchEventType.SHOT);
-    MatchEvent validShotEvent = goalEvent.copyWith(MatchEventType.VALID_SHOT);
-    matchEventRepository.saveAll(List.of(goalEvent, shotEvent, validShotEvent));
+    private List<MatchEventResponse> generateMatchEvent(MatchEventRequest request, Match match,
+        MatchUser matchUser) {
+        switch (request.getEventType()) {
+            case GOAL:
+                return generateGoalEvent(request, match, matchUser);
+            case OFFSIDE:
+                return generateOffsideEvent(request, match, matchUser);
+            case VALID_SHOT:
+                return generateValidShotEvent(request, match, matchUser);
+            default:
+                return generateDefaultEvent(request, match, matchUser);
+        }
+    }
 
-    List<MatchEventResponse> matchEventResponses = new ArrayList<>();
-    matchEventResponses.add(MatchEventMapper.toResponse(goalEvent));
-    matchEventResponses.add(MatchEventMapper.toResponse(shotEvent));
-    matchEventResponses.add(MatchEventMapper.toResponse(validShotEvent));
+    /**
+     * 골 이벤트 기록 시 호출됩니다.
+     * <ul>
+     * <li>실제 골 이벤트(goalEvent)를 생성합니다.</li>
+     * <li>골 이벤트를 기반으로 슛(shotEvent), 유효슛(validShotEvent) 이벤트를 각각 복사 생성합니다.</li>
+     * <li>세 이벤트를 모두 저장하고, 각각의 응답 객체를 반환합니다.</li>
+     * </ul>
+     *
+     * @param request 골 이벤트 요청 정보
+     * @param match   해당 경기 정보
+     * @param user    이벤트를 기록한 사용자
+     * @return 생성된 이벤트들의 응답 리스트 (골, 슛, 유효슛)
+     */
+    private List<MatchEventResponse> generateGoalEvent(MatchEventRequest request, Match match,
+        MatchUser user) {
+        MatchEvent goalEvent = MatchEventMapper.toEntity(request, match, user);
+        MatchEvent shotEvent = goalEvent.copyWith(MatchEventType.SHOT);
+        MatchEvent validShotEvent = goalEvent.copyWith(MatchEventType.VALID_SHOT);
+        matchEventRepository.saveAll(List.of(goalEvent, shotEvent, validShotEvent));
 
-    return matchEventResponses;
-  }
+        List<MatchEventResponse> matchEventResponses = new ArrayList<>();
+        matchEventResponses.add(MatchEventMapper.toResponse(goalEvent));
+        matchEventResponses.add(MatchEventMapper.toResponse(shotEvent));
+        matchEventResponses.add(MatchEventMapper.toResponse(validShotEvent));
 
-  /**
-   * 오프사이드 이벤트 기록 시 호출됩니다.
-   * <ul>
-   * <li>오프사이드 이벤트(offsideEvent)를 생성합니다.</li>
-   * <li>오프사이드 이벤트를 기반으로 파울(foulEvent) 이벤트를 복사 생성합니다.</li>
-   * <li>두 이벤트를 모두 저장하고, 각각의 응답 객체를 반환합니다.</li>
-   * </ul>
-   * 
-   * @param request 오프사이드 이벤트 요청 정보
-   * @param match   해당 경기 정보
-   * @param matchUser    이벤트를 기록한 사용자
-   * @return 생성된 이벤트들의 응답 리스트 (오프사이드, 파울)
-   */
-  private List<MatchEventResponse> generateOffsideEvent(MatchEventRequest request, Match match, MatchUser matchUser) {
-    MatchEvent offsideEvent = MatchEventMapper.toEntity(request, match, matchUser);
-    MatchEvent foulEvent = offsideEvent.copyWith(MatchEventType.FOUL);
-    matchEventRepository.saveAll(List.of(offsideEvent, foulEvent));
-    return List.of(
-        MatchEventMapper.toResponse(offsideEvent),
-        MatchEventMapper.toResponse(foulEvent));
-  }
+        return matchEventResponses;
+    }
 
-  /**
-   * 유효슛 이벤트 기록 시 호출됩니다.
-   * <ul>
-   * <li>유효슛 이벤트(validShotEvent)를 생성합니다.</li>
-   * <li>유효슛 이벤트를 기반으로 슛(shotEvent) 이벤트를 복사 생성합니다.</li>
-   * <li>두 이벤트를 모두 저장하고, 각각의 응답 객체를 반환합니다.</li>
-   * </ul>
-   * 
-   * @param request 유효슛 이벤트 요청 정보
-   * @param match   해당 경기 정보
-   * @param matchUser    이벤트를 기록한 사용자
-   * @return 생성된 이벤트들의 응답 리스트 (유효슛, 슛)
-   */
-  private List<MatchEventResponse> generateValidShotEvent(MatchEventRequest request, Match match, MatchUser matchUser) {
-    MatchEvent validShotEvent = MatchEventMapper.toEntity(request, match, matchUser);
-    MatchEvent shotEvent = validShotEvent.copyWith(MatchEventType.SHOT);
-    matchEventRepository.saveAll(List.of(validShotEvent, shotEvent));
-    return List.of(
-        MatchEventMapper.toResponse(validShotEvent),
-        MatchEventMapper.toResponse(shotEvent));
-  }
+    /**
+     * 오프사이드 이벤트 기록 시 호출됩니다.
+     * <ul>
+     * <li>오프사이드 이벤트(offsideEvent)를 생성합니다.</li>
+     * <li>오프사이드 이벤트를 기반으로 파울(foulEvent) 이벤트를 복사 생성합니다.</li>
+     * <li>두 이벤트를 모두 저장하고, 각각의 응답 객체를 반환합니다.</li>
+     * </ul>
+     *
+     * @param request   오프사이드 이벤트 요청 정보
+     * @param match     해당 경기 정보
+     * @param matchUser 이벤트를 기록한 사용자
+     * @return 생성된 이벤트들의 응답 리스트 (오프사이드, 파울)
+     */
+    private List<MatchEventResponse> generateOffsideEvent(MatchEventRequest request, Match match,
+        MatchUser matchUser) {
+        MatchEvent offsideEvent = MatchEventMapper.toEntity(request, match, matchUser);
+        MatchEvent foulEvent = offsideEvent.copyWith(MatchEventType.FOUL);
+        matchEventRepository.saveAll(List.of(offsideEvent, foulEvent));
+        return List.of(
+            MatchEventMapper.toResponse(offsideEvent),
+            MatchEventMapper.toResponse(foulEvent));
+    }
 
-  /**
-   * 기타 이벤트(기본 이벤트) 기록 시 호출됩니다.
-   * <ul>
-   * <li>요청에 따라 단일 MatchEvent를 생성 및 저장합니다.</li>
-   * <li>이벤트에 대한 응답 객체를 반환합니다.</li>
-   * </ul>
-   * 
-   * @param request 기타 이벤트 요청 정보
-   * @param match   해당 경기 정보
-   * @param matchUser    이벤트를 기록한 사용자
-   * @return 생성된 이벤트의 응답 리스트 (단일 이벤트)
-   */
-  private List<MatchEventResponse> generateDefaultEvent(MatchEventRequest request, Match match, MatchUser matchUser) {
-    MatchEvent matchEvent = MatchEventMapper.toEntity(request, match, matchUser);
-    matchEventRepository.save(matchEvent);
-    return List.of(MatchEventMapper.toResponse(matchEvent));
-  }
+    /**
+     * 유효슛 이벤트 기록 시 호출됩니다.
+     * <ul>
+     * <li>유효슛 이벤트(validShotEvent)를 생성합니다.</li>
+     * <li>유효슛 이벤트를 기반으로 슛(shotEvent) 이벤트를 복사 생성합니다.</li>
+     * <li>두 이벤트를 모두 저장하고, 각각의 응답 객체를 반환합니다.</li>
+     * </ul>
+     *
+     * @param request   유효슛 이벤트 요청 정보
+     * @param match     해당 경기 정보
+     * @param matchUser 이벤트를 기록한 사용자
+     * @return 생성된 이벤트들의 응답 리스트 (유효슛, 슛)
+     */
+    private List<MatchEventResponse> generateValidShotEvent(MatchEventRequest request, Match match,
+        MatchUser matchUser) {
+        MatchEvent validShotEvent = MatchEventMapper.toEntity(request, match, matchUser);
+        MatchEvent shotEvent = validShotEvent.copyWith(MatchEventType.SHOT);
+        matchEventRepository.saveAll(List.of(validShotEvent, shotEvent));
+        return List.of(
+            MatchEventMapper.toResponse(validShotEvent),
+            MatchEventMapper.toResponse(shotEvent));
+    }
+
+    /**
+     * 기타 이벤트(기본 이벤트) 기록 시 호출됩니다.
+     * <ul>
+     * <li>요청에 따라 단일 MatchEvent를 생성 및 저장합니다.</li>
+     * <li>이벤트에 대한 응답 객체를 반환합니다.</li>
+     * </ul>
+     *
+     * @param request   기타 이벤트 요청 정보
+     * @param match     해당 경기 정보
+     * @param matchUser 이벤트를 기록한 사용자
+     * @return 생성된 이벤트의 응답 리스트 (단일 이벤트)
+     */
+    private List<MatchEventResponse> generateDefaultEvent(MatchEventRequest request, Match match,
+        MatchUser matchUser) {
+        MatchEvent matchEvent = MatchEventMapper.toEntity(request, match, matchUser);
+        matchEventRepository.save(matchEvent);
+        return List.of(MatchEventMapper.toResponse(matchEvent));
+    }
 }
