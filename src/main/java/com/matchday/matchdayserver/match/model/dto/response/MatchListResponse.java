@@ -46,11 +46,9 @@ public class MatchListResponse {
     @Schema(description = "매치 장소", example = "토트넘 스타디움")
     private String stadium;
 
-    @NotNull
     @Schema(description = "홈팀 스코어", example = "3")
     private int homeScore;
 
-    @NotNull
     @Schema(description = "상대팀 스코어", example = "1")
     private int awayScore;
 

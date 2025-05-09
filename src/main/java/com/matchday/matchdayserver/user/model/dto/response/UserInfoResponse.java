@@ -23,7 +23,7 @@ public class UserInfoResponse {
     @NotNull
     @Schema(description = "유저가 소속된 팀 ID")
     private List<Long> teamIds;
-    
+
     @NotNull
     @Schema(description = "유저가 소속된 매치 ID")
     private List<Long> matchIds;

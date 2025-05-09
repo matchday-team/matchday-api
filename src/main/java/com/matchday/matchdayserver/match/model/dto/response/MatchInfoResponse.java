@@ -12,7 +12,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Schema(description = "매치 정보 응답 객체")
 public class MatchInfoResponse {
-    @NotNull
     @Schema(description = "id", example = "매치 id")
     private Long id;
 

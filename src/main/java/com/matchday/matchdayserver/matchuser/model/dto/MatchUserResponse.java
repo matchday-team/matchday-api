@@ -23,11 +23,9 @@ public class MatchUserResponse {
     @Schema(description = "등번호", example = "10")
     private Integer number;
 
-    @NotNull
     @Schema(description = "매치 포지션", example = "MF", nullable = true)
     private String matchPosition;
 
-    @NotNull
     @Schema(description = "선수 그리드 좌표", example = "1", nullable = true)
     private Integer matchGrid;
 
@@ -51,8 +49,7 @@ public class MatchUserResponse {
     @Schema(description = "경고 누적 수 (옐로카드 개수)", example = "1")
     private Integer caution;
 
-    @NotNull
-    @Schema(description = "퇴장 여부 (옐로 2장 이상 또는 레드 1장 이상)", example = "false")
+    @Schema(description = "퇴장 여부 (옐로 2장 이상 또는 레드 1장 이상)", example = "false", required = true)
     private boolean sentOff;
 
     @Schema(description = "프로필 이미지 url", example = "users/1/0f3578b1-c4e6-4f6f-2222-567f3f48648a.webp", nullable = true)
