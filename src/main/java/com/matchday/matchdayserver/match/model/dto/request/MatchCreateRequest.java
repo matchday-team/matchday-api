@@ -37,11 +37,11 @@ public class MatchCreateRequest {
 
     @NotNull
     @Schema(description = "경기 시작 시간", example = "14:00:00")
-    private LocalTime startTime;
+    private LocalTime plannedStartTime;
 
     @NotNull
     @Schema(description = "경기 종료 시간", example = "16:00:00")
-    private LocalTime endTime;
+    private LocalTime plannedEndTime;
 
     @Schema(description = "주심", example = "주심 이름", nullable = true)
     private String mainRefereeName;

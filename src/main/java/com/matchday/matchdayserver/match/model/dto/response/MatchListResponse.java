@@ -36,11 +36,11 @@ public class MatchListResponse {
 
     @NotNull
     @Schema(description = "매치 시작 시간")
-    private LocalTime matchStartTime;
+    private LocalTime plannedStartTime;
 
     @NotNull
     @Schema(description = "매치 종료 시간")
-    private LocalTime matchEndTime;
+    private LocalTime plannedEndTime;
 
     @NotNull
     @Schema(description = "매치 장소", example = "토트넘 스타디움")
@@ -59,7 +59,7 @@ public class MatchListResponse {
     @Builder
     public MatchListResponse(Long matchId, Long homeTeamId, String homeTeamName,
         Long awayTeamId, String awayTeamName, String matchTitle,
-        LocalTime matchStartTime, LocalTime matchEndTime, String stadium,
+        LocalTime plannedStartTime, LocalTime plannedEndTime, String stadium,
         int homeScore, int awayScore,
         MatchState matchState) {
         this.matchId = matchId;
@@ -68,8 +68,8 @@ public class MatchListResponse {
         this.awayTeamId = awayTeamId;
         this.awayTeamName = awayTeamName;
         this.matchTitle = matchTitle;
-        this.matchStartTime = matchStartTime;
-        this.matchEndTime = matchEndTime;
+        this.plannedStartTime = plannedStartTime;
+        this.plannedEndTime = plannedEndTime;
         this.stadium = stadium;
         this.homeScore = homeScore;
         this.awayScore = awayScore;
