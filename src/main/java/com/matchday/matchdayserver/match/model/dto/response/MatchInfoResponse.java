@@ -19,6 +19,7 @@ public class MatchInfoResponse {
     @Schema(description = "홈팀 ID")
     private Long homeTeamId;
 
+    @NotNull
     @Schema(description = "어웨이팀 ID")
     private Long awayTeamId;
 
@@ -27,16 +28,16 @@ public class MatchInfoResponse {
     private String stadium;
 
     @NotNull
+    @Schema(description = "날짜")
+    private LocalDate matchDate;
+
+    @NotNull
     @Schema(description = "시작 예정 시간")
     private LocalTime plannedStartTime;
 
     @NotNull
     @Schema(description = "종료 예정 시간")
     private LocalTime plannedEndTime;
-
-    @NotNull
-    @Schema(description = "종료 시간")
-    private LocalTime endTime;
 
     @Schema(description = "주심", example = "주심", nullable = true)
     private String mainRefereeName;
