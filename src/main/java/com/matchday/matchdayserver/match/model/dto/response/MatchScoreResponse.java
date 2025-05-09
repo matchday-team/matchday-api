@@ -5,6 +5,7 @@ import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.matchevent.model.dto.ScoreResponse;
 import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,14 +14,23 @@ import lombok.Getter;
 @Schema(description = "경기 점수 응답 객체")
 public class MatchScoreResponse {
 
+    @NotNull
     @Schema(description = "경기 ID", example = "1")
     private long matchId;
+
+    @NotNull
     @Schema(description = "홈팀 ID", example = "1")
     private long homeTeamId;
+
+    @NotNull
     @Schema(description = "상대팀 ID", example = "2")
     private long awayTeamId;
+
+    @NotNull
     @Schema(description = "홈팀 점수")
     private ScoreResponse homeScore;
+
+    @NotNull
     @Schema(description = "상대팀 점수")
     private ScoreResponse awayScore;
 

@@ -16,7 +16,7 @@ public class TeamMapper {
                 .teamColor(team.getTeamColor())
                 .bottomColor(team.getBottomColor())
                 .stockingColor(team.getStockingColor())
-                .teamImage(team.getTeamImg())
+                .teamImg(team.getTeamImg())
                 .build();
     }
 

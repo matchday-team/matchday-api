@@ -1,6 +1,7 @@
 package com.matchday.matchdayserver.matchevent.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,26 +15,33 @@ import lombok.NoArgsConstructor;
 @Schema(description = "경기 중 다양한 이벤트 발생 횟수 응답 객체")
 public class ScoreResponse {
 
-  @Schema(description = "골 횟수", example = "3")
-  private int goalCount;
+    @NotNull
+    @Schema(description = "골 횟수", example = "3")
+    private int goalCount;
 
-  @Schema(description = "슈팅 횟수", example = "10")
-  private int shotCount;
+    @NotNull
+    @Schema(description = "슈팅 횟수", example = "10")
+    private int shotCount;
 
-  @Schema(description = "유효 슈팅 횟수", example = "5")
-  private int validShotCount;
+    @NotNull
+    @Schema(description = "유효 슈팅 횟수", example = "5")
+    private int validShotCount;
 
-  @Schema(description = "코너킥 횟수", example = "7")
-  private int cornerKickCount;
+    @NotNull
+    @Schema(description = "코너킥 횟수", example = "7")
+    private int cornerKickCount;
 
-  @Schema(description = "오프사이드 횟수", example = "3")
-  private int offsideCount;
+    @NotNull
+    @Schema(description = "오프사이드 횟수", example = "3")
+    private int offsideCount;
 
-  @Schema(description = "파울 횟수", example = "15")
-  private int foulCount;
+    @NotNull
+    @Schema(description = "파울 횟수", example = "15")
+    private int foulCount;
 
-  @Schema(description = "경고 횟수", example = "2")
-  private int warningCount;
+    @NotNull
+    @Schema(description = "경고 횟수", example = "2")
+    private int warningCount;
 
   public void upGoalCount() {
     this.goalCount++;

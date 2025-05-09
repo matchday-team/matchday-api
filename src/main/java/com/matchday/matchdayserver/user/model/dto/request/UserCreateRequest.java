@@ -1,6 +1,7 @@
 package com.matchday.matchdayserver.user.model.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserCreateRequest {
 
+    @NotNull
     @Schema(description = "유저 이름", example = "홍길동")
     private String name;
 
