@@ -46,10 +46,16 @@ public class MatchUserResponse {
     @Schema(description = "프로필 이미지 url", example = "users/1/0f3578b1-c4e6-4f6f-2222-567f3f48648a.webp")
     private String profileImg;
 
+    @Schema(description = "교체인 여부", example = "true")
+    private boolean subIn;
+
+    @Schema(description = "교체아웃 여부", example = "false")
+    private boolean subOut;
+
     @Builder
     public MatchUserResponse(Long id, String name, Integer number, String matchPosition, Integer matchGrid,
         Integer goals, Integer assists,
-        Integer yellowCards, Integer redCards, Integer caution, boolean sentOff, String profileImg) {
+        Integer yellowCards, Integer redCards, Integer caution, boolean sentOff, String profileImg,boolean subIn, boolean subOut) {
         this.id = id;
         this.name = name;
         this.number = number;
@@ -62,5 +68,7 @@ public class MatchUserResponse {
         this.caution = caution;
         this.sentOff = sentOff;
         this.profileImg = profileImg;
+        this.subIn = subIn;
+        this.subOut = subOut;
     }
 }
