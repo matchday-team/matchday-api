@@ -74,7 +74,7 @@ public class MatchEventSaveService {
         }
     }
 
-    private void validateRequest(Long matchId, Message<MatchEventRequest> request) {
+    private void validateRequest(Long matchId, Message<MatchEventUserRequest> request) {
         List<String> errorMessages = new ArrayList<>();
 
         if (request.getData().getUserId() == null) {
