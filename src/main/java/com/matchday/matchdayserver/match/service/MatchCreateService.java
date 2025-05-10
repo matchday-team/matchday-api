@@ -51,10 +51,11 @@ public class MatchCreateService {
                 .fourthReferee(request.getFourthReferee())
                 .matchState(request.getMatchState())
                 .build();
+        matchRepository.save(match);
+
         // Team 기록용 임시 유저 생성
         createTempMatchUsers(match, List.of(homeTeam, awayTeam));
 
-        matchRepository.save(match);
         return match.getId();
     }
 
