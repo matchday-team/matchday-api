@@ -51,6 +51,24 @@ public class MatchEventSaveService {
         }
     }
 
+    public void saveMatchTeamEvent(Long matchId, Long teamId, Message<MatchEventRequest> request) {
+        validateAuthUser(teamId, request.getToken());
+
+        // 임시 유저
+        MatchUser matchUser = matchUserRepository
+            .findTempUser(matchId, teamId)
+            .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
+
+        Match match = matchUser.getMatch();
+
+        List<MatchEventResponse> matchEventResponse = matchEventStrategy
+            .generateMatchEventLog(request.getData(), match, matchUser);
+        for (MatchEventResponse response : matchEventResponse) {
+            if (!neededToSendEvent(response.getEventLog())) continue;
+            messagingTemplate.convertAndSend("/topic/match/" + teamId, response);
+        }
+    }
+
     private boolean neededToSendEvent(MatchEventType matchEventType) {
         return MatchEventType.GOAL.equals(matchEventType)
             || MatchEventType.ASSIST.equals(matchEventType)
