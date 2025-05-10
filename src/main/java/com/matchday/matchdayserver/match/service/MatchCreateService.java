@@ -5,6 +5,9 @@ import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.match.model.dto.request.MatchCreateRequest;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
+import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
+import com.matchday.matchdayserver.matchuser.model.enums.MatchUserRole;
+import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import jakarta.transaction.Transactional;
@@ -13,12 +16,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class MatchCreateService {
     private final MatchRepository matchRepository;
     private final TeamRepository teamRepository;
+    private final MatchUserRepository matchUserRepository;
 
     @Transactional
     public Long create(MatchCreateRequest request) {
@@ -45,9 +51,27 @@ public class MatchCreateService {
                 .fourthReferee(request.getFourthReferee())
                 .matchState(request.getMatchState())
                 .build();
+        // Team 기록용 임시 유저 생성
+        createTempMatchUsers(match, List.of(homeTeam, awayTeam));
 
         matchRepository.save(match);
         return match.getId();
+    }
+
+    private void createTempMatchUsers(Match match, List<Team> teams) {
+        List<MatchUser> tempMatchUsers = new ArrayList<>();
+        for (Team team : teams) {
+            tempMatchUsers.add(
+                MatchUser.builder()
+                    .match(match)
+                    .team(team)
+                    .role(MatchUserRole.START_PLAYER)
+                    .matchPosition("FW")
+                    .matchGrid(null)
+                    .build()
+            );
+        }
+        matchUserRepository.saveAll(tempMatchUsers);
     }
 
     // 경기명이 빈 값이면 예외 발생
