@@ -1,39 +1,42 @@
 spring:
-  config:
-    import: optional:file:.env[.properties]
-  application:
-    name: matchday-server
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    config:
+        import: optional:file:.env[.properties]
+    application:
+        name: matchday-server
+    datasource:
+        url: ${SPRING_DATASOURCE_URL}
+        username: ${SPRING_DATASOURCE_USERNAME}
+        password: ${SPRING_DATASOURCE_PASSWORD}
+        driver-class-name: com.mysql.cj.jdbc.Driver
 
-  jpa:
-    hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
-    show-sql: true
+    jpa:
+        hibernate:
+            ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQLDialect
 
-  sql:
-    init:
-      mode: always
+    sql:
+        init:
+            mode: always
 
-  cloud:
-    aws:
-      s3:
-        bucket: ${BUCKET_NAME}
-      stack:
-        auto: false
-      region:
-        static: ${AWS_REGION}
-      credentials:
-        access-key: ${AWS_ACCESS_KEY}
-        secret-key: ${AWS_SECRET_KEY}
+    cloud:
+        aws:
+            s3:
+                bucket: ${BUCKET_NAME}
+            stack:
+                auto: false
+            region:
+                static: ${AWS_REGION}
+            credentials:
+                access-key: ${AWS_ACCESS_KEY}
+                secret-key: ${AWS_SECRET_KEY}
 
 springdoc:
-  api-docs:
-    version: "openapi_3_0"
+    api-docs:
+        version: "openapi_3_0"
+
+decorator:
+    datasource:
+        p6spy:
+            enable-logging: false

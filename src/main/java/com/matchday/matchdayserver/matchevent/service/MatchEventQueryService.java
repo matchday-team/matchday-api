@@ -21,7 +21,7 @@ public class MatchEventQueryService {
     public MatchUserEventStat getMatchUserEventStat(Long matchId, Long matchUserId) {
         int goals = 0, assists = 0, yellowCards = 0, redCards = 0;
 
-        List<EventTypeCount> counts = matchEventRepository.countEventTypesByMatchUserAndMatch(matchId, matchUserId);
+        List<EventTypeCount> counts = matchEventRepository.countEventTypesByMatchUserAndMatch(matchUserId, matchId);
         for (EventTypeCount c : counts) {
             switch (c.getEventType()) {
                 case "GOALS" -> goals = c.getCount().intValue();
