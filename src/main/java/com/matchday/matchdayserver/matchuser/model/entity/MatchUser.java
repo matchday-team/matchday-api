@@ -32,8 +32,8 @@ public class MatchUser {
     private Match match;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "user_id")
+    private User user; // user id null일 경우 임시 유저
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
