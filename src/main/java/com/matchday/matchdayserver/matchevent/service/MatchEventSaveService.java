@@ -52,6 +52,7 @@ public class MatchEventSaveService {
 
     private boolean neededToSendEvent(MatchEventType matchEventType) {
         return MatchEventType.GOAL.equals(matchEventType)
+            || MatchEventType.ASSIST.equals(matchEventType)
             || MatchEventType.OFFSIDE.equals(matchEventType)
             || MatchEventType.YELLOW_CARD.equals(matchEventType)
             || MatchEventType.RED_CARD.equals(matchEventType)
