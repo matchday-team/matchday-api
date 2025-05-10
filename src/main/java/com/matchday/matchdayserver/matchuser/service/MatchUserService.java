@@ -83,7 +83,7 @@ public class MatchUserService {
 
     @Transactional
     public MatchUserGroupResponse getGroupedMatchUsers(Long matchId) {
-        List<MatchUser> matchUsers = matchUserRepository.findByMatchId(matchId);
+        List<MatchUser> matchUsers = matchUserRepository.findByMatchIdAndTeamIdIsNotNull(matchId);
         Match match = matchRepository.findById(matchId)
             .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
         Long homeTeamId = match.getHomeTeam().getId();
