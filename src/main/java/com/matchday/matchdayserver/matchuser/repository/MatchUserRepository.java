@@ -22,5 +22,10 @@ public interface MatchUserRepository extends JpaRepository<MatchUser, Long> {
   @Query("SELECT mu.match.id FROM MatchUser mu WHERE mu.user.id = :userId")
   List<Long> findMatchIdsByUserId(@Param("userId") Long userId);
 
-  List<MatchUser> findByMatchIdAndTeamIdIsNotNull(Long matchId);
+  /**
+   * 감독/기록관 제외, 임시 유저 제외
+   * @param matchId
+   * @return
+  */
+  List<MatchUser> findByMatchIdAndTeamIdIsNotNullAndUserIdIsNotNull(Long matchId);
 }
