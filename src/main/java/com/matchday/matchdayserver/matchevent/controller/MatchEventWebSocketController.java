@@ -14,10 +14,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MatchEventWebSocketController {
 
-  private final MatchEventSaveService matchEventSaveService;
+    private final MatchEventSaveService matchEventSaveService;
 
-  @MessageMapping("/match/{matchId}")
-  public void recordEvent(@DestinationVariable Long matchId, Message<MatchEventRequest> matchEventRequest) {
-    matchEventSaveService.saveMatchEvent(matchId, matchEventRequest);
-  }
+    @MessageMapping("/match/{matchId}")
+    public void recordEvent(@DestinationVariable Long matchId,
+        Message<MatchEventRequest> matchEventRequest) {
+        matchEventSaveService.saveMatchEvent(matchId, matchEventRequest);
+    }
 }
