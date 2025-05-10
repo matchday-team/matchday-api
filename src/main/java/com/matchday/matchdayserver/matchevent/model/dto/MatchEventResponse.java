@@ -35,6 +35,6 @@ public class MatchEventResponse {
     @Schema(description = "선수 이름", example = "손흥민")
     private String userName;
 
-    @Schema(description = "이벤트 로그", example = "손흥민 경고", nullable = true)
-    private String eventLog;
+    @Schema(description = "이벤트 로그", example = "손흥민 경고")
+    private MatchEventType eventLog;
 }

@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
  * <li>골 기록 시: 유효슛, 슛 이벤트를 함께 생성</li>
  * <li>오프사이드 기록 시: 오프사이드, 파울 이벤트를 함께 생성</li>
  * <li>유효슛 기록 시: 유효슛, 슛 이벤트를 함께 생성</li>
+ * <li>경고(옐로 카드, 레드 카드): 파울</li>
  * </ul>
  * <p>
  * 트랜잭션 처리는 상위 서비스에서 담당해야 합니다.
@@ -47,6 +48,9 @@ public class MatchEventStrategy {
                 return generateGoalEvent(request, match, matchUser);
             case OFFSIDE:
                 return generateOffsideEvent(request, match, matchUser);
+            case YELLOW_CARD:
+            case RED_CARD:
+                return generateCardEvent(request, match, matchUser);
             case VALID_SHOT:
                 return generateValidShotEvent(request, match, matchUser);
             default:
@@ -102,6 +106,31 @@ public class MatchEventStrategy {
         matchEventRepository.saveAll(List.of(offsideEvent, foulEvent));
         return List.of(
             MatchEventMapper.toResponse(offsideEvent),
+            MatchEventMapper.toResponse(foulEvent));
+    }
+
+    /**
+     * 카드(옐로카드/레드카드) 이벤트 기록 시 호출됩니다.
+     * <ul>
+     * <li>카드 이벤트(cardEvent)를 생성합니다.</li>
+     * <li>카드 이벤트를 기반으로 경고(warningEvent), 파울(foulEvent) 이벤트를 각각 복사 생성합니다.</li>
+     * <li>세 이벤트를 모두 저장하고, 각각의 응답 객체를 반환합니다.</li>
+     * </ul>
+     *
+     * @param request   카드 이벤트 요청 정보
+     * @param match     해당 경기 정보
+     * @param matchUser 이벤트를 기록한 사용자
+     * @return 생성된 이벤트들의 응답 리스트 (카드, 경고, 파울)
+     */
+    private List<MatchEventResponse> generateCardEvent(MatchEventRequest request, Match match,
+        MatchUser matchUser) {
+        MatchEvent cardEvent = MatchEventMapper.toEntity(request, match, matchUser);
+        MatchEvent warningEvent = cardEvent.copyWith(MatchEventType.WARNING);
+        MatchEvent foulEvent = cardEvent.copyWith(MatchEventType.FOUL);
+        matchEventRepository.saveAll(List.of(cardEvent, warningEvent, foulEvent));
+        return List.of(
+            MatchEventMapper.toResponse(cardEvent),
+            MatchEventMapper.toResponse(warningEvent),
             MatchEventMapper.toResponse(foulEvent));
     }
 

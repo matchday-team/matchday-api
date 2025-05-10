@@ -38,7 +38,11 @@ public enum MatchEventType {
     RED_CARD("퇴장"),
 
     @Schema(description = "자책골")
-    OWN_GOAL("자책골");
+    OWN_GOAL("자책골"),
+
+    @Schema(description = "경고")
+    WARNING("경고"),
+    ;
 
     public final String value;
 
