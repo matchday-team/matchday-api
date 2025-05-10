@@ -8,6 +8,7 @@ import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
+import com.matchday.matchdayserver.matchevent.model.dto.MatchEventUserRequest;
 import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 
 import jakarta.transaction.Transactional;
@@ -32,7 +33,7 @@ public class MatchEventSaveService {
     private final SimpMessagingTemplate messagingTemplate;
     private final MatchEventStrategy matchEventStrategy;
 
-    public void saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
+    public void saveMatchEvent(Long matchId, Message<MatchEventUserRequest> request) {
         validateRequest(matchId, request);
         validateAuthUser(matchId, request.getToken());
 
@@ -65,7 +66,7 @@ public class MatchEventSaveService {
         Long authId = Long.parseLong(token);
 
         MatchUser authUser = matchUserRepository
-            .findByMatchIdAndUserIdWithFetch(matchId, authId)
+            .findById(authId)
             .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
 
         if (!authUser.getMatch().getId().equals(matchId)) {
