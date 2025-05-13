@@ -77,45 +77,45 @@ public class MatchService {
           .collect(Collectors.toList());
   }
 
-  @Transactional
-  public void setHalfTime(Long id, MatchHalfTimeRequest halfTimeRequest) {
+    @Transactional
+    public void setHalfTime(Long id, MatchHalfTimeRequest halfTimeRequest) {
         Match match = matchRepository.findById(id)
             .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
 
-      validateTime(match, halfTimeRequest);
+        validateTime(match, halfTimeRequest);
 
-        //전반 시작/종료 시간 등록
-        if (HalfType.FIRST_HALF.equals(halfTimeRequest.getHalfType())) {
-            //전반 시작 시간 등록
-            if(TimeType.START_TIME.equals(halfTimeRequest.getTimeType())) {
-                match.setFirstHalfStartTime(halfTimeRequest.getTime());
-                match.setMatchState(MatchState.IN_PLAY); //전반 시작 시간 등록되면 매치 상태 '진행중(IN_PLAY)'으로 변경
-            }
+        switch (halfTimeRequest.getHalfType()) {
+            case FIRST_HALF:
+                switch (halfTimeRequest.getTimeType()) {
+                    case START_TIME:
+                        match.setFirstHalfStartTime(halfTimeRequest.getTime());
+                        match.setMatchState(MatchState.IN_PLAY);
+                        break;
+                    case END_TIME:
+                        match.setFirstHalfEndTime(halfTimeRequest.getTime());
+                        break;
+                }
+                break;
 
-            //전반 종료 시간 등록
-            if(TimeType.END_TIME.equals(halfTimeRequest.getTimeType())) {
-                match.setFirstHalfEndTime(halfTimeRequest.getTime());
-            }
+            case SECOND_HALF:
+                switch (halfTimeRequest.getTimeType()) {
+                    case START_TIME:
+                        match.setSecondHalfStartTime(halfTimeRequest.getTime());
+                        break;
+                    case END_TIME:
+                        match.setSecondHalfEndTime(halfTimeRequest.getTime());
+                        match.setMatchState(MatchState.FINISHED);
+                        break;
+                }
+                break;
         }
 
-        //후반 시작/종료 시간 등록
-        if (HalfType.SECOND_HALF.equals(halfTimeRequest.getHalfType())) {
-            //후반 시작 시간 등록
-            if(TimeType.START_TIME.equals(halfTimeRequest.getTimeType())) {
-                match.setSecondHalfStartTime(halfTimeRequest.getTime());
-            }
-            //후반 종료 시간 등록
-            if(TimeType.END_TIME.equals(halfTimeRequest.getTimeType())) {
-                match.setSecondHalfEndTime(halfTimeRequest.getTime());
-                match.setMatchState(MatchState.FINISHED); //후반 종료시간 등록되면 매치 상태 '종료(FINISHED)'로 변경
-            }
-        }
         matchRepository.save(match);
     }
 
+
     private void validateTime(Match match, MatchHalfTimeRequest halfTimeRequest) {
         LocalTime newTime = halfTimeRequest.getTime();
-        if (newTime == null) return;
 
         HalfType halfType = halfTimeRequest.getHalfType();
         TimeType timeType = halfTimeRequest.getTimeType();
