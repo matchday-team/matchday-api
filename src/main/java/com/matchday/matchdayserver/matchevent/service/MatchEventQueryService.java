@@ -19,7 +19,7 @@ public class MatchEventQueryService {
      * <p>
      */
     public MatchUserEventStat getMatchUserEventStat(Long matchId, Long matchUserId) {
-        int goals = 0, assists = 0, yellowCards = 0, redCards = 0;
+        int goals = 0, assists = 0, yellowCards = 0, redCards = 0, cautions = 0;
 
         List<EventTypeCount> counts = matchEventRepository.countEventTypesByMatchUserAndMatch(matchUserId, matchId);
         for (EventTypeCount c : counts) {
@@ -28,6 +28,7 @@ public class MatchEventQueryService {
                 case "ASSIST" -> assists = c.getCount().intValue();
                 case "YELLOW_CARD" -> yellowCards = c.getCount().intValue();
                 case "RED_CARD" -> redCards = c.getCount().intValue();
+                case "WARNING" -> cautions = c.getCount().intValue();
             }
         }
 
@@ -36,7 +37,7 @@ public class MatchEventQueryService {
             .assists(assists)
             .yellowCards(yellowCards)
             .redCards(redCards)
-            .caution(yellowCards)                 // caution == yellowCards
+            .caution(cautions)
             .sentOff(yellowCards >= 2 || redCards >= 1)  // 퇴장 판단
             .build();
     }
