@@ -14,6 +14,7 @@ import com.matchday.matchdayserver.match.service.MatchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -77,9 +78,9 @@ public class MatchController {
         return ApiResponse.ok(matchService.getMatchListByTeam(teamId));
     }
 
-    @Operation(summary = "전/후반 시간 등록", description = "특정 매치의 전/후반 시작/종료 시간을 등록합니다. <br> **halfTimeType**은 ``FIRST_HALF_TIME(전반) / SECOND_HALF_TIME(후반)`` 입니다. <br> **timeType**은 ``START_TIME(시작시간) / END_TIME(종료시간)``입니다. ")
+    @Operation(summary = "전/후반 시간 등록", description = "특정 매치의 전/후반 시작/종료 시간을 등록합니다. <br> **halfTimeType**은 ``FIRST_HALF_TIME(전반) / SECOND_HALF_TIME(후반)`` 입니다. <br> **timeType**은 ``START_TIME(시작시간) / END_TIME(종료시간)`` 입니다. ")
     @PatchMapping("/{matchId}/time")
-    public ApiResponse<String> updateHalfTime(@PathVariable Long matchId, @RequestBody MatchHalfTimeRequest matchHalfTimeRequest) {
+    public ApiResponse<String> updateHalfTime(@PathVariable Long matchId, @RequestBody @Valid MatchHalfTimeRequest matchHalfTimeRequest) {
         matchService.setHalfTime(matchId, matchHalfTimeRequest);
         return ApiResponse.ok("시간 등록 완료");
     }
