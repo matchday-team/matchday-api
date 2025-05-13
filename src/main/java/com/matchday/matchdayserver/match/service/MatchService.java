@@ -8,7 +8,7 @@ import com.matchday.matchdayserver.match.model.dto.response.MatchInfoResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchListResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchScoreResponse;
 import com.matchday.matchdayserver.match.model.entity.Match;
-import com.matchday.matchdayserver.match.model.enums.HalfTimeType;
+import com.matchday.matchdayserver.match.model.enums.HalfType;
 import com.matchday.matchdayserver.match.model.enums.MatchState;
 import com.matchday.matchdayserver.match.model.enums.TimeType;
 import com.matchday.matchdayserver.match.model.mapper.MatchMapper;
@@ -85,7 +85,7 @@ public class MatchService {
       validateTime(match, halfTimeRequest);
 
         //전반 시작/종료 시간 등록
-        if (HalfTimeType.FIRST_HALF_TIME.equals(halfTimeRequest.getHalfTimeType())) {
+        if (HalfType.FIRST_HALF.equals(halfTimeRequest.getHalfType())) {
             //전반 시작 시간 등록
             if(TimeType.START_TIME.equals(halfTimeRequest.getTimeType())) {
                 match.setFirstHalfStartTime(halfTimeRequest.getTime());
@@ -99,7 +99,7 @@ public class MatchService {
         }
 
         //후반 시작/종료 시간 등록
-        if (HalfTimeType.SECOND_HALF_TIME.equals(halfTimeRequest.getHalfTimeType())) {
+        if (HalfType.SECOND_HALF.equals(halfTimeRequest.getHalfType())) {
             //후반 시작 시간 등록
             if(TimeType.START_TIME.equals(halfTimeRequest.getTimeType())) {
                 match.setSecondHalfStartTime(halfTimeRequest.getTime());
@@ -117,11 +117,11 @@ public class MatchService {
         LocalTime newTime = halfTimeRequest.getTime();
         if (newTime == null) return;
 
-        HalfTimeType halfType = halfTimeRequest.getHalfTimeType();
+        HalfType halfType = halfTimeRequest.getHalfType();
         TimeType timeType = halfTimeRequest.getTimeType();
 
         switch (halfType) {
-            case FIRST_HALF_TIME -> {
+            case FIRST_HALF -> {
                 LocalTime start = match.getFirstHalfStartTime();
                 LocalTime end = match.getFirstHalfEndTime();
 
@@ -133,7 +133,7 @@ public class MatchService {
                 }
             }
 
-            case SECOND_HALF_TIME -> {
+            case SECOND_HALF -> {
                 LocalTime start = match.getSecondHalfStartTime();
                 LocalTime end = match.getSecondHalfEndTime();
                 LocalTime firstHalfEnd = match.getFirstHalfEndTime();

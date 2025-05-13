@@ -1,6 +1,6 @@
 package com.matchday.matchdayserver.match.model.dto.request;
 
-import com.matchday.matchdayserver.match.model.enums.HalfTimeType;
+import com.matchday.matchdayserver.match.model.enums.HalfType;
 import com.matchday.matchdayserver.match.model.enums.TimeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +14,7 @@ public class MatchHalfTimeRequest {
 
     @NotNull
     @Schema(description = "전/후반 ")
-    private HalfTimeType halfTimeType;
+    private HalfType halfType;
 
     @NotNull
     @Schema(description = "시작/종료 시간")
