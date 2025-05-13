@@ -24,8 +24,8 @@ public class MatchEventQueryService {
         List<EventTypeCount> counts = matchEventRepository.countEventTypesByMatchUserAndMatch(matchUserId, matchId);
         for (EventTypeCount c : counts) {
             switch (c.getEventType()) {
-                case "GOALS" -> goals = c.getCount().intValue();
-                case "ASSISTS" -> assists = c.getCount().intValue();
+                case "GOAL" -> goals = c.getCount().intValue();
+                case "ASSIST" -> assists = c.getCount().intValue();
                 case "YELLOW_CARD" -> yellowCards = c.getCount().intValue();
                 case "RED_CARD" -> redCards = c.getCount().intValue();
             }
