@@ -140,8 +140,18 @@ public class MatchEventStrategy {
 
         matchEventRepository.saveAll(needToSaveEvents);
 
+        applySendOffForRedCard(needToSaveEvents);
+
         return needToSaveEvents.stream().map(MatchEventMapper::toResponse)
             .collect(Collectors.toList());
+    }
+
+    private void applySendOffForRedCard(List<MatchEvent> matchEvent) {
+        for(MatchEvent event: matchEvent) {
+            if(event.getEventType().equals(MatchEventType.RED_CARD)) {
+                event.getMatchUser().sendOff();
+            }
+        }
     }
 
     /**
