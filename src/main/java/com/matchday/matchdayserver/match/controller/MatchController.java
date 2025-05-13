@@ -78,7 +78,7 @@ public class MatchController {
         return ApiResponse.ok(matchService.getMatchListByTeam(teamId));
     }
 
-    @Operation(summary = "전/후반 시간 등록", description = "특정 매치의 전/후반 시작/종료 시간을 등록합니다. <br> **halfTimeType**은 ``FIRST_HALF_TIME(전반) / SECOND_HALF_TIME(후반)`` 입니다. <br> **timeType**은 ``START_TIME(시작시간) / END_TIME(종료시간)`` 입니다. ")
+    @Operation(summary = "전/후반 시간 등록", description = "특정 매치의 전/후반 시작/종료 시간을 등록합니다. <br> **halfType**은 ``FIRST_HALF(전반) / SECOND_HALF(후반)`` 입니다. <br> **timeType**은 ``START_TIME(시작시간) / END_TIME(종료시간)`` 입니다. ")
     @PatchMapping("/{matchId}/time")
     public ApiResponse<String> updateHalfTime(@PathVariable Long matchId, @RequestBody @Valid MatchHalfTimeRequest matchHalfTimeRequest) {
         matchService.setHalfTime(matchId, matchHalfTimeRequest);
