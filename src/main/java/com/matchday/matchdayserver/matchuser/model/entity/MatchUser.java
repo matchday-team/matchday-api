@@ -74,4 +74,10 @@ public class MatchUser {
         this.matchPosition = originalPosition;
         this.matchGrid = originalGrid;
     }
+
+    // 퇴장시키는 메서드
+    public void sendOff() {
+        this.matchPosition = null;
+        this.matchGrid = null;
+    }
 }
