@@ -43,6 +43,10 @@ public class ScoreResponse {
     @Schema(description = "경고 횟수", example = "2")
     private int warningCount;
 
+    @NotNull
+    @Schema(description = "자책골 횟수", example = "1")
+    private int ownGoalCount;
+
   public void upGoalCount() {
     this.goalCount++;
   }
@@ -71,6 +75,10 @@ public class ScoreResponse {
     this.warningCount++;
   }
 
+  public void upOwnGoalCount() {
+      this.ownGoalCount++;
+  }
+
   public static ScoreResponse defaultScore() {
     return ScoreResponse.builder()
         .goalCount(0)
@@ -80,6 +88,7 @@ public class ScoreResponse {
         .offsideCount(0)
         .foulCount(0)
         .warningCount(0)
+        .ownGoalCount(0)
         .build();
   }
 }
