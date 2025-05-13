@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.config;
 
+import com.matchday.matchdayserver.common.Constants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,10 +34,8 @@ public class SecurityConfig {
     public CorsConfigurationSource myConfigurationSource() {
         CorsConfiguration configuration=new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000",    // 개발 주소
-            "http://localhost:5173",    // Vite 기본
-            "http://localhost:5174",    // Vite preview
-            "http://localhost:8080",    // swagger
+            Constants.FRONTEND_LOCAL_URL,
+            Constants.FRONTEND_PRODUCTION_URL,
             "https://www.matchday-planner.com" // 운영 도메인
             //필요시 추가
         ));
