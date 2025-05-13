@@ -39,4 +39,10 @@
 
         @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
         private List<UserTeam> userTeams;
+
+        public static User mock() {
+            return User.builder()
+                    .name("UNKNOWN")
+                    .build();
+        }
     }

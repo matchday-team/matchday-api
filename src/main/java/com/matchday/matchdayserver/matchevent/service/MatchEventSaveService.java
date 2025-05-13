@@ -8,6 +8,7 @@ import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
+import com.matchday.matchdayserver.matchevent.model.dto.MatchEventUserRequest;
 import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 
 import jakarta.transaction.Transactional;
@@ -32,7 +33,7 @@ public class MatchEventSaveService {
     private final SimpMessagingTemplate messagingTemplate;
     private final MatchEventStrategy matchEventStrategy;
 
-    public void saveMatchEvent(Long matchId, Message<MatchEventRequest> request) {
+    public void saveMatchEvent(Long matchId, Message<MatchEventUserRequest> request) {
         validateRequest(matchId, request);
         validateAuthUser(matchId, request.getToken());
 
@@ -47,6 +48,24 @@ public class MatchEventSaveService {
         for (MatchEventResponse response : matchEventResponse) {
             if (!neededToSendEvent(response.getEventLog())) continue;
             messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
+        }
+    }
+
+    public void saveMatchTeamEvent(Long matchId, Long teamId, Message<MatchEventRequest> request) {
+        validateAuthUser(matchId, request.getToken());
+
+        // 임시 유저
+        MatchUser matchUser = matchUserRepository
+            .findTempUser(matchId, teamId)
+            .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
+
+        Match match = matchUser.getMatch();
+
+        List<MatchEventResponse> matchEventResponse = matchEventStrategy
+            .generateMatchEventLog(request.getData(), match, matchUser);
+        for (MatchEventResponse response : matchEventResponse) {
+            if (!neededToSendEvent(response.getEventLog())) continue;
+            messagingTemplate.convertAndSend("/topic/match/" + teamId, response);
         }
     }
 
@@ -65,7 +84,7 @@ public class MatchEventSaveService {
         Long authId = Long.parseLong(token);
 
         MatchUser authUser = matchUserRepository
-            .findByMatchIdAndUserIdWithFetch(matchId, authId)
+            .findById(authId)
             .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
 
         if (!authUser.getMatch().getId().equals(matchId)) {
@@ -73,11 +92,15 @@ public class MatchEventSaveService {
         }
     }
 
-    private void validateRequest(Long matchId, Message<MatchEventRequest> request) {
+    private void validateRequest(Long matchId, Message<MatchEventUserRequest> request) {
         List<String> errorMessages = new ArrayList<>();
 
         if (request.getData().getUserId() == null) {
             errorMessages.add("userId는 필수 입력 값입니다.");
+        }
+
+        if(matchId == null) {
+            errorMessages.add("matchId는 필수 입력 값입니다.");
         }
 
         if (errorMessages.size() > 0) {

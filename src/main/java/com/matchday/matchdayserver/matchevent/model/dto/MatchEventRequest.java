@@ -16,10 +16,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MatchEventRequest {
     @NotNull
-    @Schema(description = "이벤트 유저", example = "1")
-    private Long userId;
-
-    @NotNull
     @Schema(description = "이벤트 타입", example = "GOAL")
     private MatchEventType eventType;
 

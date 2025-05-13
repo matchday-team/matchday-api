@@ -2,6 +2,7 @@ package com.matchday.matchdayserver.matchevent.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,6 @@ import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
 import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
-import com.matchday.matchdayserver.team.repository.TeamRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -113,25 +113,45 @@ public class MatchEventStrategy {
      * 카드(옐로카드/레드카드) 이벤트 기록 시 호출됩니다.
      * <ul>
      * <li>카드 이벤트(cardEvent)를 생성합니다.</li>
-     * <li>카드 이벤트를 기반으로 경고(warningEvent), 파울(foulEvent) 이벤트를 각각 복사 생성합니다.</li>
-     * <li>세 이벤트를 모두 저장하고, 각각의 응답 객체를 반환합니다.</li>
+     * <li>만약 YELLOW_CARD이고 이미 YELLOW_CARD가 존재하면 RED_CARD 이벤트도 추가로 생성합니다.</li>
+     * <li>경고(WARNING), 파울(FOUL) 이벤트를 각각 복사 생성합니다.</li>
+     * <li>생성된 모든 이벤트를 저장하고, 각각의 응답 객체를 반환합니다.</li>
      * </ul>
      *
      * @param request   카드 이벤트 요청 정보
      * @param match     해당 경기 정보
      * @param matchUser 이벤트를 기록한 사용자
-     * @return 생성된 이벤트들의 응답 리스트 (카드, 경고, 파울)
+     * @return 생성된 이벤트들의 응답 리스트 (카드, 경고, 파울, 필요시 레드카드)
      */
     private List<MatchEventResponse> generateCardEvent(MatchEventRequest request, Match match,
         MatchUser matchUser) {
         MatchEvent cardEvent = MatchEventMapper.toEntity(request, match, matchUser);
-        MatchEvent warningEvent = cardEvent.copyWith(MatchEventType.WARNING);
-        MatchEvent foulEvent = cardEvent.copyWith(MatchEventType.FOUL);
-        matchEventRepository.saveAll(List.of(cardEvent, warningEvent, foulEvent));
-        return List.of(
-            MatchEventMapper.toResponse(cardEvent),
-            MatchEventMapper.toResponse(warningEvent),
-            MatchEventMapper.toResponse(foulEvent));
+        List<MatchEvent> needToSaveEvents = new ArrayList<>();
+
+        if(request.getEventType().equals(MatchEventType.YELLOW_CARD)) {
+            boolean isAlreadyGetYellow = matchEventRepository.existsByMatchUserIdAndEventType(
+                matchUser.getId(), MatchEventType.YELLOW_CARD);
+            if(isAlreadyGetYellow)
+                needToSaveEvents.add(cardEvent.copyWith(MatchEventType.RED_CARD));
+        }
+        needToSaveEvents.add(cardEvent);
+        needToSaveEvents.add(cardEvent.copyWith(MatchEventType.WARNING));
+        needToSaveEvents.add(cardEvent.copyWith(MatchEventType.FOUL));
+
+        matchEventRepository.saveAll(needToSaveEvents);
+
+        applySendOffForRedCard(needToSaveEvents);
+
+        return needToSaveEvents.stream().map(MatchEventMapper::toResponse)
+            .collect(Collectors.toList());
+    }
+
+    private void applySendOffForRedCard(List<MatchEvent> matchEvent) {
+        for(MatchEvent event: matchEvent) {
+            if(event.getEventType().equals(MatchEventType.RED_CARD)) {
+                event.getMatchUser().sendOff();
+            }
+        }
     }
 
     /**
