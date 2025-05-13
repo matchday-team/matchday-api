@@ -48,8 +48,10 @@ public class MatchScoreResponse {
         if (eventType == MatchEventType.OWN_GOAL) {
             if (teamId.equals(this.homeTeamId)) {
                 updateScore(awayScore, MatchEventType.GOAL); // homeTeam이 자책골 기록시 awayTeam의 골
+                updateScore(homeScore, eventType); //homeTeam의 자책골 +1
             } else if (teamId.equals(this.awayTeamId)) {
                 updateScore(homeScore, MatchEventType.GOAL); // awayTeam이 자책골 기록시 homeTeam의 골
+                updateScore(awayScore, eventType);  //awayTeam의 자책골 +1
             } else {
                 throw new ApiException(MatchStatus.NOTFOUND_TEAM);
             }
@@ -74,6 +76,7 @@ public class MatchScoreResponse {
             case OFFSIDE -> score.upOffsideCount();
             case YELLOW_CARD -> score.upWarningCount();
             case RED_CARD -> score.upWarningCount();
+            case OWN_GOAL -> score.upOwnGoalCount();
         }
     }
 }
