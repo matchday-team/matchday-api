@@ -52,7 +52,7 @@ public class MatchEventSaveService {
     }
 
     public void saveMatchTeamEvent(Long matchId, Long teamId, Message<MatchEventRequest> request) {
-        validateAuthUser(teamId, request.getToken());
+        validateAuthUser(matchId, request.getToken());
 
         // 임시 유저
         MatchUser matchUser = matchUserRepository
@@ -97,6 +97,10 @@ public class MatchEventSaveService {
 
         if (request.getData().getUserId() == null) {
             errorMessages.add("userId는 필수 입력 값입니다.");
+        }
+
+        if(matchId == null) {
+            errorMessages.add("matchId는 필수 입력 값입니다.");
         }
 
         if (errorMessages.size() > 0) {
