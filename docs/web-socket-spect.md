@@ -4,13 +4,14 @@
 
 1. [WebSocket 연결 및 엔드포인트](#websocket-연결-및-엔드포인트)
 2. [메시지 송신 (이벤트 기록)](#메시지-송신-이벤트-기록)
-3. [선수 교체 요청](#선수-교체-요청)
-4. [메시지 수신 (이벤트 구독)](#메시지-수신-이벤트-구독)
-5. [이벤트 전체 삭제 알림](#이벤트-전체-삭제-알림)
-6. [이벤트 저장 및 검증 로직](#이벤트-저장-및-검증-로직)
-7. [Validation 상세](#validation-상세)
-8. [전체 플로우 요약](#전체-플로우-요약)
-9. [기타 참고사항](#기타-참고사항)
+3. [메시지 송신 (팀 이벤트 기록)](#메시지-송신-팀-이벤트-기록)
+4. [선수 교체 요청](#선수-교체-요청)
+5. [메시지 수신 (이벤트 구독)](#메시지-수신-이벤트-구독)
+6. [이벤트 전체 삭제 알림](#이벤트-전체-삭제-알림)
+7. [이벤트 저장 및 검증 로직](#이벤트-저장-및-검증-로직)
+8. [Validation 상세](#validation-상세)
+9. [전체 플로우 요약](#전체-플로우-요약)
+10. [기타 참고사항](#기타-참고사항)
 
 ## WebSocket 연결 및 엔드포인트
 
@@ -83,6 +84,72 @@ const client = new Client({
 -   YELLOW_CARD (옐로카드)
 -   RED_CARD (레드카드/퇴장)
 -   OWN_GOAL (자책골)
+
+## 메시지 송신 (팀 이벤트 기록)
+
+### 요청 메시지 구조
+
+```json
+{
+    "token": "string", // 현재는 Archives로 등록된 user의 ID (nullable: false)
+    "data": {
+        "eventType": "GOAL", // 이벤트 타입 (nullable: false, enum: 아래 MatchEventType 참고)
+        "description": "좋은 골이었습니다!" // 이벤트 설명 (nullable: true)
+    }
+}
+```
+
+-   **token**: 사용자 인증을 위한 토큰(숫자 ID 또는 JWT 등, 필수)
+-   **data**: 이벤트 데이터
+    -   **eventType**: 이벤트 타입 (필수, GOAL, ASSIST 등)
+    -   **description**: 이벤트 설명(선택, 최대 400자)
+
+### 요청 엔드포인트
+
+-   STOMP 메시지 송신 경로: `/app/match/{matchId}/teams/{teamId}`
+
+### 응답 메시지 구조
+
+이벤트가 정상적으로 기록되면, 구독자(`/topic/match/{teamId}`)에게 아래와 같은 메시지가 전송됩니다.
+
+```json
+{
+    "id": 1, // 이벤트 ID (nullable: false)
+    "elapsedMinutes": 23, // 경기 시작 후 경과 시간(분, nullable: false)
+    "teamId": 1, // 팀 ID (nullable: false)
+    "teamName": "FC 서울", // 팀 이름 (nullable: false)
+    "userId": 1, // 임시 유저의 ID (nullable: false)
+    "userName": "임시기록자", // 임시 유저 이름 (nullable: false)
+    "eventLog": "골" // 이벤트 로그(한글 설명, nullable: false)
+}
+```
+
+-   **id**: 이벤트 ID (필수)
+-   **elapsedMinutes**: 경기 시작 후 경과 시간(분, 필수)
+-   **teamId**: 팀 ID (필수)
+-   **teamName**: 팀 이름 (필수)
+-   **userId**: 임시 유저의 ID (필수)
+-   **userName**: 임시 유저 이름 (필수)
+-   **eventLog**: 이벤트 로그(한글 설명, 필수)
+
+### 발생 가능한 오류
+
+| 예외명                               | 설명                                   | httpStatusCode | customStatusCode |
+| ------------------------------------ | -------------------------------------- | -------------- | ---------------- |
+| UserStatus.NOTFOUND_USER             | 해당 유저가 존재하지 않음              | 400            | 4002             |
+| MatchStatus.NOT_PARTICIPATING_PLAYER | 경기에 참여 중이지 않은 선수/팀        | 400            | 6008             |
+| TeamStatus.NOTFOUND_TEAM             | 해당 팀이 존재하지 않음                | 400            | 5002             |
+| ValidationException                  | 필수값 누락, 타입 불일치, 길이 초과 등 | 400            | -                |
+
+-   token이 없거나 유효하지 않은 경우
+-   eventType이 없거나 허용되지 않은 값인 경우
+-   description이 400자를 초과하는 경우
+-   해당 matchId/teamId에 임시 유저가 존재하지 않는 경우
+
+### 참고
+
+-   팀 이벤트 기록은 선수 ID 없이 팀 단위로 기록됩니다. (userId는 임시 유저로 자동 매핑)
+-   구독 경로는 `/topic/match/{teamId}`입니다.
 
 ## 선수 교체 요청
 
