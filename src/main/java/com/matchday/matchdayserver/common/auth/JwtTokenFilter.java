@@ -3,7 +3,11 @@ package com.matchday.matchdayserver.common.auth;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.AuthStatus;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.GenericFilter;
 import jakarta.servlet.ServletException;
@@ -33,35 +37,54 @@ public class JwtTokenFilter extends GenericFilter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;//HTTP 전용 메소드를 사용하기 위해 변환
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        String token = httpServletRequest.getHeader("Authorization");//Authorization 헤더에서 토큰값을 꺼낸다
-        try{
-            if(token !=null){
-                if(!token.substring(0,7).equals("Bearer ")){//앞에 Bearer공백 붙었는지 확인
+        String token = httpServletRequest.getHeader("Authorization");
+
+        try {
+            if (token != null) {
+                if (!token.startsWith("Bearer ")) {
                     throw new ApiException(AuthStatus.INVALID_AUTHORIZATION_HEADER);
                 }
-                String jwtToken = token.substring(7);//Bearer 뜯어내기
-                //token 검증 및 claims(playoad) 추출
-                Claims claims= Jwts.parserBuilder()
-                    .setSigningKey(secretKey)//전달받은 토큰이 우리 서버에서 만든건지 검증
+
+                String jwtToken = token.substring(7);
+                Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
                     .build()
-                    .parseClaimsJws(jwtToken)//검증할 토큰 전달
-                    .getBody();//검증하고 페이로드 꺼내기(PayLoad 내부 key: claim)
-                //Authentication객체 생성
-                //authorities(권한) 만들기
-                List<GrantedAuthority> authorities = new ArrayList<>();//권한이 여러개일 수 있어서 List타입으로
-                authorities.add(new SimpleGrantedAuthority("ROLE_"+claims.get("role")));//ROLE_ 붙이는것이 관례
-                UserDetails userDetails=new User(claims.getSubject(),"",authorities); //matchday.user가 아니고 시큐리티user임
-                Authentication authentication=new UsernamePasswordAuthenticationToken(userDetails,jwtToken,userDetails.getAuthorities());
+                    .parseClaimsJws(jwtToken)
+                    .getBody();
+
+                List<GrantedAuthority> authorities = new ArrayList<>();
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + claims.get("role")));
+
+                UserDetails userDetails = new User(claims.getSubject(), "", authorities);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, jwtToken, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-            chain.doFilter(request,response);//SecurityFilterChain으로 다시 돌아가기 위한 코드
-        }catch (Exception e){//예외 발생 시 filterchain이후의 코드 실행시키지 않고 바로 오류 출력
-            e.printStackTrace();
-            httpServletResponse.setStatus(AuthStatus.UNAUTHORIZED.getHttpStatusCode());
-            httpServletResponse.setContentType("application/json");
-            httpServletResponse.getWriter().write("invalid token");//json 값으로 오류 반환
+            chain.doFilter(request, response);
+
+        } catch (ExpiredJwtException e) {
+            sendError(httpServletResponse, AuthStatus.EXPIRED_TOKEN, e);
+        } catch (SignatureException e) {
+            sendError(httpServletResponse, AuthStatus.INVALID_SIGNATURE, e);
+        } catch (MalformedJwtException e) {
+            sendError(httpServletResponse, AuthStatus.MALFORMED_TOKEN, e);
+        } catch (JwtException e) {
+            sendError(httpServletResponse, AuthStatus.INVALID_TOKEN, e);
+        } catch (Exception e) {
+            sendError(httpServletResponse, AuthStatus.UNAUTHORIZED, e);
         }
+    }
+
+    // json 값으로 오류 반환하기 위한 메소드
+    private void sendError(HttpServletResponse response, AuthStatus status, Exception e) throws IOException {
+        e.printStackTrace(); // 서버 로그에 예외 전체 스택 출력
+        response.setStatus(status.getHttpStatusCode());
+        response.setContentType("application/json");
+        response.getWriter().write(String.format(
+            "{\"code\":%d,\"message\":\"%s\"}",
+            status.getCustomStatusCode(),
+            status.getDescription()
+        ));
     }
 }
