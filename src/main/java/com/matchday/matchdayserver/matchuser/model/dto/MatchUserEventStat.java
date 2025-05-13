@@ -11,7 +11,7 @@ public class MatchUserEventStat {
     private Integer assists;
     private Integer yellowCards;
     private Integer redCards;
-    private Integer caution;   // == yellowCards
+    private Integer caution;   // == warning
     private boolean sentOff;   // 퇴장 여부
 
     @Builder
