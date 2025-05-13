@@ -10,6 +10,7 @@ import com.matchday.matchdayserver.user.model.entity.User;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class MatchEventMapper {
 
@@ -27,7 +28,7 @@ public class MatchEventMapper {
         Long elapsedMinutes = calculateElapsedMinutes(
             match.getPlannedStartTime().atDate(match.getMatchDate()),
             matchEvent.getEventTime());
-        User user = matchEvent.getMatchUser().getUser();
+        User user = Optional.ofNullable(matchEvent.getMatchUser().getUser()).orElseGet(User::mock);
         Team team = matchEvent.getMatchUser().getTeam();
 
         return MatchEventResponse.builder()
