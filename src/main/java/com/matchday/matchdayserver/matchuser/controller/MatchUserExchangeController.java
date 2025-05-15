@@ -1,6 +1,5 @@
 package com.matchday.matchdayserver.matchuser.controller;
 
-import com.matchday.matchdayserver.common.model.Message;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserExchangeRequest;
 import com.matchday.matchdayserver.matchuser.service.MatchUserExchangeService;
 import lombok.RequiredArgsConstructor;
