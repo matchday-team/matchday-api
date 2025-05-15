@@ -39,4 +39,22 @@ public interface MatchEventRepository extends JpaRepository<MatchEvent, Long> {
     );
 
     boolean existsByMatchUserIdAndEventType(Long matchUserId, MatchEventType eventType);
+
+    Optional<MatchEvent> findFirstByMatchUserIdAndMatchIdAndEventTypeOrderByEventTimeDesc(Long matchUserId, Long matchId,
+        MatchEventType eventType);
+
+    @Query(value = """
+        SELECT me.* FROM match_event me
+        JOIN `match` m ON me.match_id = m.id
+        JOIN match_user mu ON me.match_user_id = mu.id
+        WHERE m.id = :matchId
+          AND (m.home_team_id = :teamId OR m.away_team_id = :teamId)
+          AND me.event_type = :matchEventType
+        LIMIT 1
+        """, nativeQuery = true)
+    Optional<MatchEvent> findByMatchIdAndTeamIdAndEventType(
+        @Param("matchId") Long matchId,
+        @Param("teamId") Long teamId,
+        @Param("matchEventType") String matchEventType
+    );
 }

@@ -1,8 +1,11 @@
 package com.matchday.matchdayserver.matchevent.controller;
 
+import com.matchday.matchdayserver.matchevent.model.dto.MatchEventCancelRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventUserRequest;
+import com.matchday.matchdayserver.matchevent.service.MatchEventCancelService;
 import com.matchday.matchdayserver.matchevent.service.MatchEventSaveService;
+
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
@@ -31,5 +34,12 @@ public class MatchEventWebSocketController {
         MatchEventRequest matchEventRequest) {
 
         matchEventSaveService.saveMatchTeamEvent(matchId, teamId, matchEventRequest);
+    }
+
+    @MessageMapping("/match/{matchId}/cancel")
+    public void cancelEvent(
+        @DestinationVariable Long matchId,
+        MatchEventCancelRequest matchEventCancelRequest) {
+        matchEventCancelService.cancelEvent(matchId, matchEventCancelRequest);
     }
 }
