@@ -65,7 +65,7 @@ public class MatchEventSaveService {
             if (!neededToSendEvent(response.getEventLog())) {
                 continue;
             }
-            messagingTemplate.convertAndSend("/topic/match/" + teamId, response);
+            messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
         }
     }
 
