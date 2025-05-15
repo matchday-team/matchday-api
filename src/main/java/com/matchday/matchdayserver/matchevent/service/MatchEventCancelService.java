@@ -22,7 +22,7 @@ public class MatchEventCancelService {
         MatchEvent matchEvent;
         MatchEventCancelRequest request = message;
         if (request.getMatchUserId() != null) {
-            matchEvent = matchEventRepository.findByMatchUserIdAndMatchIdAndEventType(
+            matchEvent = matchEventRepository.findFirstByMatchUserIdAndMatchIdAndEventTypeOrderByEventTimeDesc(
                     request.getMatchUserId(), matchId, request.getMatchEventType())
                 .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH_EVENT));
         } else {
