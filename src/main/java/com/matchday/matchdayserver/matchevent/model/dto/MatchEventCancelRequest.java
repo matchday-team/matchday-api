@@ -16,9 +16,6 @@ public class MatchEventCancelRequest {
   @Schema(description = "매치 유저 ID", example = "1", nullable = true)
   private Long matchUserId;
 
-  @Schema(description = "매치 ID", example = "10", nullable = false)
-  private Long matchId;
-
   @Schema(description = "팀 ID", example = "5", nullable = false)
   private Long teamId;
 
