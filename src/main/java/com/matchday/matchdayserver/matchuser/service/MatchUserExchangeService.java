@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.matchday.matchdayserver.common.response.DefaultStatus;
-import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.matchevent.mapper.MatchEventMapper;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
@@ -15,7 +14,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
-import com.matchday.matchdayserver.common.model.Message;
 import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserExchangeRequest;
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
