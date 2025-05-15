@@ -16,7 +16,7 @@ public class MatchUserExchangeController {
 
     @MessageMapping("/match/{matchId}/exchange")
     public void exchangePlayer(@DestinationVariable Long matchId,
-        Message<MatchUserExchangeRequest> matchUserExchangeRequest) {
+        MatchUserExchangeRequest matchUserExchangeRequest) {
         matchUserExchangeService.exchangeMatchUser(matchId, matchUserExchangeRequest);
     }
 }
