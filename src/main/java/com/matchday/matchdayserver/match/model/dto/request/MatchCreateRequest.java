@@ -24,11 +24,11 @@ public class MatchCreateRequest {
     private Long awayTeamId;
 
     @NotNull
-    @Schema(description = "매치 타입(리그/대회/친선)", example = "매치 타입")
+    @Schema(description = "매치 타입(리그/대회/친선)", example = "리그")
     private Match.MatchType matchType;
 
     @NotNull
-    @Schema(description = "경기장 주소", example = "경기장 주소")
+    @Schema(description = "경기장 주소", example = "서울월드컵경기장")
     private String stadium;
 
     @NotNull
@@ -43,16 +43,24 @@ public class MatchCreateRequest {
     @Schema(description = "경기 종료 시간", example = "16:00:00")
     private LocalTime plannedEndTime;
 
-    @Schema(description = "주심", example = "주심 이름", nullable = true)
+    @NotNull
+    @Schema(description = "전반 진행 시간 (분)", example = "45")
+    private Integer firstHalfPeriod;
+
+    @NotNull
+    @Schema(description = "후반 진행 시간 (분)", example = "45")
+    private Integer secondHalfPeriod;
+
+    @Schema(description = "주심", example = "김주심", nullable = true)
     private String mainRefereeName;
 
-    @Schema(description = "부심1", example = "부심1 이름", nullable = true)
+    @Schema(description = "부심1", example = "이부심", nullable = true)
     private String assistantReferee1;
 
-    @Schema(description = "부심2", example = "부심2 이름", nullable = true)
+    @Schema(description = "부심2", example = "박부심", nullable = true)
     private String assistantReferee2;
 
-    @Schema(description = "대기심", example = "대기심 이름", nullable = true)
+    @Schema(description = "대기심", example = "정대기", nullable = true)
     private String fourthReferee;
 
     @NotNull

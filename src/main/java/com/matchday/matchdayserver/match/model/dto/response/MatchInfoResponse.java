@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -39,6 +40,14 @@ public class MatchInfoResponse {
     @Schema(description = "종료 예정 시간")
     private LocalTime plannedEndTime;
 
+    @NotNull
+    @Schema(description = "전반 진행 시간 (분)", example = "45")
+    private Integer firstHalfPeriod;
+
+    @NotNull
+    @Schema(description = "후반 진행 시간 (분)", example = "45")
+    private Integer secondHalfPeriod;
+
     @Schema(description = "주심", example = "주심", nullable = true)
     private String mainRefereeName;
 
@@ -53,7 +62,7 @@ public class MatchInfoResponse {
 
     @Schema(description = "전반 시작 시간", nullable = true)
     private LocalTime firstHalfStartTime;
-      
+
     @Schema(description = "전반 종료 시간", nullable = true)
     private LocalTime firstHalfEndTime;
 
@@ -65,23 +74,27 @@ public class MatchInfoResponse {
 
     @Builder
     public MatchInfoResponse(Long id, String stadium, LocalDate matchDate, LocalTime plannedStartTime,
-        LocalTime plannedEndTime, String mainRefereeName, String assistantReferee1,
-        String assistantReferee2, String fourthReferee,
-        LocalTime firstHalfStartTime, LocalTime firstHalfEndTime, LocalTime secondHalfStartTime, LocalTime secondHalfEndTime, Long homeTeamId, Long awayTeamId) {
-      this.id = id;
-      this.stadium = stadium;
-      this.matchDate = matchDate;
-      this.plannedStartTime = plannedStartTime;
-      this.plannedEndTime = plannedEndTime;
-      this.mainRefereeName = mainRefereeName;
-      this.assistantReferee1 = assistantReferee1;
-      this.assistantReferee2 = assistantReferee2;
-      this.fourthReferee = fourthReferee;
-      this.firstHalfStartTime = firstHalfStartTime;
-      this.firstHalfEndTime = firstHalfEndTime;
-      this.secondHalfStartTime = secondHalfStartTime;
-      this.secondHalfEndTime = secondHalfEndTime;
-      this.homeTeamId = homeTeamId;
-      this.awayTeamId = awayTeamId;
+        LocalTime plannedEndTime, Integer firstHalfPeriod, Integer secondHalfPeriod,
+        String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee,
+        LocalTime firstHalfStartTime, LocalTime firstHalfEndTime,
+        LocalTime secondHalfStartTime, LocalTime secondHalfEndTime,
+        Long homeTeamId, Long awayTeamId) {
+        this.id = id;
+        this.stadium = stadium;
+        this.matchDate = matchDate;
+        this.plannedStartTime = plannedStartTime;
+        this.plannedEndTime = plannedEndTime;
+        this.firstHalfPeriod = firstHalfPeriod;
+        this.secondHalfPeriod = secondHalfPeriod;
+        this.mainRefereeName = mainRefereeName;
+        this.assistantReferee1 = assistantReferee1;
+        this.assistantReferee2 = assistantReferee2;
+        this.fourthReferee = fourthReferee;
+        this.firstHalfStartTime = firstHalfStartTime;
+        this.firstHalfEndTime = firstHalfEndTime;
+        this.secondHalfStartTime = secondHalfStartTime;
+        this.secondHalfEndTime = secondHalfEndTime;
+        this.homeTeamId = homeTeamId;
+        this.awayTeamId = awayTeamId;
     }
 }
