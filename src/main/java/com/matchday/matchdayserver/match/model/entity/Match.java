@@ -56,11 +56,17 @@ public class Match {
     @Column(name = "first_half_end_time")
     private LocalTime firstHalfEndTime; // 전반 종료 시간
 
+    @Column(name = "first_half_period", nullable = false)
+    private Integer firstHalfPeriod; // 전반 진행 시간 (분)
+
     @Column(name = "second_half_start_time")
     private LocalTime secondHalfStartTime; // 후반 시작 시간
 
     @Column(name = "second_half_end_time")
     private LocalTime secondHalfEndTime; // 후반 종료 시간
+
+    @Column(name = "second_half_period", nullable = false)
+    private Integer secondHalfPeriod; // 후반 진행 시간 (분)
 
     @Column(name = "main_referee")
     private String mainRefereeName; //주심
@@ -112,24 +118,30 @@ public class Match {
 
     @Builder
     public Match(String title, Team homeTeam, Team awayTeam, MatchType matchType, String stadium, LocalDate matchDate,
-        LocalTime plannedStartTime, LocalTime plannedEndTime, LocalTime firstHalfStartTime, LocalTime firstHalfEndTime, LocalTime secondHalfStartTime, LocalTime secondHalfEndTime, String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee, MatchState matchState) {
-      this.title = title;
-      this.homeTeam = homeTeam;
-      this.awayTeam = awayTeam;
-      this.matchType = matchType;
-      this.stadium = stadium;
-      this.matchDate = matchDate;
-      this.plannedStartTime = plannedStartTime;
-      this.plannedEndTime = plannedEndTime;
-      this.firstHalfStartTime = firstHalfStartTime;
-      this.firstHalfEndTime = firstHalfEndTime;
-      this.secondHalfStartTime = secondHalfStartTime;
-      this.secondHalfEndTime = secondHalfEndTime;
-      this.mainRefereeName = mainRefereeName;
-      this.assistantReferee1 = assistantReferee1;
-      this.assistantReferee2 = assistantReferee2;
-      this.fourthReferee = fourthReferee;
-      this.matchState = matchState;
+        LocalTime plannedStartTime, LocalTime plannedEndTime, LocalTime firstHalfStartTime, LocalTime firstHalfEndTime,
+        LocalTime secondHalfStartTime, LocalTime secondHalfEndTime, String mainRefereeName,
+        String assistantReferee1, String assistantReferee2, String fourthReferee, MatchState matchState,
+        Integer firstHalfPeriod, Integer secondHalfPeriod) {
+
+        this.title = title;
+        this.homeTeam = homeTeam;
+        this.awayTeam = awayTeam;
+        this.matchType = matchType;
+        this.stadium = stadium;
+        this.matchDate = matchDate;
+        this.plannedStartTime = plannedStartTime;
+        this.plannedEndTime = plannedEndTime;
+        this.firstHalfStartTime = firstHalfStartTime;
+        this.firstHalfEndTime = firstHalfEndTime;
+        this.secondHalfStartTime = secondHalfStartTime;
+        this.secondHalfEndTime = secondHalfEndTime;
+        this.mainRefereeName = mainRefereeName;
+        this.assistantReferee1 = assistantReferee1;
+        this.assistantReferee2 = assistantReferee2;
+        this.fourthReferee = fourthReferee;
+        this.matchState = matchState;
+        this.firstHalfPeriod = firstHalfPeriod;
+        this.secondHalfPeriod = secondHalfPeriod;
     }
 
     @OneToMany(mappedBy = "match",cascade = CascadeType.REMOVE)
