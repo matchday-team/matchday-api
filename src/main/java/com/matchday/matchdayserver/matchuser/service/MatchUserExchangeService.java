@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.matchday.matchdayserver.common.response.DefaultStatus;
-import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.matchevent.mapper.MatchEventMapper;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
@@ -15,7 +14,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
-import com.matchday.matchdayserver.common.model.Message;
 import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserExchangeRequest;
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
@@ -33,16 +31,15 @@ public class MatchUserExchangeService {
     private final SimpMessagingTemplate messagingTemplate;
     private final MatchEventRepository matchEventRepository;
 
-    public void exchangeMatchUser(Long matchId, Message<MatchUserExchangeRequest> request) {
+    public void exchangeMatchUser(Long matchId, MatchUserExchangeRequest request) {
         validateRequest(request);
-        validateAuthUser(matchId, request.getToken());
 
         MatchUser fromMatchUser = matchUserRepository
-            .findByMatchIdAndUserIdWithFetch(matchId, request.getData().getFromMatchUserId())
+            .findByMatchIdAndMatchUserIdWithFetch(matchId, request.getFromMatchUserId())
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
         MatchUser toMatchUser = matchUserRepository
-            .findByMatchIdAndUserIdWithFetch(matchId, request.getData().getToMatchUserId())
+            .findByMatchIdAndMatchUserIdWithFetch(matchId, request.getToMatchUserId())
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
         // Dirty Checking으로 자동 저장
@@ -52,14 +49,14 @@ public class MatchUserExchangeService {
             MatchEvent.builder()
                 .eventTime(LocalDateTime.now())
                 .eventType(MatchEventType.SUB_IN)
-                .description(request.getData().getMessage())
+                .description(request.getMessage())
                 .match(toMatchUser.getMatch())
                 .matchUser(toMatchUser)
                 .build(),
             MatchEvent.builder()
                 .eventTime(LocalDateTime.now())
                 .eventType(MatchEventType.SUB_OUT)
-                .description(request.getData().getMessage())
+                .description(request.getMessage())
                 .match(toMatchUser.getMatch())
                 .matchUser(fromMatchUser)
                 .build());
@@ -74,26 +71,11 @@ public class MatchUserExchangeService {
         }
     }
 
-    private void validateAuthUser(Long matchId, String token) {
-        Long authId = Long.parseLong(token);
-
-        MatchUser authUser = matchUserRepository
-            .findByMatchIdAndUserIdWithFetch(matchId, authId)
-            .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
-
-        if (!authUser.getMatch().getId().equals(matchId)) {
-            throw new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER);
-        }
-    }
-
-    private void validateRequest(Message<MatchUserExchangeRequest> request) {
+    private void validateRequest(MatchUserExchangeRequest request) {
         List<String> errorMessages = new ArrayList<>();
-        if (request.getToken() == null) {
-            errorMessages.add("token은 필수 입력 값입니다.");
-        }
 
-        if (request.getData().getFromMatchUserId() == null
-            || request.getData().getToMatchUserId() == null) {
+        if (request.getFromMatchUserId() == null
+            || request.getToMatchUserId() == null) {
             errorMessages.add("fromMatchUserId, toUserId는 필수 입력 값입니다.");
         }
 

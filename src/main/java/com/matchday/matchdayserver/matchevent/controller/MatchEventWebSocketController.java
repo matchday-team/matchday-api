@@ -1,13 +1,15 @@
 package com.matchday.matchdayserver.matchevent.controller;
 
+import com.matchday.matchdayserver.matchevent.model.dto.MatchEventCancelRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventUserRequest;
+import com.matchday.matchdayserver.matchevent.service.MatchEventCancelService;
+import com.matchday.matchdayserver.matchevent.service.MatchEventSaveService;
+
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
-import com.matchday.matchdayserver.common.model.Message;
-import com.matchday.matchdayserver.matchevent.service.MatchEventSaveService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,10 +18,11 @@ import lombok.RequiredArgsConstructor;
 public class MatchEventWebSocketController {
 
     private final MatchEventSaveService matchEventSaveService;
+    private final MatchEventCancelService matchEventCancelService;
 
     @MessageMapping("/match/{matchId}")
     public void recordEvent(@DestinationVariable Long matchId,
-        Message<MatchEventUserRequest> matchEventRequest) {
+        MatchEventUserRequest matchEventRequest) {
 
         matchEventSaveService.saveMatchEvent(matchId, matchEventRequest);
     }
@@ -28,8 +31,15 @@ public class MatchEventWebSocketController {
     public void recordTeamEvent(
         @DestinationVariable Long matchId,
         @DestinationVariable Long teamId,
-        Message<MatchEventRequest> matchEventRequest) {
+        MatchEventRequest matchEventRequest) {
 
         matchEventSaveService.saveMatchTeamEvent(matchId, teamId, matchEventRequest);
+    }
+
+    @MessageMapping("/match/{matchId}/cancel")
+    public void cancelEvent(
+        @DestinationVariable Long matchId,
+        MatchEventCancelRequest matchEventCancelRequest) {
+        matchEventCancelService.cancelEvent(matchId, matchEventCancelRequest);
     }
 }
