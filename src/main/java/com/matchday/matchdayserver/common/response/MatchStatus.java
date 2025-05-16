@@ -18,6 +18,7 @@ public enum MatchStatus implements StatusInterface {
     INVALID_TIME_RANGE(400, 6015,"종료 시간은 시작 시간보다 늦어야합니다"),
     SECOND_HALF_TIME_ERROR(400, 6016,"후반 시작 시간은 전반 종료 시간 보다 늦어야합니다"),
     NOTFOUND_MATCH_EVENT(404, 6017, "존재하지 않는 경기 이벤트입니다"),
+    INVALID_HALF_PERIOD(404,6018,"유효한 경기 기간은 1분~45분입니다")
     ;
 
     private final int httpStatusCode;
