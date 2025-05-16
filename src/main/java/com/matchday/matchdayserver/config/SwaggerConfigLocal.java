@@ -6,26 +6,29 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+
 import java.util.List;
 
-@Configuration    // 스프링 실행시 설정파일 읽어드리기 위한 어노테이션
-public class SwaggerConfig {
+@Configuration
+@Profile("local")
+public class SwaggerConfigLocal {
 
     @Bean
     public OpenAPI openAPI() {
-        Server devServer = new Server();
-        devServer.setUrl("https://dev-api.matchday-planner.com"); // HTTPS 주소 명시
+        Server localServer = new Server();
+        localServer.setUrl("http://localhost:8080");
 
         return new OpenAPI()
             .components(new Components())
             .info(apiInfo())
-            .servers(List.of(devServer)); // 서버 명시
+            .servers(List.of(localServer));
     }
 
     private Info apiInfo() {
         return new Info()
-                .title("MatchDay Swagger")
-                .description("MatchDay 요구사항에 대한 REST API")
-                .version("0.0.1");
+            .title("MatchDay Swagger (Local)")
+            .description("로컬 개발용 Swagger API 문서")
+            .version("0.0.1");
     }
 }
