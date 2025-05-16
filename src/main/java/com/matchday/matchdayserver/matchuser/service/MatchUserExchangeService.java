@@ -33,7 +33,6 @@ public class MatchUserExchangeService {
 
     public void exchangeMatchUser(Long matchId, MatchUserExchangeRequest request) {
         validateRequest(request);
-//        validateAuthUser(matchId, request.getToken());
 
         MatchUser fromMatchUser = matchUserRepository
             .findByMatchIdAndMatchUserIdWithFetch(matchId, request.getFromMatchUserId())
@@ -71,18 +70,6 @@ public class MatchUserExchangeService {
             messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
         }
     }
-
-//    private void validateAuthUser(Long matchId, String token) {
-//        Long authId = Long.parseLong(token);
-//
-//        MatchUser authUser = matchUserRepository
-//            .findByMatchIdAndUserId(matchId, authId)
-//            .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
-//
-//        if (!authUser.getMatch().getId().equals(matchId)) {
-//            throw new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER);
-//        }
-//    }
 
     private void validateRequest(MatchUserExchangeRequest request) {
         List<String> errorMessages = new ArrayList<>();
