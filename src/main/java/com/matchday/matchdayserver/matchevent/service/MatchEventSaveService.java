@@ -35,7 +35,7 @@ public class MatchEventSaveService {
         validateRequest(matchId, request);
 
         MatchUser matchUser = matchUserRepository
-            .findByMatchIdAndMatchUserIdWithFetch(matchId, request.getUserId())
+            .findByMatchIdAndMatchUserIdWithFetch(matchId, request.getMatchUserId())
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
         Match match = matchUser.getMatch();
@@ -83,7 +83,7 @@ public class MatchEventSaveService {
     private void validateRequest(Long matchId, MatchEventUserRequest request) {
         List<String> errorMessages = new ArrayList<>();
 
-        if (request.getUserId() == null) {
+        if (request.getMatchUserId() == null) {
             errorMessages.add("userId는 필수 입력 값입니다.");
         }
 
