@@ -112,7 +112,8 @@ public class MatchUserService {
             boolean subOut = matchEventRepository.existsByMatchUserIdAndEventType(matchUser.getId(), MatchEventType.SUB_OUT);
 
             MatchUserResponse response = MatchUserResponse.builder()
-                .id(userId)
+                .id(matchUser.getId())
+                .userId(userId)
                 .name(userName)
                 .number(number)
                 .matchPosition(matchUser.getMatchPosition())
