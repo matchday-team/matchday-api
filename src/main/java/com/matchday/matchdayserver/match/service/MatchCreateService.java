@@ -35,6 +35,8 @@ public class MatchCreateService {
         validateStadium(request.getStadium());
         validateDate(request.getMatchDate());
         validateTime(request.getPlannedStartTime(), request.getPlannedEndTime());
+        validateHalfPeriods(request.getFirstHalfPeriod(), request.getSecondHalfPeriod());
+
 
         Match match = Match.builder()
                 .title(request.getTitle())
@@ -116,5 +118,16 @@ public class MatchCreateService {
         if (startTime.isAfter(endTime)) {
             throw new ApiException(MatchStatus.TIME_ORDER_INVALID);  // 시작 시간이 종료 시간보다 늦을 경우
         }
+    }
+
+    // 전후반 시간이 1~45분 범위 내에 있는지 검증
+    private void validateHalfPeriods(Integer firstHalfPeriod, Integer secondHalfPeriod) {
+        if (!isValidHalfPeriod(firstHalfPeriod) || !isValidHalfPeriod(secondHalfPeriod)) {
+            throw new ApiException(MatchStatus.INVALID_HALF_PERIOD);
+        }
+    }
+
+    private boolean isValidHalfPeriod(Integer period) {
+        return period != null && period >= 1 && period <= 45;
     }
 }
