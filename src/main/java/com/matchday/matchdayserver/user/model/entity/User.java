@@ -42,7 +42,7 @@
 
         public static User mock() {
             return User.builder()
-                    .name(null)
+                    .name("UNKNOWN")
                     .build();
         }
     }
