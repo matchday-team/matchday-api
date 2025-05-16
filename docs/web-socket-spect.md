@@ -56,20 +56,15 @@ const client = new Client({
 
 ```json
 {
-    "token": "string", // 현재는 Archives로 등록된 user의 ID
-    "data": {
-        "userId": 1, // 이벤트를 기록하는 선수 ID
-        "eventType": "GOAL", // 이벤트 타입
-        "description": "좋은 골이었습니다!" // 이벤트 설명(선택)
-    }
+    "matchUserId": 1, // 이벤트를 기록하는 선수의 매치 유저 ID
+    "eventType": "GOAL", // 이벤트 타입
+    "description": "좋은 골이었습니다!" // 이벤트 설명(선택)
 }
 ```
 
--   **token**: 사용자 인증을 위한 토큰(숫자 ID 또는 JWT 등)
--   **data**: 이벤트 데이터
-    -   **userId**: 이벤트를 기록하는 선수의 ID
-    -   **eventType**: 이벤트 타입
-    -   **description**: 이벤트 설명(선택)
+-   **matchUserId**: 이벤트를 기록하는 선수의 매치 유저 ID
+-   **eventType**: 이벤트 타입
+-   **description**: 이벤트 설명(선택)
 
 ### 이벤트 타입 (MatchEventType)
 
@@ -157,20 +152,15 @@ const client = new Client({
 
 ```json
 {
-    "token": "string", // 현재는 Archives로 등록된 user의 ID
-    "data": {
-        "fromMatchUserId": 1, // 교체할 선수의 매치 유저 아이디
-        "toUserId": 2, // 교체할 선수의 유저 아이디
-        "message": "부상으로 인한 교체" // 교체 사유 등
-    }
+    "fromMatchUserId": 1, // 교체할 선수의 매치 유저 아이디
+    "toMatchUserId": 2, // 교체할 선수의 유저 아이디
+    "message": "부상으로 인한 교체" // 교체 사유 등
 }
 ```
 
--   **token**: 사용자 인증을 위한 토큰(숫자 ID 또는 JWT 등)
--   **data**: 교체 데이터
-    -   **fromMatchUserId**: 교체될 선수의 매치 유저 아이디
-    -   **toUserId**: 교체될 선수의 유저 아이디
-    -   **message**: 교체 사유 등 (선택)
+-   **fromMatchUserId**: 교체될 선수의 매치 유저 아이디
+-   **toMatchUserId**: 교체할 선수의 유저 아이디
+-   **message**: 교체 사유 등 (선택)
 
 ### 선수 교체 요청 엔드포인트
 
