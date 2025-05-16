@@ -12,8 +12,12 @@ import lombok.Setter;
 public class MatchUserResponse {
 
     @NotNull
-    @Schema(description = "유저 ID", example = "12")
+    @Schema(description = "매치유저 ID", example = "5")
     private Long id;
+
+    @NotNull
+    @Schema(description = "유저 ID", example = "12")
+    private Long userId;
 
     @NotNull
     @Schema(description = "유저 이름", example = "홍길동")
@@ -62,10 +66,11 @@ public class MatchUserResponse {
     private boolean subOut;
 
     @Builder
-    public MatchUserResponse(Long id, String name, Integer number, String matchPosition, Integer matchGrid,
+    public MatchUserResponse(Long id, Long userId, String name, Integer number, String matchPosition, Integer matchGrid,
         Integer goals, Integer assists,
         Integer yellowCards, Integer redCards, Integer caution, boolean sentOff, String profileImg,boolean subIn, boolean subOut) {
         this.id = id;
+        this.userId = userId;
         this.name = name;
         this.number = number;
         this.matchPosition = matchPosition;
