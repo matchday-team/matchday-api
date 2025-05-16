@@ -1,10 +1,8 @@
 package com.matchday.matchdayserver.matchevent.service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
-import com.matchday.matchdayserver.common.model.Message;
 import com.matchday.matchdayserver.common.response.DefaultStatus;
 import com.matchday.matchdayserver.common.response.MatchStatus;
-import com.matchday.matchdayserver.common.response.UserStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
@@ -33,26 +31,26 @@ public class MatchEventSaveService {
     private final SimpMessagingTemplate messagingTemplate;
     private final MatchEventStrategy matchEventStrategy;
 
-    public void saveMatchEvent(Long matchId, Message<MatchEventUserRequest> request) {
+    public void saveMatchEvent(Long matchId, MatchEventUserRequest request) {
         validateRequest(matchId, request);
-        validateAuthUser(matchId, request.getToken());
 
         MatchUser matchUser = matchUserRepository
-            .findByMatchIdAndUserIdWithFetch(matchId, request.getData().getUserId())
+            .findByMatchIdAndMatchUserIdWithFetch(matchId, request.getMatchUserId())
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
         Match match = matchUser.getMatch();
 
         List<MatchEventResponse> matchEventResponse = matchEventStrategy
-            .generateMatchEventLog(request.getData(), match, matchUser);
+            .generateMatchEventLog(request, match, matchUser);
         for (MatchEventResponse response : matchEventResponse) {
-            if (!neededToSendEvent(response.getEventLog())) continue;
+            if (!neededToSendEvent(response.getEventLog())) {
+                continue;
+            }
             messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
         }
     }
 
-    public void saveMatchTeamEvent(Long matchId, Long teamId, Message<MatchEventRequest> request) {
-        validateAuthUser(matchId, request.getToken());
+    public void saveMatchTeamEvent(Long matchId, Long teamId, MatchEventRequest request) {
 
         // 임시 유저
         MatchUser matchUser = matchUserRepository
@@ -62,10 +60,12 @@ public class MatchEventSaveService {
         Match match = matchUser.getMatch();
 
         List<MatchEventResponse> matchEventResponse = matchEventStrategy
-            .generateMatchEventLog(request.getData(), match, matchUser);
+            .generateMatchEventLog(request, match, matchUser);
         for (MatchEventResponse response : matchEventResponse) {
-            if (!neededToSendEvent(response.getEventLog())) continue;
-            messagingTemplate.convertAndSend("/topic/match/" + teamId, response);
+            if (!neededToSendEvent(response.getEventLog())) {
+                continue;
+            }
+            messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
         }
     }
 
@@ -80,26 +80,14 @@ public class MatchEventSaveService {
             ;
     }
 
-    private void validateAuthUser(Long matchId, String token) {
-        Long authId = Long.parseLong(token);
-
-        MatchUser authUser = matchUserRepository
-            .findById(authId)
-            .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
-
-        if (!authUser.getMatch().getId().equals(matchId)) {
-            throw new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER);
-        }
-    }
-
-    private void validateRequest(Long matchId, Message<MatchEventUserRequest> request) {
+    private void validateRequest(Long matchId, MatchEventUserRequest request) {
         List<String> errorMessages = new ArrayList<>();
 
-        if (request.getData().getUserId() == null) {
+        if (request.getMatchUserId() == null) {
             errorMessages.add("userId는 필수 입력 값입니다.");
         }
 
-        if(matchId == null) {
+        if (matchId == null) {
             errorMessages.add("matchId는 필수 입력 값입니다.");
         }
 

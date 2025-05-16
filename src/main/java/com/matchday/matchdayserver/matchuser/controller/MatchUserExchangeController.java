@@ -1,6 +1,5 @@
 package com.matchday.matchdayserver.matchuser.controller;
 
-import com.matchday.matchdayserver.common.model.Message;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserExchangeRequest;
 import com.matchday.matchdayserver.matchuser.service.MatchUserExchangeService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,7 @@ public class MatchUserExchangeController {
 
     @MessageMapping("/match/{matchId}/exchange")
     public void exchangePlayer(@DestinationVariable Long matchId,
-        Message<MatchUserExchangeRequest> matchUserExchangeRequest) {
+        MatchUserExchangeRequest matchUserExchangeRequest) {
         matchUserExchangeService.exchangeMatchUser(matchId, matchUserExchangeRequest);
     }
 }
