@@ -14,5 +14,5 @@ import lombok.NoArgsConstructor;
 public class MatchEventUserRequest extends MatchEventRequest {
     @NotNull
     @Schema(description = "이벤트 유저", example = "1")
-    private Long userId;
+    private Long matchUserId;
 }
