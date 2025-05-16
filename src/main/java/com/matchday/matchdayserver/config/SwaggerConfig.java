@@ -4,24 +4,27 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import java.util.List;
 
 @Configuration    // 스프링 실행시 설정파일 읽기 위한 어노테이션
-@Profile("dev")
-public class SwaggerConfigDev {
+public class SwaggerConfig {
+
+    @Value("${springdoc.api-docs.url}")
+    private String serverUrl;
 
     @Bean
     public OpenAPI openAPI() {
-        Server devServer = new Server();
-        devServer.setUrl("https://dev-api.matchday-planner.com"); // HTTPS 주소 명시
+        Server server = new Server();
+        server.setUrl(serverUrl); // HTTPS 주소 명시
 
         return new OpenAPI()
             .components(new Components())
             .info(apiInfo())
-            .servers(List.of(devServer)); // 서버 명시
+            .servers(List.of(server)); // 서버 명시
     }
 
     private Info apiInfo() {
