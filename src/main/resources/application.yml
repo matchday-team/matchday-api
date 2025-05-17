@@ -28,6 +28,11 @@ spring:
                 access-key: ${AWS_ACCESS_KEY}
                 secret-key: ${AWS_SECRET_KEY}
 
+    flyway:
+        enabled: true
+        baseline-on-migrate: true
+        locations: classpath:db/migration
+
 springdoc:
     api-docs:
         version: "openapi_3_0"
