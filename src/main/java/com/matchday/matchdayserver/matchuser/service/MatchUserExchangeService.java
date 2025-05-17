@@ -43,7 +43,7 @@ public class MatchUserExchangeService {
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
         // Dirty Checking으로 자동 저장
-        fromMatchUser.exchange(toMatchUser);
+        fromMatchUser.substituteTo(toMatchUser);
 
         List<MatchEvent> matchEvents = List.of(
             MatchEvent.builder()

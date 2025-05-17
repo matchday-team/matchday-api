@@ -54,26 +54,18 @@ public class MatchUser {
     @OneToMany(mappedBy = "matchUser", cascade = CascadeType.REMOVE)
     private List<MatchEvent> matchEvents;
 
-    public void updateMatchPosition(String matchPosition) {
-        this.matchPosition = matchPosition;
-    }
-
     public void updateMatchGrid(int matchGrid) {
         this.matchGrid = matchGrid;
     }
 
-    public void exchange(MatchUser toMatchUser) {
-        if (!toMatchUser.getTeam().getId().equals(this.team.getId())) {
+    public void substituteTo(MatchUser subInPlayer) {
+        if (!subInPlayer.getTeam().getId().equals(this.team.getId())) {
             throw new ApiException(MatchStatus.DIFFERENT_TEAM_EXCHANGE);
         }
-        String originalPosition = toMatchUser.getMatchPosition();
-        int originalGrid = toMatchUser.getMatchGrid();
-        toMatchUser.updateMatchPosition(this.matchPosition);
-        toMatchUser.updateMatchGrid(this.matchGrid);
 
-        this.matchPosition = originalPosition;
-        this.matchGrid = originalGrid;
+        subInPlayer.updateMatchGrid(this.matchGrid);
     }
+
 
     // 퇴장시키는 메서드
     public void sendOff() {
