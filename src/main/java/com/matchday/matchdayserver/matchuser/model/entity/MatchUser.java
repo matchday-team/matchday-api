@@ -54,10 +54,6 @@ public class MatchUser {
     @OneToMany(mappedBy = "matchUser", cascade = CascadeType.REMOVE)
     private List<MatchEvent> matchEvents;
 
-    public void updateMatchPosition(String matchPosition) {
-        this.matchPosition = matchPosition;
-    }
-
     public void updateMatchGrid(int matchGrid) {
         this.matchGrid = matchGrid;
     }
