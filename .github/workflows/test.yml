@@ -1,51 +1,64 @@
 name: 빌드 테스트
 #PR 단계에서 단순 코드 테스트용, 테스트를 통과하지 못한다면 merge 불가
 on:
-  pull_request:
-    branches:
-      - release
-      - main
+    pull_request:
+        branches:
+            - release
+            - main
+
+permissions:
+  pull-requests: write
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: JDK 설치
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: temurin
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: JDK 설치
+              uses: actions/setup-java@v4
+              with:
+                  java-version: 17
+                  distribution: temurin
 
-      - name: Gradle 캐시 적용
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle
+            - name: Gradle 캐시 적용
+              uses: actions/cache@v3
+              with:
+                  path: |
+                      ~/.gradle/caches
+                      ~/.gradle/wrapper
+                  key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle/wrapper/gradle-wrapper.properties') }}
+                  restore-keys: |
+                      ${{ runner.os }}-gradle
 
-#      - name: .env 파일 생성
-#        run: echo "${{ secrets.DOTENV }}" > .env
+            #      - name: .env 파일 생성
+            #        run: echo "${{ secrets.DOTENV }}" > .env
 
-      - name: Set Yaml
-        uses: cschleiden/replace-tokens@v1
-        with:
-            tokenPrefix: "${"
-            tokenSuffix: "}"
-            files: '["./src/main/resources/application.yml"]'
-        env:
-            SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
-            SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-            SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-            BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
-            AWS_REGION: ${{ secrets.AWS_REGION }}
-            AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-            AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+            - name: Set Yaml
+              uses: cschleiden/replace-tokens@v1
+              with:
+                  tokenPrefix: "${"
+                  tokenSuffix: "}"
+                  files: '["./src/main/resources/application.yml"]'
+              env:
+                  SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+                  SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+                  SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+                  BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+                  AWS_REGION: ${{ secrets.AWS_REGION }}
+                  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+                  AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
 
-      - name: 테스트 및 빌드하기
-        run: |
-          chmod +x gradlew
-          ./gradlew clean build
+            - name: 테스트 및 빌드하기
+              run: |
+                  chmod +x gradlew
+                  ./gradlew clean build
+
+            - name: 테스트 커버리지를 PR에 코멘트로 등록
+              id: jacoco
+              uses: madrapps/jacoco-report@v1.2
+              with:
+                  title: 📝 테스트 커버리지 리포트입니다
+                  paths: ${{ github.workspace }}/build/jacoco/test/jacocoTestReport.xml
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  min-coverage-overall: 50
+                  min-coverage-changed-files: 50
