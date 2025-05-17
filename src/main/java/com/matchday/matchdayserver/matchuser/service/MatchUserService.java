@@ -77,6 +77,11 @@ public class MatchUserService {
       MatchUser matchUser = matchUserRepository.findById(matchUserId)
           .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCHUSER));
 
+      //이미 해당 좌표가 점유되었는지 확인
+      if(matchUserRepository.existsByMatchIdAndMatchGrid(matchUser.getMatch().getId(),matchUserGridUpdateRequest.getMatchGrid())){
+          throw new ApiException(MatchUserStatus.ALREADY_OCCUPYED);
+      }
+
       matchUser.updateMatchGrid(matchUserGridUpdateRequest.getMatchGrid());
      matchUserRepository.save(matchUser);
   }

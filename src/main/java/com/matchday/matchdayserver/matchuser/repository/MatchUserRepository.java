@@ -26,6 +26,9 @@ public interface MatchUserRepository extends JpaRepository<MatchUser, Long> {
 
   //특정 매치에 특정 유저가 존재하는지 여부
   boolean existsByMatchIdAndUserId(Long matchId, Long userId);
+
+  //특정 매치에 특정 번호의 그리드가 있는지 여부
+  boolean existsByMatchIdAndMatchGrid(Long matchId, Integer gridId);
   
   // 특정 유저가 참여한 매치 리스트 조회
   @Query("SELECT mu.match.id FROM MatchUser mu WHERE mu.user.id = :userId")
