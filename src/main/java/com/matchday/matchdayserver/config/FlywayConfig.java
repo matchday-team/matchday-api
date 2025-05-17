@@ -6,6 +6,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class FlywayConfig {
+
+    /**
+     * SQL Script에서 오류가 났을 경우
+     * SQL 수정 후 자동으로 DB를 수정하는 FlywayMigrationStrategy
+     * @return
+     */
     @Bean
     public FlywayMigrationStrategy repairMigrationStrategy() {
         return flyway -> {
