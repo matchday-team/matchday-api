@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'jacoco'
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
 }
@@ -59,4 +60,49 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+    reportsDirectory = layout.buildDirectory.dir('jacoco')
+}
+
+test {
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    getClassDirectories().setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        '**/enums', // enums package 내부는 제외
+                        '**/config', // config package 내부는 제외
+                ])
+            })
+    )
+    reports {
+        xml.required = true
+        html.outputLocation = layout.buildDirectory.dir('jacoco')
+    }
+    dependsOn test
+    finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS' // 클래스 단위로 커버리지 검증 
+            limit {
+                counter = 'METHOD' // 메서드 단위로 커버리지 검증
+                value = 'COVEREDRATIO' // 커버리지 비율
+                minimum = 0 // 커버리지 비율 최소값 (만족 못하면 Test 통과 X)
+            }
+            limit {
+                counter = 'BRANCH' // 분기를 기준으로 커버리 측정
+                value = 'COVEREDRATIO' // 커버리지 비율
+                minimum = 0 // 커버리지 비율 최소값 (만족 못하면 Test 통과 X)
+            }
+        }
+    }
 }
