@@ -25,6 +25,10 @@ public class MatchInfoResponse {
     private Long awayTeamId;
 
     @NotNull
+    @Schema(description = "경기명", example = "K리그 결승")
+    private String title;
+
+    @NotNull
     @Schema(description = "장소", example = "경기 장소")
     private String stadium;
 
@@ -73,13 +77,14 @@ public class MatchInfoResponse {
     private LocalTime secondHalfEndTime;
 
     @Builder
-    public MatchInfoResponse(Long id, String stadium, LocalDate matchDate, LocalTime plannedStartTime,
+    public MatchInfoResponse(Long id, String title, String stadium, LocalDate matchDate, LocalTime plannedStartTime,
         LocalTime plannedEndTime, Integer firstHalfPeriod, Integer secondHalfPeriod,
         String mainRefereeName, String assistantReferee1, String assistantReferee2, String fourthReferee,
         LocalTime firstHalfStartTime, LocalTime firstHalfEndTime,
         LocalTime secondHalfStartTime, LocalTime secondHalfEndTime,
         Long homeTeamId, Long awayTeamId) {
         this.id = id;
+        this.title = title;
         this.stadium = stadium;
         this.matchDate = matchDate;
         this.plannedStartTime = plannedStartTime;
