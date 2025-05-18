@@ -35,7 +35,6 @@ public class UserService {
     private final MatchUserRepository matchUserRepository;
 
     public Long createUser(UserCreateRequest request){
-        validateDuplicateUser(request.getName());
         User user = new User(request.getName(), request.getProfileImg());
         userRepository.save(user);
         return user.getId();
@@ -63,13 +62,6 @@ public class UserService {
         //객체 저장
         userTeamRepository.save(userTeam);
         return UserTeamMapper.toJoinUserTeamResponse(userTeam);
-    }
-
-    //유저 이름 중복 체크
-    private void validateDuplicateUser(String name) {
-        if (userRepository.existsByName(name)) {
-            throw new ApiException(UserStatus.DUPLICATE_USERNAME);
-        }
     }
 
     public boolean existsById(Long userId) {
