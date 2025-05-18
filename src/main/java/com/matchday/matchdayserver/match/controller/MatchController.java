@@ -7,9 +7,11 @@ import com.matchday.matchdayserver.match.model.dto.request.MatchHalfTimeRequest;
 import com.matchday.matchdayserver.match.model.dto.response.MatchInfoResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchListPageResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchListResponse;
+import com.matchday.matchdayserver.match.model.dto.response.MatchResultInfoResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchScoreResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchMemoResponse;
 import com.matchday.matchdayserver.match.service.MatchCreateService;
+import com.matchday.matchdayserver.match.service.MatchResultService;
 import com.matchday.matchdayserver.match.service.MatchScoreService;
 import com.matchday.matchdayserver.match.service.MatchService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +37,7 @@ public class MatchController {
     private final MatchCreateService matchCreateService;
     private final MatchService matchService;
     private final MatchScoreService matchScoreService;
+    private final MatchResultService matchResultService;
 
     @Operation(summary = "매치 생성")
     @PostMapping
@@ -93,5 +96,13 @@ public class MatchController {
     public ApiResponse<String> updateHalfTime(@PathVariable Long matchId, @RequestBody @Valid MatchHalfTimeRequest matchHalfTimeRequest) {
         matchService.setHalfTime(matchId, matchHalfTimeRequest);
         return ApiResponse.ok("시간 등록 완료");
+    }
+
+    @GetMapping("/teams/{teamId}/result")
+    public ApiResponse<List<MatchResultInfoResponse>> getMatchResultByTeam(
+        @PathVariable Long teamId) {
+
+        List<MatchResultInfoResponse> response = matchResultService.getMatchResultsByTeam(teamId);
+        return ApiResponse.ok(response);
     }
 }
