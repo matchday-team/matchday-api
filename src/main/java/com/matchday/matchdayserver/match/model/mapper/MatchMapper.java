@@ -10,6 +10,7 @@ public class MatchMapper {
     public static MatchInfoResponse toResponse(Match match) {
         return MatchInfoResponse.builder()
             .id(match.getId())
+            .title(match.getTitle())
             .stadium(match.getStadium())
             .matchDate(match.getMatchDate())
             .plannedStartTime(match.getPlannedStartTime())
