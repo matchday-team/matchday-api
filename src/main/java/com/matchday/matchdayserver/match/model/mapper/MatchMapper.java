@@ -2,8 +2,10 @@ package com.matchday.matchdayserver.match.model.mapper;
 
 import com.matchday.matchdayserver.match.model.dto.response.MatchInfoResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchListResponse;
+import com.matchday.matchdayserver.match.model.dto.response.MatchResultInfoResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchScoreResponse;
 import com.matchday.matchdayserver.match.model.entity.Match;
+import com.matchday.matchdayserver.match.model.enums.MatchResult;
 
 public class MatchMapper {
     // Match → MatchInfoResponse 변환
@@ -44,6 +46,29 @@ public class MatchMapper {
             .homeScore(scoreResponse.getHomeScore().getGoalCount())
             .awayScore(scoreResponse.getAwayScore().getGoalCount())
             .matchState(match.getMatchState())
+            .build();
+    }
+
+    public static MatchResultInfoResponse toMatchResultInfoResponse(
+        Match match,
+        MatchResult matchResult,
+        int matchTime,
+        int playerCount, MatchScoreResponse scoreResponse
+    ) {
+        return MatchResultInfoResponse.builder()
+            .matchId(match.getId())
+            .homeTeamId(match.getHomeTeam().getId())
+            .homeTeamName(match.getHomeTeam().getName())
+            .awayTeamId(match.getAwayTeam().getId())
+            .awayTeamName(match.getAwayTeam().getName())
+            .matchTitle(match.getTitle())
+            .matchResult(matchResult)
+            .homeScore(scoreResponse.getHomeScore().getGoalCount())
+            .awayScore(scoreResponse.getAwayScore().getGoalCount())
+            .matchTime(matchTime)
+            .playerCount(playerCount)
+            .stadium(match.getStadium())
+            .matchDate(match.getMatchDate())
             .build();
     }
 }
