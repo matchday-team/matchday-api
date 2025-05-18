@@ -5,6 +5,7 @@ import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.match.model.dto.request.MatchHalfTimeRequest;
 import com.matchday.matchdayserver.match.model.dto.response.MatchInfoResponse;
+import com.matchday.matchdayserver.match.model.dto.response.MatchListPageResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchListResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchScoreResponse;
 import com.matchday.matchdayserver.match.model.entity.Match;
@@ -76,6 +77,42 @@ public class MatchService {
           })
           .collect(Collectors.toList());
   }
+
+  public MatchListPageResponse getMatchList(int page, int size) {
+      // 유효성 검사
+      if (page < 0) {
+          throw new ApiException(MatchStatus.INVALID_PAGE_NUMBER);
+      }
+      if (size <= 0) {
+          throw new ApiException(MatchStatus.INVALID_PAGE_SIZE);
+      }
+
+      long totalCount = matchRepository.count();
+
+      // 데이터가 없는 경우 빈 응답 반환
+      if (totalCount == 0) {
+          return MatchListPageResponse.builder()
+              .totalCount(0)
+              .matches(List.of())
+              .build();
+      }
+
+        int offset = page * size;
+
+        List<Match> matches = matchRepository.findMatchesByOffsetAndLimit(offset, size);
+
+        List<MatchListResponse> responseList = matches.stream()
+            .map(match -> {
+                MatchScoreResponse scoreRes = matchScoreService.getMatchScore(match.getId());
+                return MatchMapper.toMatchListResponse(match, scoreRes);
+            })
+            .collect(Collectors.toList());
+
+        return MatchListPageResponse.builder()
+            .totalCount(totalCount)
+            .matches(responseList)
+            .build();
+    }
 
     @Transactional
     public void setHalfTime(Long id, MatchHalfTimeRequest halfTimeRequest) {

@@ -5,6 +5,7 @@ import com.matchday.matchdayserver.match.model.dto.request.MatchCreateRequest;
 import com.matchday.matchdayserver.match.model.dto.request.MatchMemoRequest;
 import com.matchday.matchdayserver.match.model.dto.request.MatchHalfTimeRequest;
 import com.matchday.matchdayserver.match.model.dto.response.MatchInfoResponse;
+import com.matchday.matchdayserver.match.model.dto.response.MatchListPageResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchListResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchScoreResponse;
 import com.matchday.matchdayserver.match.model.dto.response.MatchMemoResponse;
@@ -22,8 +23,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.time.LocalTime;
 import java.util.List;
 
 @Tag(name = "matches", description = "매치 관련 API")
@@ -72,10 +73,19 @@ public class MatchController {
       return ApiResponse.ok(matchService.get(matchId));
     }
 
-    @Operation(summary = "매치 리스트 조회", description = "특정 팀이 속한 매치 리스트를 조회합니다. <br> 경기 상태(matchStatus) 값은 SCHEDULED(경기 전), IN_PLAY(경기중), FINISHED(경기 종료) 입니다.")
+    @Operation(summary = "특정 팀 매치 리스트 조회", description = "특정 팀이 속한 매치 리스트를 조회합니다. <br> 경기 상태(matchStatus) 값은 SCHEDULED(경기 전), IN_PLAY(경기중), FINISHED(경기 종료) 입니다.")
     @GetMapping("/teams/{teamId}")
     public ApiResponse<List<MatchListResponse>> getMatchList(@PathVariable Long teamId) {
         return ApiResponse.ok(matchService.getMatchListByTeam(teamId));
+    }
+
+    @Operation(summary = "전체 매치 리스트 조회", description = " 전체 매치 리스트를 페이징하여 조회합니다.<br> `page: 0부터 시작하는 페이지 번호 (기본값 0)` <br> `size: 한 페이지에 포함할 데이터 개수 (기본값 10)`<br>")
+    @GetMapping()
+    public ApiResponse<MatchListPageResponse> getPagedMatchList(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.ok(matchService.getMatchList(page, size));
     }
 
     @Operation(summary = "전/후반 시간 등록", description = "특정 매치의 전/후반 시작/종료 시간을 등록합니다. <br> **halfType**은 ``FIRST_HALF(전반) / SECOND_HALF(후반)`` 입니다. <br> **timeType**은 ``START_TIME(시작시간) / END_TIME(종료시간)`` 입니다. ")
