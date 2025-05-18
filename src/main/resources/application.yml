@@ -42,3 +42,7 @@ decorator:
     datasource:
         p6spy:
             enable-logging: false
+
+jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION}
