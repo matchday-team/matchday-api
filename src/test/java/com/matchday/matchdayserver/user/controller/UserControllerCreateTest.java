@@ -71,7 +71,7 @@ public class UserControllerCreateTest {
 
     @Test
     @DisplayName("임시 유저 생성 - 중복된 이름인 경우도 생성됨")
-    void createUser_Fail_DuplicateName() throws Exception {
+    void createUser_Success_DuplicateName() throws Exception {
         // given
         String duplicateName = "중복이름";
 
@@ -89,7 +89,8 @@ public class UserControllerCreateTest {
         // then
         actions
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.status").value(201)); // 사용자 중복 에러 코드 가정
+                .andExpect(jsonPath("$.status").value(201)); // 중복 이름도 허용되어 성공적으로 생성됨
+
     }
 
     @Test
