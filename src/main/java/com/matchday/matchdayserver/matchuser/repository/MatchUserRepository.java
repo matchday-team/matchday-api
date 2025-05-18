@@ -40,4 +40,8 @@ public interface MatchUserRepository extends JpaRepository<MatchUser, Long> {
    * @return
   */
   List<MatchUser> findByMatchIdAndTeamIdIsNotNullAndUserIdIsNotNull(Long matchId);
+
+    // 특정 경기의 모든 MatchUser 조회
+    List<MatchUser> findByMatchId(Long matchId);
+
 }

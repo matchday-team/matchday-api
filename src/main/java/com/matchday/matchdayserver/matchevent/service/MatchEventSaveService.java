@@ -4,10 +4,10 @@ import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.DefaultStatus;
 import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
+import com.matchday.matchdayserver.matchevent.common.MatchEventConstants;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventUserRequest;
-import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 
 import jakarta.transaction.Transactional;
 
@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class MatchEventSaveService {
-
     private final MatchUserRepository matchUserRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final MatchEventStrategy matchEventStrategy;
@@ -34,50 +33,34 @@ public class MatchEventSaveService {
     public void saveMatchEvent(Long matchId, MatchEventUserRequest request) {
         validateRequest(matchId, request);
 
-        MatchUser matchUser = matchUserRepository
-            .findByMatchIdAndMatchUserIdWithFetch(matchId, request.getMatchUserId())
+        MatchUser matchUser = matchUserRepository.findByMatchIdAndMatchUserIdWithFetch(matchId,
+                request.getMatchUserId())
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
         Match match = matchUser.getMatch();
 
-        List<MatchEventResponse> matchEventResponse = matchEventStrategy
-            .generateMatchEventLog(request, match, matchUser);
-        for (MatchEventResponse response : matchEventResponse) {
-            if (!neededToSendEvent(response.getEventLog())) {
-                continue;
-            }
-            messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
+        List<MatchEventResponse> matchEventResponse = matchEventStrategy.generateMatchEventLog(
+            request, match, matchUser);
+        if (!matchEventResponse.isEmpty()) {
+            messagingTemplate.convertAndSend(MatchEventConstants.getMatchEventUrl(matchId),
+                matchEventResponse.get(0));
         }
     }
 
     public void saveMatchTeamEvent(Long matchId, Long teamId, MatchEventRequest request) {
 
         // 임시 유저
-        MatchUser matchUser = matchUserRepository
-            .findTempUser(matchId, teamId)
+        MatchUser matchUser = matchUserRepository.findTempUser(matchId, teamId)
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
         Match match = matchUser.getMatch();
 
-        List<MatchEventResponse> matchEventResponse = matchEventStrategy
-            .generateMatchEventLog(request, match, matchUser);
-        for (MatchEventResponse response : matchEventResponse) {
-            if (!neededToSendEvent(response.getEventLog())) {
-                continue;
-            }
-            messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
+        List<MatchEventResponse> matchEventResponse = matchEventStrategy.generateMatchEventLog(
+            request, match, matchUser);
+        if (!matchEventResponse.isEmpty()) {
+            messagingTemplate.convertAndSend(MatchEventConstants.getMatchEventUrl(matchId),
+                matchEventResponse.get(0));
         }
-    }
-
-    private boolean neededToSendEvent(MatchEventType matchEventType) {
-        return MatchEventType.GOAL.equals(matchEventType)
-            || MatchEventType.ASSIST.equals(matchEventType)
-            || MatchEventType.OFFSIDE.equals(matchEventType)
-            || MatchEventType.YELLOW_CARD.equals(matchEventType)
-            || MatchEventType.RED_CARD.equals(matchEventType)
-            || MatchEventType.SUB_IN.equals(matchEventType)
-            || MatchEventType.SUB_OUT.equals(matchEventType)
-            ;
     }
 
     private void validateRequest(Long matchId, MatchEventUserRequest request) {
