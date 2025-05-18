@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.matchday.matchdayserver.common.response.DefaultStatus;
+import com.matchday.matchdayserver.matchevent.common.MatchEventConstants;
 import com.matchday.matchdayserver.matchevent.mapper.MatchEventMapper;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
@@ -67,7 +68,7 @@ public class MatchUserExchangeService {
             .toList();
 
         for (MatchEventResponse response : matchEventResponses) {
-            messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
+            messagingTemplate.convertAndSend(MatchEventConstants.getMatchEventUrl(matchId), response);
         }
     }
 
