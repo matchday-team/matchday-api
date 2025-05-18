@@ -79,7 +79,23 @@ public class MatchService {
   }
 
   public MatchListPageResponse getMatchList(int page, int size) {
-        long totalCount = matchRepository.count();
+      // 유효성 검사
+      if (page < 0) {
+          throw new ApiException(MatchStatus.INVALID_PAGE_NUMBER);
+      }
+      if (size <= 0) {
+          throw new ApiException(MatchStatus.INVALID_PAGE_SIZE);
+      }
+
+      long totalCount = matchRepository.count();
+
+      // 데이터가 없는 경우 빈 응답 반환
+      if (totalCount == 0) {
+          return MatchListPageResponse.builder()
+              .totalCount(0)
+              .matches(List.of())
+              .build();
+      }
 
         int offset = page * size;
 
