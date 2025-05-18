@@ -9,7 +9,9 @@ import com.matchday.matchdayserver.user.model.dto.response.UserInfoResponse;
 import com.matchday.matchdayserver.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "users", description = "유저 관련 API")
@@ -22,11 +24,12 @@ public class UserController {
     private final S3PresignedService s3PresignedManager;
     private static final String FOLDER_NAME = "users";
 
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "임시 유저 생성" , description = "생성된 user의 Id 값 반환 <br> profileImg는 선택 사항입니다.")
     @PostMapping
-    public ApiResponse<Long> createUser(@RequestBody UserCreateRequest request) {
+    public ApiResponse<Long> createUser(@Valid @RequestBody UserCreateRequest request) {
         Long userId=userService.createUser(request);
-        return ApiResponse.ok(userId);
+        return ApiResponse.created(userId);
     }
 
     @Operation(summary = "팀 입단", description = "{userId}가 teamId에 소속됩니다 ")

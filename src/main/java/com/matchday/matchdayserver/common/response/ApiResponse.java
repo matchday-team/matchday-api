@@ -24,6 +24,11 @@ public class ApiResponse<T> {
         return new ApiResponse<>(HttpStatus.OK.value(), data, DefaultStatus.OK.getDescription());
     }
 
+    public static <T> ApiResponse<T> created(T data) {
+        return new ApiResponse<>(HttpStatus.CREATED.value(), data, DefaultStatus.OK.getDescription());
+    }
+
+
     public static <T> ApiResponse<T> error(StatusInterface status) {
         return new ApiResponse<>(status.getCustomStatusCode(), null, status.getDescription());
     }
