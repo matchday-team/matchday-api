@@ -42,11 +42,8 @@ public class MatchEventSaveService {
 
         List<MatchEventResponse> matchEventResponse = matchEventStrategy
             .generateMatchEventLog(request, match, matchUser);
-        for (MatchEventResponse response : matchEventResponse) {
-            if (!neededToSendEvent(response.getEventLog())) {
-                continue;
-            }
-            messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
+        if(!matchEventResponse.isEmpty()) {
+            messagingTemplate.convertAndSend("/topic/match" + matchId, matchEventResponse.get(0));
         }
     }
 
@@ -61,23 +58,9 @@ public class MatchEventSaveService {
 
         List<MatchEventResponse> matchEventResponse = matchEventStrategy
             .generateMatchEventLog(request, match, matchUser);
-        for (MatchEventResponse response : matchEventResponse) {
-            if (!neededToSendEvent(response.getEventLog())) {
-                continue;
-            }
-            messagingTemplate.convertAndSend("/topic/match/" + matchId, response);
+        if (!matchEventResponse.isEmpty()) {
+            messagingTemplate.convertAndSend("/topic/match/" + matchId, matchEventResponse.get(0));
         }
-    }
-
-    private boolean neededToSendEvent(MatchEventType matchEventType) {
-        return MatchEventType.GOAL.equals(matchEventType)
-            || MatchEventType.ASSIST.equals(matchEventType)
-            || MatchEventType.OFFSIDE.equals(matchEventType)
-            || MatchEventType.YELLOW_CARD.equals(matchEventType)
-            || MatchEventType.RED_CARD.equals(matchEventType)
-            || MatchEventType.SUB_IN.equals(matchEventType)
-            || MatchEventType.SUB_OUT.equals(matchEventType)
-            ;
     }
 
     private void validateRequest(Long matchId, MatchEventUserRequest request) {
