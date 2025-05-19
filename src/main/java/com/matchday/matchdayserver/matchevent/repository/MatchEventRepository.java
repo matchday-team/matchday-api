@@ -24,19 +24,19 @@ public interface MatchEventRepository extends JpaRepository<MatchEvent, Long> {
 
     void deleteByMatchId(Long matchId);
 
-    @Query(value = """
-        SELECT 
-          event_type AS eventType,
-          COUNT(*) AS count
-        FROM match_event
-        WHERE match_user_id = :matchUserId
-          AND match_id = :matchId
-        GROUP BY event_type
-        """, nativeQuery = true)
+    @Query("""
+    SELECT e.eventType AS eventType,
+           COUNT(e) AS count
+    FROM MatchEvent e
+    WHERE e.matchUser.id = :matchUserId
+      AND e.match.id = :matchId
+    GROUP BY e.eventType
+    """)
     List<EventTypeCount> countEventTypesByMatchUserAndMatch(
         @Param("matchUserId") Long matchUserId,
         @Param("matchId") Long matchId
     );
+
 
     boolean existsByMatchUserIdAndEventType(Long matchUserId, MatchEventType eventType);
 
