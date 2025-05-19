@@ -12,4 +12,6 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     @Query(value = "SELECT * FROM `match` ORDER BY id LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Match> findMatchesByOffsetAndLimit(@Param("offset") int offset, @Param("limit") int limit);
 
+    List<Match> findAllByHomeTeamIdOrAwayTeamId(Long homeTeamId, Long awayTeamId);
+
 }
