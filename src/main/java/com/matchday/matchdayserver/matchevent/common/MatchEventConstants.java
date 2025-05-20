@@ -7,5 +7,5 @@ public class MatchEventConstants {
         return MATCH_URL_PREFIX  + matchId;
     }
 
-    public static String getMemoTopic(Long matchId) { return MATCH_URL_PREFIX  + matchId + "/memo"; }
+    public static String getMemoUrl(Long matchId) { return MATCH_URL_PREFIX  + matchId + "/memo"; }
 }
