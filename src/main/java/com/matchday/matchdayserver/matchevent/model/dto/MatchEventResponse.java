@@ -22,7 +22,7 @@ public class MatchEventResponse {
 
     @NotNull
     @Schema(description = "전반/후반 여부", example = "FIRST_HALF")
-    private HalfType halfType;
+    private String halfType;
 
     @NotNull
     @Schema(description = "팀 ID", example = "1")

@@ -32,15 +32,15 @@ public class MatchEventMapper {
 
     public static MatchEventResponse toResponse(MatchEvent matchEvent) {
         Match match = matchEvent.getMatch();
-        HalfType halfType;
+        String halfTypeString;
         //만약 second_half_start_time 이 null 값이라면 아직 전반전인 것임
         LocalDateTime matchStartTime;
         if (match.getMatchState() == MatchState.PLAY_FIRST_HALF) {
             matchStartTime = match.getFirstHalfStartTime().atDate(match.getMatchDate());//핵심
-            halfType=FIRST_HALF;
+            halfTypeString="FIRST_HALF";
         } else {
             matchStartTime = match.getSecondHalfStartTime().atDate(match.getMatchDate());//핵심
-            halfType=SECOND_HALF;
+            halfTypeString="SECOND_HALF";
         }
 
         Long elapsedMinutes = calculateElapsedMinutes(
@@ -52,7 +52,7 @@ public class MatchEventMapper {
         return MatchEventResponse.builder()
             .id(matchEvent.getId())
             .elapsedMinutes(elapsedMinutes)
-            .halfType(halfType)
+            .halfType(halfTypeString)
             .teamId(team.getId())
             .teamName(team.getName())
             .userId(user.getId())
