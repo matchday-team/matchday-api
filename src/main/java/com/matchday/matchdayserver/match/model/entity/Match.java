@@ -120,7 +120,7 @@ public class Match {
     public Match(String title, Team homeTeam, Team awayTeam, MatchType matchType, String stadium, LocalDate matchDate,
         LocalTime plannedStartTime, LocalTime plannedEndTime, LocalTime firstHalfStartTime, LocalTime firstHalfEndTime,
         LocalTime secondHalfStartTime, LocalTime secondHalfEndTime, String mainRefereeName,
-        String assistantReferee1, String assistantReferee2, String fourthReferee, MatchState matchState,
+        String assistantReferee1, String assistantReferee2, String fourthReferee,
         Integer firstHalfPeriod, Integer secondHalfPeriod) {
 
         this.title = title;
@@ -139,7 +139,7 @@ public class Match {
         this.assistantReferee1 = assistantReferee1;
         this.assistantReferee2 = assistantReferee2;
         this.fourthReferee = fourthReferee;
-        this.matchState = matchState;
+        this.matchState = MatchState.SCHEDULED; //매치 생성시 "SCHEDULED" 기본 값으로 설정
         this.firstHalfPeriod = firstHalfPeriod;
         this.secondHalfPeriod = secondHalfPeriod;
     }
