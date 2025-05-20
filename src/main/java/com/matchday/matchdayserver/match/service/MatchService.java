@@ -16,6 +16,7 @@ import com.matchday.matchdayserver.match.model.mapper.MatchMapper;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.match.model.dto.request.MatchMemoRequest;
 import com.matchday.matchdayserver.match.model.dto.response.MatchMemoResponse;
+import com.matchday.matchdayserver.matchevent.common.MatchEventConstants;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,11 @@ public class MatchService {
           matchId(match.getId()).
           memo(match.getMemo()).
           build();
-      simpMessagingTemplate.convertAndSend("/topic/match-memo", response);
+
+      simpMessagingTemplate.convertAndSend(
+          MatchEventConstants.getMemoUrl(matchId),
+          response
+      );
   }
 
   public MatchMemoResponse get(Long matchId) {
