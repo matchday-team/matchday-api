@@ -41,14 +41,14 @@ public class MatchEventMapper {
                 throw new ApiException(MatchStatus.INVALID_MATCH_TIME);
             }
             matchStartTime = match.getFirstHalfStartTime().atDate(match.getMatchDate());
-            halfTypeString = "FIRST_HALF";
+            halfTypeString = FIRST_HALF.toString();
 
         } else if (match.getMatchState() == MatchState.PLAY_SECOND_HALF) {
             if (match.getSecondHalfStartTime() == null) {
                 throw new ApiException(MatchStatus.INVALID_MATCH_TIME);
             }
             matchStartTime = match.getSecondHalfStartTime().atDate(match.getMatchDate());
-            halfTypeString = "SECOND_HALF";
+            halfTypeString = SECOND_HALF.toString();
 
         } else {
             throw new ApiException(MatchStatus.NOT_IN_PLAY_MATCH);
