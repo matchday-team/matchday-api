@@ -54,7 +54,7 @@ public class JwtTokenFilter extends GenericFilter{
                 }
                 String jwtToken = token.substring(7);//Bearer 뜯어내기
                 //token 검증 및 claims(playoad) 추출
-                Claims claims= Jwts.parser()//todo 여기까지 하다가 잠
+                Claims claims= Jwts.parser()
                     .verifyWith(secretKey)//전달받은 토큰이 우리 서버에서 만든건지 검증
                     .build()
                     .parseSignedClaims(jwtToken)//검증할 토큰 전달
@@ -65,6 +65,7 @@ public class JwtTokenFilter extends GenericFilter{
                 authorities.add(new SimpleGrantedAuthority("ROLE_"+claims.get("role")));//ROLE_ 붙이는것이 관례// todo 롤값 없으면 안생김
                 UserDetails userDetails=new User(claims.getSubject(),"",authorities); //matchday.user가 아니고 시큐리티user임
                 Authentication authentication=new UsernamePasswordAuthenticationToken(userDetails,jwtToken,userDetails.getAuthorities());
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             chain.doFilter(request,response);//SecurityFilterChain으로 다시 돌아가기 위한 코드
