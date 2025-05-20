@@ -1,0 +1,3 @@
+ALTER TABLE matchday_schema.`match`
+    MODIFY COLUMN match_state ENUM('SCHEDULED', 'IN_PLAY', 'FINISHED')
+    DEFAULT 'SCHEDULED' NOT NULL;
