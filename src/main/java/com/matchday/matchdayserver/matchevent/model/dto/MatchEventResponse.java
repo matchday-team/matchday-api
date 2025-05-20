@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.matchevent.model.dto;
 
+import com.matchday.matchdayserver.match.model.enums.HalfType;
 import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,10 @@ public class MatchEventResponse {
     @NotNull
     @Schema(description = "경기 시작 후 경과 시간(분)", example = "23")
     private Long elapsedMinutes;
+
+    @NotNull
+    @Schema(description = "전반/후반 여부", example = "FIRST_HALF")
+    private HalfType halfType;
 
     @NotNull
     @Schema(description = "팀 ID", example = "1")
