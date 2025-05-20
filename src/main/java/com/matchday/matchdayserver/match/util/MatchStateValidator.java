@@ -10,7 +10,8 @@ public class MatchStateValidator {
     private MatchStateValidator() {} // 유틸클래스니까
 
     public static void validateInPlay(Match match) {
-        if (!match.getMatchState().equals(MatchState.IN_PLAY)) {
+        MatchState state = match.getMatchState();
+        if (!(state == MatchState.PLAY_FIRST_HALF || state == MatchState.PLAY_SECOND_HALF)) {
             throw new ApiException(MatchStatus.NOT_IN_PLAY_MATCH);
         }
     }
