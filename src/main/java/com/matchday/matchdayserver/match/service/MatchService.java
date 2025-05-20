@@ -16,6 +16,7 @@ import com.matchday.matchdayserver.match.model.mapper.MatchMapper;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.match.model.dto.request.MatchMemoRequest;
 import com.matchday.matchdayserver.match.model.dto.response.MatchMemoResponse;
+import com.matchday.matchdayserver.match.util.MatchStateValidator;
 import com.matchday.matchdayserver.matchevent.common.MatchEventConstants;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import jakarta.transaction.Transactional;
@@ -44,6 +45,8 @@ public class MatchService {
   public void createOrUpdate(Long matchId, MatchMemoRequest request) {
     Match match = matchRepository.findById(matchId)
         .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
+
+      MatchStateValidator.validateInPlay(match);
 
     match.updateMemo(request.getMemo());
     matchRepository.save(match);
