@@ -1,5 +1,7 @@
 package com.matchday.matchdayserver.matchevent.mapper;
 
+import com.matchday.matchdayserver.common.exception.ApiException;
+import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
@@ -25,8 +27,22 @@ public class MatchEventMapper {
 
     public static MatchEventResponse toResponse(MatchEvent matchEvent) {
         Match match = matchEvent.getMatch();
+        //만약 second_half_start_time 이 null 값이라면 아직 전반전인 것임
+        LocalDateTime matchStartTime;
+        if (match.getSecondHalfStartTime() == null) {
+            if (match.getFirstHalfStartTime() == null || match.getMatchDate() == null) {
+                throw new ApiException(MatchStatus.INVALID_MATCH_TIME);
+            }
+            matchStartTime = match.getFirstHalfStartTime().atDate(match.getMatchDate());//핵심
+        } else {
+            if (match.getMatchDate() == null) {
+                throw new ApiException(MatchStatus.INVALID_MATCH_TIME);
+            }
+            matchStartTime = match.getSecondHalfStartTime().atDate(match.getMatchDate());//핵심
+        }
+
         Long elapsedMinutes = calculateElapsedMinutes(
-            match.getPlannedStartTime().atDate(match.getMatchDate()),
+            matchStartTime,
             matchEvent.getEventTime());
         User user = Optional.ofNullable(matchEvent.getMatchUser().getUser()).orElseGet(User::mock);
         Team team = matchEvent.getMatchUser().getTeam();
