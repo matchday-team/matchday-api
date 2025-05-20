@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.matchday.matchdayserver.common.response.DefaultStatus;
+import com.matchday.matchdayserver.match.model.enums.MatchState;
+import com.matchday.matchdayserver.match.util.MatchStateValidator;
 import com.matchday.matchdayserver.matchevent.common.MatchEventConstants;
 import com.matchday.matchdayserver.matchevent.mapper.MatchEventMapper;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
@@ -42,6 +44,9 @@ public class MatchUserExchangeService {
         MatchUser toMatchUser = matchUserRepository
             .findByMatchIdAndMatchUserIdWithFetch(matchId, request.getToMatchUserId())
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
+
+        //진행 중인 경기인지 확인
+        MatchStateValidator.validateInPlay(fromMatchUser.getMatch());
 
         // Dirty Checking으로 자동 저장
         fromMatchUser.substituteTo(toMatchUser);

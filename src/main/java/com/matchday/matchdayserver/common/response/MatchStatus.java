@@ -20,7 +20,8 @@ public enum MatchStatus implements StatusInterface {
     NOTFOUND_MATCH_EVENT(404, 6017, "존재하지 않는 경기 이벤트입니다"),
     INVALID_HALF_PERIOD(404,6018,"유효한 경기 기간은 1분~45분입니다"),
     INVALID_PAGE_NUMBER(400, 6019, "page는 음수 값이 될 수 없습니다."),
-    INVALID_PAGE_SIZE(400, 6020, "size는 1이상의 값이어야 합니다.")
+    INVALID_PAGE_SIZE(400, 6020, "size는 1이상의 값이어야 합니다."),
+    NOT_IN_PLAY_MATCH(400,6021,"진행 중인 경기가 아닙니다")
     ;
 
     private final int httpStatusCode;

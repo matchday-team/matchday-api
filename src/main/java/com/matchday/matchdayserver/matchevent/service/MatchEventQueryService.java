@@ -19,12 +19,13 @@ public class MatchEventQueryService {
      * <p>
      */
     public MatchUserEventStat getMatchUserEventStat(Long matchId, Long matchUserId) {
-        int goals = 0, assists = 0, yellowCards = 0, redCards = 0, cautions = 0;
+        int goals = 0, ownGoals = 0, assists = 0, yellowCards = 0, redCards = 0, cautions = 0;
 
         List<EventTypeCount> counts = matchEventRepository.countEventTypesByMatchUserAndMatch(matchUserId, matchId);
         for (EventTypeCount c : counts) {
             switch (c.getEventType()) {
                 case GOAL -> goals = c.getCount().intValue();
+                case OWN_GOAL -> ownGoals = c.getCount().intValue();
                 case ASSIST -> assists = c.getCount().intValue();
                 case YELLOW_CARD -> yellowCards = c.getCount().intValue();
                 case RED_CARD -> redCards = c.getCount().intValue();
@@ -34,6 +35,7 @@ public class MatchEventQueryService {
 
         return MatchUserEventStat.builder()
             .goals(goals)
+            .ownGoals(ownGoals)
             .assists(assists)
             .yellowCards(yellowCards)
             .redCards(redCards)
