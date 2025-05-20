@@ -10,4 +10,4 @@ decorator:
 springdoc:
     api-docs:
         version: "openapi_3_0"
-        url: "https://dev-api.matchday-planner.com"
+        url: "http://localhost:8080"
