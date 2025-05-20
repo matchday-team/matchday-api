@@ -16,9 +16,11 @@ import com.matchday.matchdayserver.match.model.mapper.MatchMapper;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.match.model.dto.request.MatchMemoRequest;
 import com.matchday.matchdayserver.match.model.dto.response.MatchMemoResponse;
+import com.matchday.matchdayserver.matchevent.common.MatchEventConstants;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.util.List;
@@ -30,6 +32,7 @@ public class MatchService {
   private final MatchRepository matchRepository;
   private final MatchScoreService matchScoreService;
     private final TeamRepository teamRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     public MatchInfoResponse getMatchInfo(Long matchId) {
     Match match = matchRepository.findById(matchId)
@@ -44,6 +47,15 @@ public class MatchService {
 
     match.updateMemo(request.getMemo());
     matchRepository.save(match);
+      MatchMemoResponse response = MatchMemoResponse.builder().
+          matchId(match.getId()).
+          memo(match.getMemo()).
+          build();
+
+      simpMessagingTemplate.convertAndSend(
+          MatchEventConstants.getMemoUrl(matchId),
+          response
+      );
   }
 
   public MatchMemoResponse get(Long matchId) {

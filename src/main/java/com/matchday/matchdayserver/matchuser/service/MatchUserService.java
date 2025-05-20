@@ -124,6 +124,7 @@ public class MatchUserService {
                 .matchPosition(matchUser.getMatchPosition())
                 .matchGrid(matchUser.getMatchGrid())
                 .goals(stat.getGoals())
+                .ownGoals(stat.getOwnGoals())
                 .assists(stat.getAssists())
                 .yellowCards(stat.getYellowCards())
                 .redCards(stat.getRedCards())

@@ -1,6 +1,7 @@
 package com.matchday.matchdayserver.matchevent.model.dto;
+import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 
-public interface EventTypeCount {//쿼리 결과를 맵핑시키기 위해 사용 (인터페이스 DTO)
-    String getEventType();
+public interface EventTypeCount {
+    MatchEventType getEventType();  // enum으로 변경
     Long getCount();
 }
