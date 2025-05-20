@@ -145,6 +145,7 @@ public class MatchService {
                         break;
                     case END_TIME:
                         match.setFirstHalfEndTime(halfTimeRequest.getTime());
+                        match.setMatchState(MatchState.HALF_TIME);
                         break;
                 }
                 break;
@@ -153,6 +154,7 @@ public class MatchService {
                 switch (halfTimeRequest.getTimeType()) {
                     case START_TIME:
                         match.setSecondHalfStartTime(halfTimeRequest.getTime());
+                        match.setMatchState(MatchState.IN_PLAY);
                         break;
                     case END_TIME:
                         match.setSecondHalfEndTime(halfTimeRequest.getTime());
