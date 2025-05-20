@@ -85,7 +85,7 @@ public class Match {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "match_state", nullable = false)
-    private MatchState matchState;  //경기 상태 (시작 전, 진행 중, 종료)
+    private MatchState matchState;
 
     public enum MatchType {
         리그, 대회, 친선경기

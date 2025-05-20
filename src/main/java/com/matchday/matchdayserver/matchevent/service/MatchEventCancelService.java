@@ -2,6 +2,10 @@ package com.matchday.matchdayserver.matchevent.service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.MatchStatus;
+import com.matchday.matchdayserver.match.model.entity.Match;
+import com.matchday.matchdayserver.match.model.enums.MatchState;
+import com.matchday.matchdayserver.match.repository.MatchRepository;
+import com.matchday.matchdayserver.match.util.MatchStateValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +21,15 @@ import lombok.RequiredArgsConstructor;
 public class MatchEventCancelService {
 
     private final MatchEventRepository matchEventRepository;
+    private final MatchRepository matchRepository;
 
     public void cancelEvent(Long matchId, MatchEventCancelRequest message) {
+
+        Match match = matchRepository.findById(matchId)
+            .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
+
+        MatchStateValidator.validateInPlay(match);
+
         MatchEvent matchEvent;
         MatchEventCancelRequest request = message;
         if (request.getMatchUserId() != null) {

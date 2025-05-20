@@ -4,6 +4,8 @@ import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.DefaultStatus;
 import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
+import com.matchday.matchdayserver.match.model.enums.MatchState;
+import com.matchday.matchdayserver.match.util.MatchStateValidator;
 import com.matchday.matchdayserver.matchevent.common.MatchEventConstants;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
@@ -39,6 +41,9 @@ public class MatchEventSaveService {
 
         Match match = matchUser.getMatch();
 
+        //경기 상태가 진행 중인지 확인
+        MatchStateValidator.validateInPlay(match);
+
         List<MatchEventResponse> matchEventResponse = matchEventStrategy.generateMatchEventLog(
             request, match, matchUser);
         if (!matchEventResponse.isEmpty()) {
@@ -54,6 +59,11 @@ public class MatchEventSaveService {
             .orElseThrow(() -> new ApiException(MatchStatus.NOT_PARTICIPATING_PLAYER));
 
         Match match = matchUser.getMatch();
+
+        //경기 상태가 진행 중인지 확인
+        if (!match.getMatchState().equals(MatchState.IN_PLAY)) {
+            throw new ApiException(MatchStatus.NOT_IN_PLAY_MATCH);
+        }
 
         List<MatchEventResponse> matchEventResponse = matchEventStrategy.generateMatchEventLog(
             request, match, matchUser);
