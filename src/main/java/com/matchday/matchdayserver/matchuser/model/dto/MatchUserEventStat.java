@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class MatchUserEventStat {
     private Integer goals;
+    private Integer ownGoals;
     private Integer assists;
     private Integer yellowCards;
     private Integer redCards;
@@ -15,10 +16,11 @@ public class MatchUserEventStat {
     private boolean sentOff;   // 퇴장 여부
 
     @Builder
-    public MatchUserEventStat(Integer goals, Integer assists,
+    public MatchUserEventStat(Integer goals, Integer ownGoals, Integer assists,
         Integer yellowCards, Integer redCards,
         Integer caution, boolean sentOff) {
         this.goals = goals;
+        this.ownGoals = ownGoals;
         this.assists = assists;
         this.yellowCards = yellowCards;
         this.redCards = redCards;
