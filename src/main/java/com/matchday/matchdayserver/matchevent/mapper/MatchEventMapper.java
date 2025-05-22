@@ -32,27 +32,9 @@ public class MatchEventMapper {
 
     public static MatchEventResponse toResponse(MatchEvent matchEvent) {
         Match match = matchEvent.getMatch();
-
-        String halfTypeString;
-        LocalDateTime matchStartTime;
-
-        if (match.getMatchState() == MatchState.PLAY_FIRST_HALF) {
-            if (match.getFirstHalfStartTime() == null) {
-                throw new ApiException(MatchStatus.INVALID_MATCH_TIME);
-            }
-            matchStartTime = match.getFirstHalfStartTime().atDate(match.getMatchDate());
-            halfTypeString = FIRST_HALF.toString();
-
-        } else if (match.getMatchState() == MatchState.PLAY_SECOND_HALF) {
-            if (match.getSecondHalfStartTime() == null) {
-                throw new ApiException(MatchStatus.INVALID_MATCH_TIME);
-            }
-            matchStartTime = match.getSecondHalfStartTime().atDate(match.getMatchDate());
-            halfTypeString = SECOND_HALF.toString();
-
-        } else {
-            throw new ApiException(MatchStatus.NOT_IN_PLAY_MATCH);
-        }
+        LocalDateTime eventTime = matchEvent.getEventTime();
+        HalfType halfType = determineHalfType(eventTime, match);//전반 후반 판단
+        LocalDateTime matchStartTime = getMatchStartTime(match, halfType);//전후반 경기가 시작된 시간 판단
 
         Long elapsedMinutes = calculateElapsedMinutes(
             matchStartTime,
@@ -63,7 +45,7 @@ public class MatchEventMapper {
         return MatchEventResponse.builder()
             .id(matchEvent.getId())
             .elapsedMinutes(elapsedMinutes)
-            .halfType(halfTypeString)
+            .halfType(halfType.name())
             .teamId(team.getId())
             .teamName(team.getName())
             .userId(user.getId())
@@ -76,5 +58,23 @@ public class MatchEventMapper {
         LocalDateTime eventTime) {
         long minutes = Duration.between(matchStartTime, eventTime).toMinutes();
         return minutes < 0 ? 0L : minutes; // 음수인 경우 0으로 처리
+    }
+
+    private static HalfType determineHalfType(LocalDateTime eventTime, Match match) {
+        if (match.getFirstHalfStartTime() == null) {
+            throw new ApiException(MatchStatus.INVALID_MATCH_TIME);
+        }
+        if (match.getSecondHalfStartTime() == null) {
+            return FIRST_HALF;
+        }
+        LocalDateTime secondHalfStart = match.getSecondHalfStartTime().atDate(match.getMatchDate());
+        return eventTime.isBefore(secondHalfStart) ? FIRST_HALF : SECOND_HALF;
+    }
+
+    private static LocalDateTime getMatchStartTime(Match match, HalfType halfType) {
+        return switch (halfType) {
+            case FIRST_HALF -> match.getFirstHalfStartTime().atDate(match.getMatchDate());
+            case SECOND_HALF -> match.getSecondHalfStartTime().atDate(match.getMatchDate());
+        };
     }
 }
