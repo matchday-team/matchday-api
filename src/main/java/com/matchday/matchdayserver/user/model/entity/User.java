@@ -1,11 +1,14 @@
     package com.matchday.matchdayserver.user.model.entity;
 
     import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
+    import com.matchday.matchdayserver.user.model.enums.Role;
+    import com.matchday.matchdayserver.user.model.enums.SocialType;
     import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
     import jakarta.persistence.*;
     import lombok.Builder;
     import lombok.Getter;
     import lombok.NoArgsConstructor;
+    import org.hibernate.annotations.ColumnDefault;
 
     import java.util.List;
 
@@ -22,6 +25,20 @@
 
         @Column(name = "profile_img", length = 512, nullable = true)
         private String profileImg;
+
+        @Column(nullable = true)
+        private String email;
+
+        @Column(nullable = true)
+        private String password;
+
+        @Column(nullable = true)
+        @Enumerated(EnumType.STRING)
+        private Role role = Role.USER;
+
+        @Column(nullable = true)
+        @Enumerated(EnumType.STRING)
+        private SocialType socialType;
 
         @Builder
         public User (String name, String profileImg) {
