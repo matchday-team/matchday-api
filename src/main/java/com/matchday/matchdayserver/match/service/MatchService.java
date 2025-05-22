@@ -16,6 +16,8 @@ import com.matchday.matchdayserver.match.model.mapper.MatchMapper;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.match.model.dto.request.MatchMemoRequest;
 import com.matchday.matchdayserver.match.model.dto.response.MatchMemoResponse;
+import com.matchday.matchdayserver.match.util.MatchStateValidator;
+import com.matchday.matchdayserver.matchevent.common.MatchEventConstants;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -44,13 +46,19 @@ public class MatchService {
     Match match = matchRepository.findById(matchId)
         .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
 
+      MatchStateValidator.validateInPlay(match);
+
     match.updateMemo(request.getMemo());
     matchRepository.save(match);
       MatchMemoResponse response = MatchMemoResponse.builder().
           matchId(match.getId()).
           memo(match.getMemo()).
           build();
-      simpMessagingTemplate.convertAndSend("/topic/match-memo", response);
+
+      simpMessagingTemplate.convertAndSend(
+          MatchEventConstants.getMemoUrl(matchId),
+          response
+      );
   }
 
   public MatchMemoResponse get(Long matchId) {
@@ -133,10 +141,11 @@ public class MatchService {
                 switch (halfTimeRequest.getTimeType()) {
                     case START_TIME:
                         match.setFirstHalfStartTime(halfTimeRequest.getTime());
-                        match.setMatchState(MatchState.IN_PLAY);
+                        match.setMatchState(MatchState.PLAY_FIRST_HALF);
                         break;
                     case END_TIME:
                         match.setFirstHalfEndTime(halfTimeRequest.getTime());
+                        match.setMatchState(MatchState.HALF_TIME);
                         break;
                 }
                 break;
@@ -145,6 +154,7 @@ public class MatchService {
                 switch (halfTimeRequest.getTimeType()) {
                     case START_TIME:
                         match.setSecondHalfStartTime(halfTimeRequest.getTime());
+                        match.setMatchState(MatchState.PLAY_SECOND_HALF);
                         break;
                     case END_TIME:
                         match.setSecondHalfEndTime(halfTimeRequest.getTime());

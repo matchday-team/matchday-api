@@ -84,8 +84,8 @@ public class Match {
     private String memo;  //경기 메모
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "match_state", nullable = false, length = 50, columnDefinition = "VARCHAR(50) DEFAULT 'SCHEDULED'")
-    private MatchState matchState;  //경기 상태 (시작 전, 진행 중, 종료)
+    @Column(name = "match_state", nullable = false)
+    private MatchState matchState;
 
     public enum MatchType {
         리그, 대회, 친선경기

@@ -38,6 +38,10 @@ public class MatchUserResponse {
     private Integer goals;
 
     @NotNull
+    @Schema(description = "자책골 수", example = "1")
+    private Integer ownGoals;
+
+    @NotNull
     @Schema(description = "어시스트 수", example = "1")
     private Integer assists;
 
@@ -67,7 +71,7 @@ public class MatchUserResponse {
 
     @Builder
     public MatchUserResponse(Long id, Long userId, String name, Integer number, String matchPosition, Integer matchGrid,
-        Integer goals, Integer assists,
+        Integer goals, Integer ownGoals, Integer assists,
         Integer yellowCards, Integer redCards, Integer caution, boolean sentOff, String profileImg,boolean subIn, boolean subOut) {
         this.id = id;
         this.userId = userId;
@@ -76,6 +80,7 @@ public class MatchUserResponse {
         this.matchPosition = matchPosition;
         this.matchGrid = matchGrid;
         this.goals = goals;
+        this.ownGoals = ownGoals;
         this.assists = assists;
         this.yellowCards = yellowCards;
         this.redCards = redCards;

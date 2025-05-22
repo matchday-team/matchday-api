@@ -1,5 +1,9 @@
 package com.matchday.matchdayserver.matchevent.mapper;
 
+import com.matchday.matchdayserver.common.exception.ApiException;
+import com.matchday.matchdayserver.common.response.MatchStatus;
+import com.matchday.matchdayserver.match.model.enums.HalfType;
+import com.matchday.matchdayserver.match.model.enums.MatchState;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
@@ -11,6 +15,9 @@ import com.matchday.matchdayserver.user.model.entity.User;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import static com.matchday.matchdayserver.match.model.enums.HalfType.FIRST_HALF;
+import static com.matchday.matchdayserver.match.model.enums.HalfType.SECOND_HALF;
 
 public class MatchEventMapper {
 
@@ -25,8 +32,30 @@ public class MatchEventMapper {
 
     public static MatchEventResponse toResponse(MatchEvent matchEvent) {
         Match match = matchEvent.getMatch();
+
+        String halfTypeString;
+        LocalDateTime matchStartTime;
+
+        if (match.getMatchState() == MatchState.PLAY_FIRST_HALF) {
+            if (match.getFirstHalfStartTime() == null) {
+                throw new ApiException(MatchStatus.INVALID_MATCH_TIME);
+            }
+            matchStartTime = match.getFirstHalfStartTime().atDate(match.getMatchDate());
+            halfTypeString = FIRST_HALF.toString();
+
+        } else if (match.getMatchState() == MatchState.PLAY_SECOND_HALF) {
+            if (match.getSecondHalfStartTime() == null) {
+                throw new ApiException(MatchStatus.INVALID_MATCH_TIME);
+            }
+            matchStartTime = match.getSecondHalfStartTime().atDate(match.getMatchDate());
+            halfTypeString = SECOND_HALF.toString();
+
+        } else {
+            throw new ApiException(MatchStatus.NOT_IN_PLAY_MATCH);
+        }
+
         Long elapsedMinutes = calculateElapsedMinutes(
-            match.getPlannedStartTime().atDate(match.getMatchDate()),
+            matchStartTime,
             matchEvent.getEventTime());
         User user = Optional.ofNullable(matchEvent.getMatchUser().getUser()).orElseGet(User::mock);
         Team team = matchEvent.getMatchUser().getTeam();
@@ -34,6 +63,7 @@ public class MatchEventMapper {
         return MatchEventResponse.builder()
             .id(matchEvent.getId())
             .elapsedMinutes(elapsedMinutes)
+            .halfType(halfTypeString)
             .teamId(team.getId())
             .teamName(team.getName())
             .userId(user.getId())
