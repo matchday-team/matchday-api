@@ -63,7 +63,8 @@ public class JwtTokenFilter extends GenericFilter{
                 //authorities(권한) 만들기
                 List<GrantedAuthority> authorities = new ArrayList<>();//권한이 여러개일 수 있어서 List타입으로
                 authorities.add(new SimpleGrantedAuthority("ROLE_"+claims.get("role")));//ROLE_ 붙이는것이 관례// todo 롤값 없으면 안생김
-                UserDetails userDetails=new User(claims.getSubject(),"",authorities); //matchday.user가 아니고 시큐리티user임
+                Long userId = Long.valueOf(claims.get("userId").toString());
+                CustomUserDetails userDetails=new CustomUserDetails(userId,claims.getSubject(),authorities); //matchday.user가 아니고 시큐리티user임
                 Authentication authentication=new UsernamePasswordAuthenticationToken(userDetails,jwtToken,userDetails.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
