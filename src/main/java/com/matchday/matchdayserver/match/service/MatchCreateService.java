@@ -51,7 +51,6 @@ public class MatchCreateService {
                 .assistantReferee1(request.getAssistantReferee1())
                 .assistantReferee2(request.getAssistantReferee2())
                 .fourthReferee(request.getFourthReferee())
-                .matchState(request.getMatchState())
                 .firstHalfPeriod(request.getFirstHalfPeriod())
                 .secondHalfPeriod(request.getSecondHalfPeriod())
                 .build();
