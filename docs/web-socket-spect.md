@@ -224,13 +224,14 @@ const client = new Client({
   "matchEventType": "GOAL"  // 취소할 이벤트 타입 (필수)
 }
 ```
- - matchUserId : 취소할 이벤트를 발생시킨 matchUserId (팀 스탯 취소의 경우 null)
- - teamId : 취소할 이벤트가 소속된 팀Id (필수)
- - matchEventType : 취소할 이벤트 타입 (메인 이벤트 삭제시 파생 이벤트도 함께 삭제됨)
-   - `GOAL` 삭제 요청시 파생 데이터 `SHOT`, `VALID_SHOT` 함께 삭제 됨
-   - 최초 `YELLOW_CARD` 삭제 요청시 파생 데이터 `WARNING`, `FOUL` 함께 삭제 됨
-   - 2번째 `YELLOW_CARD` 삭제 요청시 파생 데이터 `RED_CARD`, `WARNING`, `FOUL` 함께 삭제 됨
-   - 'RED_CARD' 삭제 요청시 파생 데이터 `WARNING`, `FOUL` 함께 삭제 됨
+- matchUserId : 취소할 이벤트를 발생시킨 matchUserId (팀 스탯 취소의 경우 null)
+- teamId : 취소할 이벤트가 소속된 팀Id (필수)
+- matchEventType : 취소할 이벤트 타입 (메인 이벤트 삭제시 파생 이벤트도 함께 삭제됨)
+  - `GOAL` 삭제 요청시 파생 데이터 `SHOT`, `VALID_SHOT` 함께 삭제 됨
+  - 최초 `YELLOW_CARD` 삭제 요청시 파생 데이터 `WARNING`, `FOUL` 함께 삭제 됨
+  - 2번째 `YELLOW_CARD` 삭제 요청시 파생 데이터 `RED_CARD`, `WARNING`, `FOUL` 함께 삭제 됨
+  - `RED_CARD` 삭제 요청시 파생 데이터 `WARNING`, `FOUL` 함께 삭제 됨
+  - `VALID_SHOT` 삭제 요청 시 파생 데이터 `SHOT` 함께 삭제 됨
 
 ### 응답 메세지 구조
 ```json
