@@ -26,6 +26,10 @@ public class MatchEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private MatchEvent parent;
+
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime eventTime;
@@ -45,6 +49,10 @@ public class MatchEvent {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "match_user_id", nullable = false)
     private MatchUser matchUser;
+
+    public void setParent(MatchEvent parent) {
+        this.parent = parent;
+    }
 
     public MatchEvent copyWith(MatchEventType eventType) {
         return MatchEvent.builder()
