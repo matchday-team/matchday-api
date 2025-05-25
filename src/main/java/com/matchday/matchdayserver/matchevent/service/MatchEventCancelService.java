@@ -14,6 +14,7 @@ import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
 import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
 
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Service
 @Transactional
@@ -41,6 +42,13 @@ public class MatchEventCancelService {
                     matchId, request.getTeamId(), request.getMatchEventType().name())
                 .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH_EVENT));
         }
+
+        //파생 이벤트 삭제
+        List<MatchEvent> childEvents = matchEventRepository.findAllByParentId(matchEvent.getId());
+        matchEventRepository.deleteAll(childEvents);
+
+        // 메인 이벤트 삭제
         matchEventRepository.delete(matchEvent);
+
     }
 }
