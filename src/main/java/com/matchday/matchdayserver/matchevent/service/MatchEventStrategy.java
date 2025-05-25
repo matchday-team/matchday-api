@@ -182,6 +182,8 @@ public class MatchEventStrategy {
         MatchEvent validShotEvent = MatchEventMapper.toEntity(request, match, matchUser);
         MatchEvent shotEvent = validShotEvent.copyWith(MatchEventType.SHOT);
 
+        shotEvent.setParent(validShotEvent);
+
         matchEventRepository.saveAll(List.of(validShotEvent, shotEvent));
         return List.of(
             MatchEventMapper.toResponse(validShotEvent),
