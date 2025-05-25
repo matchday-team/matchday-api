@@ -40,10 +40,19 @@
         @Enumerated(EnumType.STRING)
         private SocialType socialType;
 
+        @Column(nullable = true)
+        private String socialId;
+
         @Builder
-        public User (String name, String profileImg) {
+        public User(String name, String email, String password, String profileImg,
+            Role role, SocialType socialType, String socialId) {
             this.name = name;
+            this.email = email;
+            this.password = password;
             this.profileImg = profileImg;
+            this.role = role != null ? role : Role.USER;
+            this.socialType = socialType;
+            this.socialId = socialId;
         }
 
         public void updateName(String name) {
