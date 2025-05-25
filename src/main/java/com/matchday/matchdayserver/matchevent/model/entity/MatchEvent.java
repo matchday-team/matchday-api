@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.matchevent.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.matchday.matchdayserver.match.model.entity.Match;
 import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
@@ -28,6 +29,7 @@ public class MatchEvent {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
+    @JsonIgnore
     private MatchEvent parent;
 
     @Column(nullable = false)
