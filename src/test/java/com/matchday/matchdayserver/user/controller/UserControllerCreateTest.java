@@ -71,7 +71,9 @@ public class UserControllerCreateTest extends IntegrationTestSupport {
         String duplicateName = "중복이름";
 
         // 먼저 동일한 이름으로 유저 생성
-        User existingUser = new User(duplicateName, null);
+        User existingUser = User.builder()
+            .name(duplicateName)
+            .build();
         userRepository.save(existingUser);
 
         UserCreateRequest request = new UserCreateRequest(duplicateName, null);
