@@ -18,7 +18,8 @@ public class CorsConfig {
             Constants.FRONTEND_LOCAL_URL,
             Constants.BACKEND_LOCAL_URL,
             Constants.FRONTEND_PRODUCTION_URL,
-            Constants.BACKEND_PRODUCTION_URL
+            Constants.BACKEND_PRODUCTION_URL,
+            Constants.FRONTEND_LOCAL_VUE_URL
         ));
         configuration.setAllowedMethods(Arrays.asList("*")); //모든 HTTP메서드 허용
         configuration.setAllowedHeaders(Arrays.asList(
