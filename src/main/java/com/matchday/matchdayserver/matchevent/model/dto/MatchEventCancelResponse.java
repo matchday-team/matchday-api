@@ -12,16 +12,16 @@ import lombok.Getter;
 public class MatchEventCancelResponse {
     @NotNull
     @Schema(description = "이벤트 ID", example = "1")
-    private Long id;
+    private final Long id;
 
     @NotNull
     @Schema(description = "팀 ID", example = "2")
-    private Long teamId;
+    private final Long teamId;
 
     @Schema(description = "매치 유저 ID", example = "13")
-    private Long matchUserId;
+    private final Long matchUserId;
 
     @NotNull
     @Schema(description = "취소된 이벤트 로그", example = "골")
-    private MatchEventType cancelEventLog;
+    private final MatchEventType cancelEventLog;
 }
