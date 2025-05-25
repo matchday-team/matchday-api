@@ -78,8 +78,6 @@ public class GoogleOauthService {
             .retrieve()//retrieve:응답 body값만을 추출
             .toEntity(GoogleAccessTokenResponse.class);// JSON → AccessTokenDto 역직렬화(restClient 의 기능)
 
-        System.out.println("응답 json"+response.getBody());
-
         return response.getBody();
     }
 
@@ -95,7 +93,6 @@ public class GoogleOauthService {
             .retrieve()
             .toEntity(GoogleProfileResponse.class);
 
-        System.out.println("profile JSON: "+response.getBody());
         return response.getBody();
     }
 
