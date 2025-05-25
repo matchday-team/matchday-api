@@ -136,19 +136,17 @@ public class MatchEventStrategy {
                 MatchEvent redCardEvent = cardEvent.copyWith(MatchEventType.RED_CARD);
                 redCardEvent.setParent(cardEvent);
                 needToSaveEvents.add(redCardEvent);
-                //needToSaveEvents.add(cardEvent.copyWith(MatchEventType.RED_CARD));
             }
         }
+
         needToSaveEvents.add(cardEvent);
         MatchEvent warningEvent = cardEvent.copyWith(MatchEventType.WARNING);
         warningEvent.setParent(cardEvent);
         needToSaveEvents.add(warningEvent);
-//        needToSaveEvents.add(cardEvent.copyWith(MatchEventType.WARNING));
 
         MatchEvent foulEvent = cardEvent.copyWith(MatchEventType.FOUL);
         foulEvent.setParent(cardEvent);
         needToSaveEvents.add(foulEvent);
-//        needToSaveEvents.add(cardEvent.copyWith(MatchEventType.FOUL));
 
         matchEventRepository.saveAll(needToSaveEvents);
 
