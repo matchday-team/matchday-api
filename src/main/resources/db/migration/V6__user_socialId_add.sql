@@ -1,0 +1,2 @@
+ALTER TABLE `user`
+    ADD COLUMN `social_id` VARCHAR(255) NULL;
