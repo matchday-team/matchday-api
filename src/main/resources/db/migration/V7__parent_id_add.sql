@@ -1,4 +1,4 @@
-ALTER TABLE match_event
+ALTER TABLE `match_event`
     ADD COLUMN parent_id BIGINT;
 
 ALTER TABLE match_event
