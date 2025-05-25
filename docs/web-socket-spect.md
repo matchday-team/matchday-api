@@ -11,8 +11,8 @@
 7. [이벤트 취소](#이벤트-취소)
 8. [이벤트 저장 및 검증 로직](#이벤트-저장-및-검증-로직)
 9. [Validation 상세](#validation-상세)
-10. [전체 플로우 요약](#전체-플로우-요약)
-1. [기타 참고사항](#기타-참고사항)
+10. [전체 플로우 요약](#전체-플로우-요약)  
+11. [기타 참고사항](#기타-참고사항)
 
 ## WebSocket 연결 및 엔드포인트
 
@@ -213,19 +213,19 @@ const client = new Client({
 
 ## 이벤트 취소
 ### 이벤트 취소 요청 엔드포인트
- - STOMP 메시지 송신 경로 : `/app/match/{matchId}/cancel`
- - STOMP 구독 경로 : `/topic/match/{matchId}`
+- STOMP 메시지 송신 경로 : `/app/match/{matchId}/cancel`
+- STOMP 구독 경로 : `/topic/match/{matchId}`
 
 ### 요청 메세지 구조
 ```json
 {
-  "matchUserId": 1, // 취소할 이벤트를 발생시킨 매치유저 ID (선택)
+  "matchUserId": 1, // 취소할 이벤트를 발생시킨 매치유저 ID (optional)
   "teamId": 5,      // 취소할 이벤트의 소속팀 ID (필수)
   "matchEventType": "GOAL"  // 취소할 이벤트 타입 (필수)
 }
 ```
 - matchUserId : 취소할 이벤트를 발생시킨 matchUserId (팀 스탯 취소의 경우 null)
-- teamId : 취소할 이벤트가 소속된 팀Id (필수)
+- teamId : 취소할 이벤트가 소속된 팀Id (U) 
 - matchEventType : 취소할 이벤트 타입 (메인 이벤트 삭제시 파생 이벤트도 함께 삭제됨)
   - `GOAL` 삭제 요청시 파생 데이터 `SHOT`, `VALID_SHOT` 함께 삭제 됨
   - 최초 `YELLOW_CARD` 삭제 요청시 파생 데이터 `WARNING`, `FOUL` 함께 삭제 됨
