@@ -54,10 +54,10 @@ public class MatchEventCancelService {
         // 메인 이벤트 삭제
         matchEventRepository.delete(matchEvent);
 
-        MatchEventCancelResponse response = MatchEventMapper.toCancelResponse(matchEvent);
+//        MatchEventCancelResponse response = MatchEventMapper.toCancelResponse(matchEvent);
 
-        simpMessagingTemplate.convertAndSend(
-            MatchEventConstants.getMatchEventUrl(matchId),response);
+//        simpMessagingTemplate.convertAndSend(
+//            MatchEventConstants.getMatchEventUrl(matchId),response);
 
     }
 }
