@@ -77,13 +77,13 @@ public class TeamResultSummaryService {
                 
                 if (homeGoals > awayGoals) {
                     win++;
-                    if(recentResults.size() <= 5) recentResults.add(MatchResult.WIN);
+                    if(recentResults.size() < 5) recentResults.add(MatchResult.WIN);
                 } else if (homeGoals < awayGoals) {
                     loss++;
-                    if(recentResults.size() <= 5) recentResults.add(MatchResult.LOSE);
+                    if(recentResults.size() < 5) recentResults.add(MatchResult.LOSE);
                 } else {
                     draw++;
-                    if(recentResults.size() <= 5) recentResults.add(MatchResult.DRAW);
+                    if(recentResults.size() < 5) recentResults.add(MatchResult.DRAW);
                 }
             } else {
                 totalGoalsScored += awayGoals;
@@ -91,18 +91,18 @@ public class TeamResultSummaryService {
                 
                 if (awayGoals > homeGoals) {
                     win++;
-                    if(recentResults.size() <= 5) recentResults.add(MatchResult.WIN);
+                    if(recentResults.size() < 5) recentResults.add(MatchResult.WIN);
                 } else if (awayGoals < homeGoals) {
                     loss++;
-                    if(recentResults.size() <= 5) recentResults.add(MatchResult.LOSE);
+                    if(recentResults.size() < 5) recentResults.add(MatchResult.LOSE);
                 } else {
                     draw++;
-                    if(recentResults.size() <= 5) recentResults.add(MatchResult.DRAW);
+                    if(recentResults.size() < 5) recentResults.add(MatchResult.DRAW);
                 }
 
             }
         }
-        
+
         MatchResultSummary winLossDraw = MatchResultSummary.builder()
             .win(win)
             .loss(loss)
