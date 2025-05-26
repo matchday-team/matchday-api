@@ -32,6 +32,7 @@ import java.util.List;
 public class JwtTokenFilter extends GenericFilter{
 
     private final SecretKey secretKey;//SecretKey가 Key보다 하위 인터페이스
+    private static final String BEARER_PREFIX = "Bearer ";
 
     public JwtTokenFilter(@Value("${jwt.secret}") String secretKey) {
         this.secretKey = generateSecretKey(secretKey);
@@ -49,7 +50,7 @@ public class JwtTokenFilter extends GenericFilter{
         String token = httpServletRequest.getHeader("Authorization");//Authorization 헤더에서 토큰값을 꺼낸다
         try{
             if(token !=null){
-                if(!token.substring(0,7).equals("Bearer ")){//앞에 Bearer공백 붙었는지 확인
+                if(!token.substring(0,7).equals(BEARER_PREFIX)){//앞에 Bearer공백 붙었는지 확인
                     throw new ApiException(AuthStatus.INVALID_AUTHORIZATION_HEADER);
                 }
                 String jwtToken = token.substring(7);//Bearer 뜯어내기
