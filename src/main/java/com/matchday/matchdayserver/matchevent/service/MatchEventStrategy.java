@@ -76,6 +76,10 @@ public class MatchEventStrategy {
         MatchEvent goalEvent = MatchEventMapper.toEntity(request, match, user);
         MatchEvent shotEvent = goalEvent.copyWith(MatchEventType.SHOT);
         MatchEvent validShotEvent = goalEvent.copyWith(MatchEventType.VALID_SHOT);
+
+        shotEvent.setParent(goalEvent);
+        validShotEvent.setParent(goalEvent);
+
         matchEventRepository.saveAll(List.of(goalEvent, shotEvent, validShotEvent));
 
         List<MatchEventResponse> matchEventResponses = new ArrayList<>();
@@ -128,12 +132,21 @@ public class MatchEventStrategy {
         if(request.getEventType().equals(MatchEventType.YELLOW_CARD)) {
             boolean isAlreadyGetYellow = matchEventRepository.existsByMatchUserIdAndEventType(
                 matchUser.getId(), MatchEventType.YELLOW_CARD);
-            if(isAlreadyGetYellow)
-                needToSaveEvents.add(cardEvent.copyWith(MatchEventType.RED_CARD));
+            if(isAlreadyGetYellow){
+                MatchEvent redCardEvent = cardEvent.copyWith(MatchEventType.RED_CARD);
+                redCardEvent.setParent(cardEvent);
+                needToSaveEvents.add(redCardEvent);
+            }
         }
+
         needToSaveEvents.add(cardEvent);
-        needToSaveEvents.add(cardEvent.copyWith(MatchEventType.WARNING));
-        needToSaveEvents.add(cardEvent.copyWith(MatchEventType.FOUL));
+        MatchEvent warningEvent = cardEvent.copyWith(MatchEventType.WARNING);
+        warningEvent.setParent(cardEvent);
+        needToSaveEvents.add(warningEvent);
+
+        MatchEvent foulEvent = cardEvent.copyWith(MatchEventType.FOUL);
+        foulEvent.setParent(cardEvent);
+        needToSaveEvents.add(foulEvent);
 
         matchEventRepository.saveAll(needToSaveEvents);
 
@@ -168,6 +181,9 @@ public class MatchEventStrategy {
         MatchUser matchUser) {
         MatchEvent validShotEvent = MatchEventMapper.toEntity(request, match, matchUser);
         MatchEvent shotEvent = validShotEvent.copyWith(MatchEventType.SHOT);
+
+        shotEvent.setParent(validShotEvent);
+
         matchEventRepository.saveAll(List.of(validShotEvent, shotEvent));
         return List.of(
             MatchEventMapper.toResponse(validShotEvent),
