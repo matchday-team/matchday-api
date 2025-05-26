@@ -61,9 +61,7 @@ public class MatchEventSaveService {
         Match match = matchUser.getMatch();
 
         //경기 상태가 진행 중인지 확인
-        if (!match.getMatchState().equals(MatchState.IN_PLAY)) {
-            throw new ApiException(MatchStatus.NOT_IN_PLAY_MATCH);
-        }
+        MatchStateValidator.validateInPlay(match);
 
         List<MatchEventResponse> matchEventResponse = matchEventStrategy.generateMatchEventLog(
             request, match, matchUser);

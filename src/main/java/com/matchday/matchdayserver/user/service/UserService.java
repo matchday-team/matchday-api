@@ -35,7 +35,10 @@ public class UserService {
     private final MatchUserRepository matchUserRepository;
 
     public Long createUser(UserCreateRequest request){
-        User user = new User(request.getName(), request.getProfileImg());
+        User user = User.builder()
+            .name(request.getName())
+            .profileImg(request.getProfileImg())
+            .build();
         userRepository.save(user);
         return user.getId();
     }

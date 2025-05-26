@@ -74,8 +74,8 @@ public class MatchScoreResponse {
             case CORNER_KICK -> score.upCornerKickCount();
             case FOUL -> score.upFoulCount();
             case OFFSIDE -> score.upOffsideCount();
-            case YELLOW_CARD -> score.upWarningCount();
-            case RED_CARD -> score.upWarningCount();
+            //case YELLOW_CARD -> score.upWarningCount();
+            //case RED_CARD -> score.upWarningCount();
             case WARNING -> score.upWarningCount();
             case OWN_GOAL -> score.upOwnGoalCount();
         }

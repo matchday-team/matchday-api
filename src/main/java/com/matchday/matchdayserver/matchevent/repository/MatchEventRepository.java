@@ -57,4 +57,7 @@ public interface MatchEventRepository extends JpaRepository<MatchEvent, Long> {
         @Param("teamId") Long teamId,
         @Param("matchEventType") String matchEventType
     );
+
+    List<MatchEvent> findAllByParentId(Long parentId);
+
 }
