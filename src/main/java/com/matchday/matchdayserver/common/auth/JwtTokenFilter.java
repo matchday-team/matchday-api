@@ -33,6 +33,7 @@ public class JwtTokenFilter extends GenericFilter{
 
     private final SecretKey secretKey;//SecretKey가 Key보다 하위 인터페이스
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String USERINFO_ATTRIBUTE_NAME="userInfo";
 
     public JwtTokenFilter(@Value("${jwt.secret}") String secretKey) {
         this.secretKey = generateSecretKey(secretKey);
@@ -68,6 +69,7 @@ public class JwtTokenFilter extends GenericFilter{
                 CustomUserDetails userDetails=new CustomUserDetails(userId,claims.getSubject(),authorities); //matchday.user가 아니고 시큐리티user임
                 Authentication authentication=new UsernamePasswordAuthenticationToken(userDetails,jwtToken,userDetails.getAuthorities());
 
+                request.setAttribute(USERINFO_ATTRIBUTE_NAME,authentication.getPrincipal());//request에 userDetails 내용 추가
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             chain.doFilter(request,response);//SecurityFilterChain으로 다시 돌아가기 위한 코드
