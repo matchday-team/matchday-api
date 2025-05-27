@@ -60,4 +60,7 @@ public interface MatchEventRepository extends JpaRepository<MatchEvent, Long> {
 
     List<MatchEvent> findAllByParentId(Long parentId);
 
+    //이벤트별 누적 값 계산
+    @Query("SELECT COUNT(e) FROM MatchEvent e JOIN MatchUser mu ON e.matchUser.id = mu.id " + "WHERE mu.team.id = :teamId AND mu.user.id = :userId AND e.eventType = :eventType")
+    int countEventsByTeamIdAndUserIdAndEventType(@Param("teamId") Long teamId, @Param("userId") Long userId, @Param("eventType") MatchEventType eventType);
 }
