@@ -37,7 +37,7 @@ public class UserSessionResolver implements HandlerMethodArgumentResolver {
 
         Optional<CustomUserDetails> customUserDetails = Optional.ofNullable(
                 RequestContextHolder.getRequestAttributes())
-            .map(attributes -> (CustomUserDetails) attributes.getAttribute(JwtTokenFilter.USERINFO_ATTRIBUTE_NAME, RequestAttributes.SCOPE_REQUEST));
+            .map(attributes -> (CustomUserDetails) attributes.getAttribute(JwtTokenFilter.USERDETAILS_ATTRIBUTE_NAME, RequestAttributes.SCOPE_REQUEST));
 
         Long userId = customUserDetails
             .map(CustomUserDetails::getUserId)
