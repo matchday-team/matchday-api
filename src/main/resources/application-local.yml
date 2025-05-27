@@ -1,20 +1,25 @@
+# active profile local
 spring:
     config:
         import: optional:file:.env[.properties]
     application:
         name: matchday-server
     datasource:
-        url: ${SPRING_DATASOURCE_URL}
-        username: ${SPRING_DATASOURCE_USERNAME}
-        password: ${SPRING_DATASOURCE_PASSWORD}
+        url: ${SPRING_DATASOURCE_URL_LOCAL}
+        username: ${SPRING_DATASOURCE_USERNAME_LOCAL}
+        password: ${SPRING_DATASOURCE_PASSWORD_LOCAL}
         driver-class-name: com.mysql.cj.jdbc.Driver
 
     jpa:
         hibernate:
-            ddl-auto: validate
+            ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO_LOCAL}
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.MySQLDialect
+
+    sql:
+        init:
+            mode: always
 
     cloud:
         aws:
@@ -28,20 +33,19 @@ spring:
                 access-key: ${AWS_ACCESS_KEY}
                 secret-key: ${AWS_SECRET_KEY}
 
-    flyway:
-        enabled: true
-        baseline-on-migrate: true
-        locations: classpath:db/migration
-
 springdoc:
     api-docs:
         version: "openapi_3_0"
-        url: "https://dev-api.matchday-planner.com"
+        url: "http://localhost:8080"
 
 decorator:
     datasource:
         p6spy:
-            enable-logging: false
+            enable-logging: true
+            multiline: true
+            logging: slf4j
+            # 실제값 한 줄만 출력됨 이거 안하면 ? 쿼리하는 거까지 총 두 줄뜸
+            log-format: "%(sql)"
 
 jwt:
     secret: ${JWT_SECRET}
@@ -52,9 +56,3 @@ oauth:
         client-id: ${OAUTH_GOOGLE_CLIENT_ID}
         client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
         redirect-url: ${OAUTH_GOOGLE_REDIRECT_URL}
-
-logging:
-    level:
-        org.springframework.messaging: DEBUG
-        org.springframework.web.socket: DEBUG
-        org.springframework.web.socket.messaging: DEBUG

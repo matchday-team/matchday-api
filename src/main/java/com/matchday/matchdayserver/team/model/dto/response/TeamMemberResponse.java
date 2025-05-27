@@ -31,13 +31,25 @@ public class TeamMemberResponse {
     @Schema(description = "프로필 이미지", nullable = true)
     private String imageUrl; //프로필 이미지 url
 
+    @Schema(description = "누적 출전수")
+    private int totalAppearances;
+
+    @Schema(description = "누적 득점수")
+    private int totalGoals;
+
+    @Schema(description = "누적 경고수")
+    private int totalWarnings;
+
     @Builder
-    public TeamMemberResponse(Long id, String name, Integer number, String defaultPosition, Boolean isActive,String imageUrl) {
+    public TeamMemberResponse(Long id, String name, Integer number, String defaultPosition, Boolean isActive,String imageUrl, int totalAppearances, int totalGoals, int totalWarnings) {
         this.id = id;
         this.name = name;
         this.number = number;
         this.defaultPosition = defaultPosition;
         this.isActive = isActive;
         this.imageUrl = imageUrl;
+        this.totalAppearances = totalAppearances;
+        this.totalGoals = totalGoals;
+        this.totalWarnings = totalWarnings;
     }
 }

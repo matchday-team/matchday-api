@@ -44,4 +44,16 @@ public interface MatchUserRepository extends JpaRepository<MatchUser, Long> {
     // 특정 경기의 모든 MatchUser 조회
     List<MatchUser> findByMatchId(Long matchId);
 
+    @Query(value = """
+    SELECT COUNT(*) FROM match_user mu
+    LEFT JOIN match_event me 
+        ON mu.id = me.match_user_id AND me.event_type = 'SUB_IN'
+    WHERE mu.team_id = :teamId
+    AND mu.user_id = :userId
+    AND (
+        mu.role = 'START_PLAYER' OR 
+        (mu.role = 'SUB_PLAYER' AND me.id IS NOT NULL)
+    )
+""", nativeQuery = true)
+    int countAppearances(@Param("teamId") Long teamId, @Param("userId") Long userId);
 }

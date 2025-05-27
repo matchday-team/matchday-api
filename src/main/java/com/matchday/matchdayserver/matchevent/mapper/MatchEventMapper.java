@@ -3,7 +3,7 @@ package com.matchday.matchdayserver.matchevent.mapper;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.match.model.enums.HalfType;
-import com.matchday.matchdayserver.match.model.enums.MatchState;
+import com.matchday.matchdayserver.matchevent.model.dto.MatchEventCancelResponse;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventRequest;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
@@ -76,5 +76,14 @@ public class MatchEventMapper {
             case FIRST_HALF -> match.getFirstHalfStartTime().atDate(match.getMatchDate());
             case SECOND_HALF -> match.getSecondHalfStartTime().atDate(match.getMatchDate());
         };
+    }
+
+    public static MatchEventCancelResponse toCancelResponse(MatchEvent event) {
+        return new MatchEventCancelResponse(
+            event.getId(),
+            event.getMatchUser().getTeam().getId(),
+            event.getMatchUser().getId(),
+            event.getEventType()
+        );
     }
 }
