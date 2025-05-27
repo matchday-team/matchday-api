@@ -3,8 +3,6 @@ package com.matchday.matchdayserver.user.service;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
-import com.matchday.matchdayserver.match.model.entity.Match;
-import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
 import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
