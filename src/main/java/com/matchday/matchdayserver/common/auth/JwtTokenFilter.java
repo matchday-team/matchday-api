@@ -19,8 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -33,7 +31,7 @@ public class JwtTokenFilter extends GenericFilter{
 
     private final SecretKey secretKey;//SecretKey가 Key보다 하위 인터페이스
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final String USERINFO_ATTRIBUTE_NAME="userInfo";
+    public static final String USERINFO_ATTRIBUTE_NAME="userInfo";
 
     public JwtTokenFilter(@Value("${jwt.secret}") String secretKey) {
         this.secretKey = generateSecretKey(secretKey);
