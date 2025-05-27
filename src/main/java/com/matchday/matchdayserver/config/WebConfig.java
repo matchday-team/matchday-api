@@ -1,12 +1,19 @@
 package com.matchday.matchdayserver.config;
 
+import com.matchday.matchdayserver.common.resolver.UserIdResolver;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.matchday.matchdayserver.common.Constants;
+import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
+
+private final UserIdResolver userIdResolver;
 
   @Override
   public void addCorsMappings(CorsRegistry registry) {
@@ -15,4 +22,9 @@ public class WebConfig implements WebMvcConfigurer {
         .allowedMethods("*")
         .allowedHeaders("*");
   }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(userIdResolver);
+    }
 }
