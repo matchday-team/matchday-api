@@ -36,9 +36,16 @@ spring:
 springdoc:
     api-docs:
         version: "openapi_3_0"
-        url: "https://dev-api.matchday-planner.com"
+        #url: "https://dev-api.matchday-planner.com"
+        url : "http://localhost:8080"
 
 decorator:
     datasource:
         p6spy:
             enable-logging: false
+
+logging:
+    level:
+        org.springframework.messaging: DEBUG
+        org.springframework.web.socket: DEBUG
+        org.springframework.web.socket.messaging: DEBUG
