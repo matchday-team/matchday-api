@@ -2,6 +2,7 @@ package com.matchday.matchdayserver.team.service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
+import com.matchday.matchdayserver.matchevent.model.enums.MatchEventType;
 import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
 import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
@@ -80,9 +81,10 @@ public class TeamService {
             Long userId = userTeam.getUser().getId();
 
             int appearances = matchUserRepository.countAppearances(teamId, userId);
-            int goals = matchEventRepository.countGoalsByTeamIdAndUserId(teamId, userId);
-            int warnings = matchEventRepository.countWarningsByTeamIdAndUserId(
-                teamId, userId);
+            int goals = matchEventRepository.countEventsByTeamIdAndUserIdAndEventType(teamId,userId,
+                MatchEventType.GOAL);
+            int warnings = matchEventRepository.countEventsByTeamIdAndUserIdAndEventType(teamId,userId,
+                MatchEventType.WARNING);
 
             return UserTeamMapper.toTeamMemberResponse(userTeam, appearances, goals, warnings);
         }).collect(Collectors.toList());
