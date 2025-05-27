@@ -1,4 +1,4 @@
-package com.matchday.matchdayserver.auth.controller;
+package com.matchday.matchdayserver.user.controller;
 
 import com.matchday.matchdayserver.auth.model.dto.request.OauthLoginRequest;
 import com.matchday.matchdayserver.auth.model.dto.response.OauthLoginResponse;
@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "auth", description = "인증 관련 API")
+@Tag(name = "open-api", description = "인증이 필요없는 API")
+@RequestMapping("/open-api/v1/users")
 @RestController
-@RequestMapping("/api/v1/auth/oauth")
 @RequiredArgsConstructor
-public class GoogleOauthController {
+public class UserOpenApiController {
 
     private final GoogleOauthService googleOauthService;
 
@@ -23,4 +23,5 @@ public class GoogleOauthController {
     public ApiResponse<OauthLoginResponse> googleLogin(@RequestBody OauthLoginRequest oAuthLoginRequest){
         return ApiResponse.ok(googleOauthService.googleLogin(oAuthLoginRequest));
     }
+
 }
