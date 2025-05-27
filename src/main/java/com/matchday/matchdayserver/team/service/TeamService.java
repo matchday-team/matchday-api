@@ -2,6 +2,8 @@ package com.matchday.matchdayserver.team.service;
 
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
+import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
+import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
 import com.matchday.matchdayserver.team.model.dto.response.*;
 import com.matchday.matchdayserver.team.model.entity.Team;
@@ -22,6 +24,8 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final UserTeamRepository userTeamRepository;
+    private final MatchUserRepository matchUserRepository;
+    private final MatchEventRepository matchEventRepository;
 
     //팀 생성
     public Long create(TeamCreateRequest request){
@@ -71,13 +75,22 @@ public class TeamService {
     //팀에 속한 선수들 조회
     public TeamMemberListResponse getTeamMembers(Long teamId){
         List<UserTeam> userTeams = userTeamRepository.findAllByTeamId(teamId);
-        List<TeamMemberResponse> userTeamMembers = userTeams.stream()
-                .map(userTeam -> UserTeamMapper.toTeamMemberResponse(userTeam))
-                .collect(Collectors.toList());
+
+        List<TeamMemberResponse> userTeamMembers = userTeams.stream().map(userTeam -> {
+            Long userId = userTeam.getUser().getId();
+
+            int appearances = matchUserRepository.countAppearances(teamId, userId);
+            int goals = matchEventRepository.countGoalsByTeamIdAndUserId(teamId, userId);
+            int warnings = matchEventRepository.countWarningsByTeamIdAndUserId(
+                teamId, userId);
+
+            return UserTeamMapper.toTeamMemberResponse(userTeam, appearances, goals, warnings);
+        }).collect(Collectors.toList());
+
         return new TeamMemberListResponse(userTeamMembers);
     }
 
-  public boolean existsById(Long teamId) {
+    public boolean existsById(Long teamId) {
     return teamRepository.existsById(teamId);
   }
 }
