@@ -23,7 +23,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return this.authorities; // 실제 주입된 권한 리스트 반환
     }
 
     @Override
@@ -33,7 +33,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return "";
+        return this.username; // JWT의 sub로부터 받은 값 반환
     }
 
     @Override
