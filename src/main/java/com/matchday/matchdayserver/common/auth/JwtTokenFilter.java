@@ -43,7 +43,7 @@ public class JwtTokenFilter extends GenericFilter{
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;//HTTP 전용 메소드를 사용하기 위해 변환
         //토큰 형식 검증(Bearer)
         String jwtToken =resolveToken(httpServletRequest);
-        if(StringUtils.hasText(jwtToken) && tokenHelper.validateToken(jwtToken)){
+        if(tokenHelper.validateToken(jwtToken)){
             //문제가 없으면 SecurityContextHolder 에 jwtToken 정보가 담긴 authentication 적재
             Authentication authentication = tokenHelper.getAuthentication(jwtToken);
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();//UserDetails를 구현한 사용자 객체를 Return

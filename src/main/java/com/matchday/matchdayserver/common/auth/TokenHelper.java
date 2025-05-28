@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import javax.crypto.SecretKey;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,9 @@ public class TokenHelper {
 
     //유효한 Jwt 토큰인지 검증
     public boolean validateToken(String token) {
+        if (!StringUtils.hasText(token)) {
+            throw new ApiException(JwtStatus.EMPTY_TOKEN);
+        }
         try{
             Claims claims= getClaims(token);
             return true;

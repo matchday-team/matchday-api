@@ -6,7 +6,9 @@ public enum JwtStatus implements StatusInterface {
     EXPIRED_TOKEN(401, 9002, "JWT 토큰이 만료됨"),
     SIGNATURE_NOT_MATCH(401, 9003, "JWT 서명이 적절하지 않음"),
     MALFORMED_TOKEN(401, 9004, "JWT 형식이 잘못됨"),
-    INVALID_TOKEN(401, 9005, "유효하지 않은 JWT 토큰")
+    INVALID_TOKEN(401, 9005, "유효하지 않은 JWT 토큰"),
+    EMPTY_TOKEN(401,9006,"토큰이 존재하지 않거나 비어 있음")
+
     ;
 
     private final int httpStatusCode;
