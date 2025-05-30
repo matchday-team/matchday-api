@@ -32,13 +32,9 @@ import java.util.*;
 public class TokenHelper {
 
     private final SecretKey secretKey;//SecretKey가 Key보다 하위 인터페이스
-    private final JwtTokenProvider jwtTokenProvider;
-    private final UserRepository userRepository;
 
-    public TokenHelper(@Value("${jwt.secret}") String secretKey, JwtTokenProvider jwtTokenProvider,UserRepository userRepository) {
-        this.jwtTokenProvider=jwtTokenProvider;
+    public TokenHelper(@Value("${jwt.secret}") String secretKey) {
         this.secretKey = generateSecretKey(secretKey);
-        this.userRepository = userRepository;
     }
 
     private SecretKey generateSecretKey(String secret) {
@@ -50,7 +46,8 @@ public class TokenHelper {
     public boolean validateToken(String token, JwtTokenType type) {
         try{
             Claims claims= getClaims(token);
-            if (type!=claims.get("tokenType", JwtTokenType.class)){
+            String tokenTypeStr = claims.get("tokenType", String.class);
+            if (!type.name().equals(tokenTypeStr)) {
                 throw new ApiException(JwtStatus.INVALID_TOKEN_TYPE);
             }
             return true;
