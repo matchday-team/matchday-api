@@ -1,14 +1,23 @@
 package com.matchday.matchdayserver.common.auth;
 
+import com.matchday.matchdayserver.auth.model.dto.enums.JwtTokenType;
+import com.matchday.matchdayserver.auth.model.dto.response.RenewResponse;
+import com.matchday.matchdayserver.auth.service.GoogleOauthService;
 import com.matchday.matchdayserver.common.exception.ApiException;
+import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.common.response.JwtStatus;
+import com.matchday.matchdayserver.user.model.entity.User;
+import com.matchday.matchdayserver.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.internal.parser.TokenType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,8 +25,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -35,9 +43,13 @@ public class TokenHelper {
     }
 
     //유효한 Jwt 토큰인지 검증
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token, JwtTokenType type) {
         try{
             Claims claims= getClaims(token);
+            String tokenTypeStr = claims.get("tokenType", String.class);
+            if (!type.name().equals(tokenTypeStr)) {
+                throw new ApiException(JwtStatus.INVALID_TOKEN_TYPE);
+            }
             return true;
         } catch (SignatureException exception) {
             log.error(exception.getMessage() + "\n" + exception.getStackTrace()
@@ -46,7 +58,10 @@ public class TokenHelper {
         } catch (ExpiredJwtException exception) {
             log.error(exception.getMessage() + "\n" + exception.getStackTrace()
                 .toString());
-            throw new ApiException(JwtStatus.EXPIRED_TOKEN);
+            if (type == JwtTokenType.REFRESH) {
+                throw new ApiException(JwtStatus.EXPIRED_REFRESH_TOKEN);
+            }
+            throw new ApiException(JwtStatus.EXPIRED_ACCESS_TOKEN);
         } catch (Exception exception) {
             log.error(exception.getMessage() + "\n" + exception.getStackTrace()
                 .toString());

@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OauthLoginResponse {
-    String accessToken; //서버 access token
-    Long id;
+public class RenewResponse {
+    String accessToken; //재발급 받은 서버 access token
 }
