@@ -7,6 +7,7 @@ import com.matchday.matchdayserver.common.auth.JwtTokenProvider;
 import com.matchday.matchdayserver.common.auth.TokenHelper;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.JwtStatus;
+import com.matchday.matchdayserver.user.model.dto.response.LoginResponse;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -25,23 +26,27 @@ public class UserOpenApiService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
+    public static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+
+    public LoginResponse doLogin(User user) {
+
+        String accessToken=jwtTokenProvider.createToken(user, JwtTokenType.ACCESS);
+        String refreshToken=jwtTokenProvider.createToken(user, JwtTokenType.REFRESH);
+        return new LoginResponse(accessToken,createCookie(refreshToken,REFRESH_TOKEN_COOKIE_NAME),
+            user.getId());
+    }
+
     public RenewResponse renewToken(HttpServletRequest request){
         String refreshToken = getTokenFromRequest(request);
         tokenHelper.validateToken(refreshToken, JwtTokenType.REFRESH);
         Claims claims = tokenHelper.getClaims(refreshToken);
 
-        Map<String, Object> payload = new HashMap<>();
-        Long userId = Long.valueOf(claims.get("userId").toString());
-        String email = claims.getSubject();
-        String role = claims.get("role").toString();
-        payload.put("userId", userId);
-        payload.put("role", role);
-
         //DB 조회로 사용자 상태 검증
+        Long userId = Long.valueOf(claims.get("userId").toString());
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ApiException(JwtStatus.NOTFOUND_USER));
 
-        String jwtAccessToken=jwtTokenProvider.createToken(email, payload, JwtTokenType.ACCESS);
+        String jwtAccessToken=jwtTokenProvider.createToken(user, JwtTokenType.ACCESS);
 
         return new RenewResponse(jwtAccessToken);
     }
@@ -49,8 +54,11 @@ public class UserOpenApiService {
     private String getTokenFromRequest(HttpServletRequest request) {
         String refresh = null;
         Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new ApiException(JwtStatus.NOTFOUND_COOKIE);
+        }
         for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(GoogleOauthService.REFRESH_TOKEN_COOKIE_NAME)) {
+            if (cookie.getName().equals(REFRESH_TOKEN_COOKIE_NAME)) {
                 refresh = cookie.getValue();
             }
         }
@@ -58,5 +66,16 @@ public class UserOpenApiService {
             throw new ApiException(JwtStatus.NOTFOUND_TOKEN_IN_COOKIE);
         }
         return refresh;
+    }
+
+    private Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24*60*60);
+        cookie.setSecure(false); //https (운영환경에선)false
+        cookie.setPath("/"); //전체 경로에 대해 쿠키 유효
+        cookie.setHttpOnly(true);
+
+        return cookie;
     }
 }
