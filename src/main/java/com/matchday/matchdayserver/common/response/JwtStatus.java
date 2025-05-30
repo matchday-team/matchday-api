@@ -10,7 +10,9 @@ public enum JwtStatus implements StatusInterface {
     INVALID_TOKEN(401, 9006, "유효하지 않은 JWT 토큰"),
     INVALID_TOKEN_TYPE(400,9007,"적절한 토큰 타입이 아닙니다(ACCESS,REFRESH)"),
     NOTFOUND_TOKEN_IN_COOKIE(404,9008,"쿠키에서 토큰값을 찾을 수 없습니다"),
-    NOTFOUND_USER(404,9009,"토큰 페이로드 정보로 찾을 수 없는 사용자 입니다.")
+    NOTFOUND_USER(404,9009,"토큰 페이로드 정보로 찾을 수 없는 사용자 입니다."),
+    NOTFOUND_COOKIE(404,9008,"쿠키에 데이터가 없습니다"),
+
     ;
 
     private final int httpStatusCode;
