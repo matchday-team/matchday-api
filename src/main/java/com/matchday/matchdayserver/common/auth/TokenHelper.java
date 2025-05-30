@@ -94,40 +94,4 @@ public class TokenHelper {
             .parseSignedClaims(token)//검증할 토큰 전달
             .getPayload();
     }
-
-    public RenewResponse renew(HttpServletRequest request){
-        //리프레시 토큰 가져와서 토큰 있는지 확인
-        String refresh = null;
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(GoogleOauthService.REFRESH_TOKEN_COOKIE_NAME)) {
-                refresh = cookie.getValue();
-            }
-        }
-
-        if (refresh == null) {
-            throw new ApiException(JwtStatus.NOTFOUND_TOKEN_IN_COOKIE);
-        }
-
-        //리프레시 토큰이 유효한지 검증
-        validateToken(refresh,JwtTokenType.REFRESH);
-
-        //JWT 만들어 리턴해주기
-        Claims claims = getClaims(refresh);
-
-        Map<String, Object> payload = new HashMap<>();
-        Long userId = Long.valueOf(claims.get("userId").toString());
-        String email = claims.getSubject();
-        String role = claims.get("role").toString();
-        payload.put("userId", userId);
-        payload.put("role", role);
-
-        //DB 조회로 사용자 상태 검증
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(JwtStatus.NOTFOUND_USER));
-
-        String jwtAccessToken=jwtTokenProvider.createToken(email, payload, JwtTokenType.ACCESS);
-
-        return new RenewResponse(jwtAccessToken);
-    }
 }
