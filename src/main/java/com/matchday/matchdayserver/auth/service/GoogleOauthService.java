@@ -25,6 +25,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class GoogleOauthService {
+
+    public static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+
     @Value("${oauth.google.client-id}")
     private String googleClientId;
 
@@ -61,7 +64,7 @@ public class GoogleOauthService {
         String jwtAccessToken=jwtTokenProvider.createToken(user.getEmail(), payload, JwtTokenType.ACCESS);
         String jwtRefreshToken=jwtTokenProvider.createToken(user.getEmail(), payload, JwtTokenType.REFRESH);
 
-        return new OauthLoginResponse(jwtAccessToken, createCookie("refreshToken",jwtRefreshToken), user.getId());
+        return new OauthLoginResponse(jwtAccessToken, createCookie(REFRESH_TOKEN_COOKIE_NAME,jwtRefreshToken), user.getId());
     }
 
     private Cookie createCookie(String key, String value) {
