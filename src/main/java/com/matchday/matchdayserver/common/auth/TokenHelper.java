@@ -1,14 +1,23 @@
 package com.matchday.matchdayserver.common.auth;
 
+import com.matchday.matchdayserver.auth.model.dto.enums.JwtTokenType;
+import com.matchday.matchdayserver.auth.model.dto.response.RenewResponse;
+import com.matchday.matchdayserver.auth.service.GoogleOauthService;
 import com.matchday.matchdayserver.common.exception.ApiException;
+import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.common.response.JwtStatus;
+import com.matchday.matchdayserver.user.model.entity.User;
+import com.matchday.matchdayserver.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.internal.parser.TokenType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,17 +25,20 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Component
 public class TokenHelper {
 
     private final SecretKey secretKey;//SecretKey가 Key보다 하위 인터페이스
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
-    public TokenHelper(@Value("${jwt.secret}") String secretKey) {
+    public TokenHelper(@Value("${jwt.secret}") String secretKey, JwtTokenProvider jwtTokenProvider,UserRepository userRepository) {
+        this.jwtTokenProvider=jwtTokenProvider;
         this.secretKey = generateSecretKey(secretKey);
+        this.userRepository = userRepository;
     }
 
     private SecretKey generateSecretKey(String secret) {
@@ -35,9 +47,12 @@ public class TokenHelper {
     }
 
     //유효한 Jwt 토큰인지 검증
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token, JwtTokenType type) {
         try{
             Claims claims= getClaims(token);
+            if (type!=claims.get("tokenType", JwtTokenType.class)){
+                throw new ApiException(JwtStatus.INVALID_TOKEN_TYPE);
+            }
             return true;
         } catch (SignatureException exception) {
             log.error(exception.getMessage() + "\n" + exception.getStackTrace()
@@ -46,7 +61,10 @@ public class TokenHelper {
         } catch (ExpiredJwtException exception) {
             log.error(exception.getMessage() + "\n" + exception.getStackTrace()
                 .toString());
-            throw new ApiException(JwtStatus.EXPIRED_TOKEN);
+            if (type == JwtTokenType.REFRESH) {
+                throw new ApiException(JwtStatus.EXPIRED_REFRESH_TOKEN);
+            }
+            throw new ApiException(JwtStatus.EXPIRED_ACCESS_TOKEN);
         } catch (Exception exception) {
             log.error(exception.getMessage() + "\n" + exception.getStackTrace()
                 .toString());
@@ -75,5 +93,41 @@ public class TokenHelper {
             .build()
             .parseSignedClaims(token)//검증할 토큰 전달
             .getPayload();
+    }
+
+    public RenewResponse renew(HttpServletRequest request){
+        //리프레시 토큰 가져와서 토큰 있는지 확인
+        String refresh = null;
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(GoogleOauthService.REFRESH_TOKEN_COOKIE_NAME)) {
+                refresh = cookie.getValue();
+            }
+        }
+
+        if (refresh == null) {
+            throw new ApiException(JwtStatus.NOTFOUND_TOKEN_IN_COOKIE);
+        }
+
+        //리프레시 토큰이 유효한지 검증
+        validateToken(refresh,JwtTokenType.REFRESH);
+
+        //JWT 만들어 리턴해주기
+        Claims claims = getClaims(refresh);
+
+        Map<String, Object> payload = new HashMap<>();
+        Long userId = Long.valueOf(claims.get("userId").toString());
+        String email = claims.getSubject();
+        String role = claims.get("role").toString();
+        payload.put("userId", userId);
+        payload.put("role", role);
+
+        //DB 조회로 사용자 상태 검증
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(JwtStatus.NOTFOUND_USER));
+
+        String jwtAccessToken=jwtTokenProvider.createToken(email, payload, JwtTokenType.ACCESS);
+
+        return new RenewResponse(jwtAccessToken);
     }
 }
