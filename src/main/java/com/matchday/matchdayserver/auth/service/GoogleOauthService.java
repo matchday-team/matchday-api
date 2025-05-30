@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.auth.service;
 
+import com.matchday.matchdayserver.auth.model.dto.enums.JwtTokenType;
 import com.matchday.matchdayserver.auth.model.dto.request.OauthLoginRequest;
 import com.matchday.matchdayserver.auth.model.dto.response.GoogleAccessTokenResponse;
 import com.matchday.matchdayserver.auth.model.dto.response.OauthLoginResponse;
@@ -8,7 +9,9 @@ import com.matchday.matchdayserver.common.auth.JwtTokenProvider;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.model.enums.SocialType;
 import com.matchday.matchdayserver.user.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GoogleOauthService {
     @Value("${oauth.google.client-id}")
     private String googleClientId;
@@ -47,15 +51,28 @@ public class GoogleOauthService {
         User user = userRepository.findBySocialId(googleProfile.getSub());
         //없으면 만들기
         if (user == null) {
-            user = createOatuh(googleProfile,SocialType.GOOGLE);
+            user = createOatuh(googleProfile, SocialType.GOOGLE);
         }
         //토큰발급
         Map<String, Object> payload = new HashMap<>();
         payload.put("userId", user.getId());
         payload.put("role", user.getRole());
-        String jwtToken=jwtTokenProvider.createToken(user.getEmail(), payload);
 
-        return new OauthLoginResponse(jwtToken,user.getId());
+        String jwtAccessToken=jwtTokenProvider.createToken(user.getEmail(), payload, JwtTokenType.ACCESS);
+        String jwtRefreshToken=jwtTokenProvider.createToken(user.getEmail(), payload, JwtTokenType.REFRESH);
+
+        return new OauthLoginResponse(jwtAccessToken, createCookie("refreshToken",jwtRefreshToken), user.getId());
+    }
+
+    private Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24*60*60);
+        cookie.setSecure(false); //https (운영환경에선)false
+        cookie.setPath("/"); //전체 경로에 대해 쿠키 유효
+        cookie.setHttpOnly(true);
+
+        return cookie;
     }
 
     /**
