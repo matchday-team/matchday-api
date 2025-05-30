@@ -32,7 +32,7 @@ public class UserOpenApiService {
 
         String accessToken=jwtTokenProvider.createToken(user, JwtTokenType.ACCESS);
         String refreshToken=jwtTokenProvider.createToken(user, JwtTokenType.REFRESH);
-        return new LoginResponse(accessToken,createCookie(refreshToken,REFRESH_TOKEN_COOKIE_NAME),
+        return new LoginResponse(accessToken,createCookie(REFRESH_TOKEN_COOKIE_NAME,refreshToken),
             user.getId());
     }
 
