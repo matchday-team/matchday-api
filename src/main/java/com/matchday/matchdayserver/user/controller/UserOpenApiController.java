@@ -2,9 +2,12 @@ package com.matchday.matchdayserver.user.controller;
 
 import com.matchday.matchdayserver.auth.model.dto.request.OauthLoginRequest;
 import com.matchday.matchdayserver.auth.model.dto.response.OauthLoginResponse;
+import com.matchday.matchdayserver.auth.model.dto.response.RenewResponse;
 import com.matchday.matchdayserver.auth.service.GoogleOauthService;
 import com.matchday.matchdayserver.common.response.ApiResponse;
+import com.matchday.matchdayserver.user.service.UserOpenApiService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/open-api/v1/users")
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class UserOpenApiController {
 
     private final GoogleOauthService googleOauthService;
+    private final UserOpenApiService userOpenApiService;
 
 
     @PostMapping("/google")
@@ -37,18 +40,7 @@ public class UserOpenApiController {
     }
 
     @PostMapping("/renew")
-    public ApiResponse<?> renewAccessToken(HttpServletRequest request, HttpServletResponse response){
-
-        //리프레시 토큰 가져오기
-
-        //리프레시 토큰 데이터베이스에 있는지 검증
-
-        //리프레시 토큰이 만료되었는지 확인
-
-        //JWT 만들어 리턴해주기
-            return null;
+    public ApiResponse<RenewResponse> renew(HttpServletRequest request){
+        return ApiResponse.ok(userOpenApiService.renewToken(request));
     }
-
-
-
 }
