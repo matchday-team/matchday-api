@@ -17,8 +17,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +32,7 @@ public class UserOpenApiService {
 
         String accessToken=jwtTokenProvider.createToken(userLoginDto, JwtTokenType.ACCESS);
         String refreshToken=jwtTokenProvider.createToken(userLoginDto, JwtTokenType.REFRESH);
-        return new LoginResponse(accessToken,createCookie(REFRESH_TOKEN_COOKIE_NAME,refreshToken),
-            userLoginDto.getId());
+        return new LoginResponse(accessToken,refreshToken);
     }
 
     public RenewResponse renewToken(HttpServletRequest request){
@@ -48,9 +45,10 @@ public class UserOpenApiService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ApiException(JwtStatus.NOTFOUND_USER));
 
-        String jwtAccessToken=jwtTokenProvider.createToken(UserMapper.toLoginUserDto(user), JwtTokenType.ACCESS);
+        String newAccessToken=jwtTokenProvider.createToken(UserMapper.toLoginUserDto(user), JwtTokenType.ACCESS);
+        String newRefreshToken = jwtTokenProvider.createToken(UserMapper.toLoginUserDto(user), JwtTokenType.REFRESH);
 
-        return new RenewResponse(jwtAccessToken);
+        return new RenewResponse(newAccessToken,newRefreshToken);
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
@@ -70,9 +68,9 @@ public class UserOpenApiService {
         return refresh;
     }
 
-    private Cookie createCookie(String key, String value) {
+    public Cookie createRefreshCookie(String value) {
 
-        Cookie cookie = new Cookie(key, value);
+        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, value);
         cookie.setMaxAge(24*60*60);
         cookie.setSecure(false); //https (운영환경에선)false
         cookie.setPath("/"); //전체 경로에 대해 쿠키 유효
