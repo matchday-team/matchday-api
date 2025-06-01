@@ -12,6 +12,9 @@ public enum JwtStatus implements StatusInterface {
     NOTFOUND_TOKEN_IN_COOKIE(404,9008,"쿠키에서 토큰값을 찾을 수 없습니다"),
     NOTFOUND_USER(404,9009,"토큰 페이로드 정보로 찾을 수 없는 사용자 입니다."),
     NOTFOUND_COOKIE(404,9008,"쿠키에 데이터가 없습니다"),
+    NOTFOUND_TOKEN_IN_DB(404,9009,"저장된 리프레시 토큰이 아닙니다"),
+    INVALID_REFRESH_TOKEN(400,9010,"현재 유저에 해당하는 리프레시 토큰이 아닙니다"),
+
 
     ;
 
