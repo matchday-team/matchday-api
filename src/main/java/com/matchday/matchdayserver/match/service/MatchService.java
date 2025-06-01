@@ -46,7 +46,7 @@ public class MatchService {
     Match match = matchRepository.findById(matchId)
         .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH));
 
-      MatchStateValidator.validateInPlay(match);
+      MatchStateValidator.validateInPlayOrHalfTime(match);
 
     match.updateMemo(request.getMemo());
     matchRepository.save(match);
