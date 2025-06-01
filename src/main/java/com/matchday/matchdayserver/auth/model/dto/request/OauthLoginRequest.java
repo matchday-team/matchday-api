@@ -1,10 +1,13 @@
 package com.matchday.matchdayserver.auth.model.dto.request;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
 @NoArgsConstructor
-@Data
 public class OauthLoginRequest {
     private String code;
     //여기에 프론트에서 폼 등으로 입력받은 추가데이터 받을 수 있음
