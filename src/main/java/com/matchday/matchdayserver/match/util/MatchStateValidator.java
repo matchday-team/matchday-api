@@ -15,4 +15,11 @@ public class MatchStateValidator {
             throw new ApiException(MatchStatus.NOT_IN_PLAY_MATCH);
         }
     }
+
+    public static void validateInPlayOrHalfTime(Match match) {
+        MatchState state = match.getMatchState();
+        if (!(state == MatchState.PLAY_FIRST_HALF || state == MatchState.PLAY_SECOND_HALF || state == MatchState.HALF_TIME)) {
+            throw new ApiException(MatchStatus.NOT_IN_PLAY_MATCH);
+        }
+    }
 }
