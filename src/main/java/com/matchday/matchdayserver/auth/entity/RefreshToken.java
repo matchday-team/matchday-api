@@ -23,6 +23,7 @@ public class RefreshToken {
     @Column(nullable = false, length = 1000)
     private String token;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public void update(String newToken) {
