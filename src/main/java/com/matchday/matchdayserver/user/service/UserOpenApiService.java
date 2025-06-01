@@ -1,8 +1,10 @@
 package com.matchday.matchdayserver.user.service;
 
+import com.matchday.matchdayserver.auth.entity.RefreshToken;
 import com.matchday.matchdayserver.auth.mapper.UserMapper;
 import com.matchday.matchdayserver.auth.model.dto.enums.JwtTokenType;
 import com.matchday.matchdayserver.auth.model.dto.response.RenewResponse;
+import com.matchday.matchdayserver.auth.repository.RefreshTokenRepository;
 import com.matchday.matchdayserver.auth.service.GoogleOauthService;
 import com.matchday.matchdayserver.common.auth.JwtTokenProvider;
 import com.matchday.matchdayserver.common.auth.TokenHelper;
@@ -18,6 +20,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class UserOpenApiService {
@@ -25,6 +29,7 @@ public class UserOpenApiService {
     private final TokenHelper tokenHelper;
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
@@ -32,6 +37,12 @@ public class UserOpenApiService {
 
         String accessToken=jwtTokenProvider.createToken(userLoginDto, JwtTokenType.ACCESS);
         String refreshToken=jwtTokenProvider.createToken(userLoginDto, JwtTokenType.REFRESH);
+
+        refreshTokenRepository.save(RefreshToken.builder().
+                userId(userLoginDto.getId()).
+                token(accessToken).
+                build());
+
         return new LoginResponse(accessToken,refreshToken);
     }
 
@@ -40,13 +51,26 @@ public class UserOpenApiService {
         tokenHelper.validateToken(refreshToken, JwtTokenType.REFRESH);
         Claims claims = tokenHelper.getClaims(refreshToken);
 
-        //DB 조회로 사용자 상태 검증
-        Long userId = Long.valueOf(claims.get("userId").toString());
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ApiException(JwtStatus.NOTFOUND_USER));
 
+        Long userId = Long.valueOf(claims.get("userId").toString());
+
+        RefreshToken stored = refreshTokenRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(JwtStatus.NOTFOUND_TOKEN_IN_DB));
+
+        if (!stored.getToken().equals(refreshToken)) {
+            throw new ApiException(JwtStatus.INVALID_REFRESH_TOKEN);
+        }
+
+        //DB 조회로 사용자 상태 검증
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(JwtStatus.NOTFOUND_USER));
+
+        // 토큰 재발급
         String newAccessToken=jwtTokenProvider.createToken(UserMapper.toLoginUserDto(user), JwtTokenType.ACCESS);
         String newRefreshToken = jwtTokenProvider.createToken(UserMapper.toLoginUserDto(user), JwtTokenType.REFRESH);
+
+        stored.update(newRefreshToken);
+        refreshTokenRepository.save(stored);
 
         return new RenewResponse(newAccessToken,newRefreshToken);
     }
