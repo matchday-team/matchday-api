@@ -40,7 +40,7 @@ public class UserOpenApiService {
 
         refreshTokenRepository.save(RefreshToken.builder().
                 userId(userLoginDto.getId()).
-                token(accessToken).
+                token(refreshToken).
                 build());
 
         return new LoginResponse(accessToken,refreshToken);
