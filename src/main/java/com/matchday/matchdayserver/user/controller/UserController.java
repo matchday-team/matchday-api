@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.user.controller;
 
+import com.matchday.matchdayserver.common.annotation.UserId;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.s3.service.S3PresignedService;
 import com.matchday.matchdayserver.s3.dto.S3PresignedResponse;
@@ -61,4 +62,11 @@ public class UserController {
   public ApiResponse<UserInfoResponse> getUserInfo(@PathVariable Long userId){
     return ApiResponse.ok(userService.getUserInfo(userId));
   }
+
+    @Operation(summary = "로그아웃", description = "현재 로그인된 사용자의 리프레시 토큰을 사용할 수 없게 합니다")
+    @PostMapping("/logout")
+    public ApiResponse<Long> logout(@UserId Long userId) {
+        userService.logout(userId);
+        return ApiResponse.ok(userId);
+    }
 }

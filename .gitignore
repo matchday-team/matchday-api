@@ -21,4 +21,5 @@ out/
 .env
 .DS_Store
 **/application_dev.yml
+**/application-local.yml
 **/spy.properties
