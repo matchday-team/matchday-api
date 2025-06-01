@@ -1,6 +1,7 @@
 package com.matchday.matchdayserver.common.auth;
 
 import com.matchday.matchdayserver.auth.model.dto.enums.JwtTokenType;
+import com.matchday.matchdayserver.user.model.dto.LoginUserDto;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.model.enums.Role;
 import io.jsonwebtoken.Claims;
@@ -24,9 +25,9 @@ public class JwtTokenProvider {
         this.secretKey = generateSecretKey(secretKey);
     }
 
-    public String createToken(User user, JwtTokenType type) {
+    public String createToken(LoginUserDto loginUserDto, JwtTokenType type) {
 
-        Claims claims = generateClaims(user, type);
+        Claims claims = generateClaims(loginUserDto, type);
 
         return Jwts.builder() //시그니처 부분 만들기
             .claims(claims)
@@ -35,11 +36,11 @@ public class JwtTokenProvider {
             .compact();
     }
 
-    private Claims generateClaims(User user,JwtTokenType type) {
+    private Claims generateClaims(LoginUserDto loginUserDto,JwtTokenType type) {
 
-        Long userId = user.getId();
-        String email = user.getEmail();
-        Role role = user.getRole();
+        Long userId = loginUserDto.getId();
+        String email = loginUserDto.getEmail();
+        Role role = loginUserDto.getRole();
 
         String subject=email;
 

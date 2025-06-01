@@ -1,11 +1,13 @@
 package com.matchday.matchdayserver.auth.service;
 
+import com.matchday.matchdayserver.auth.mapper.UserMapper;
 import com.matchday.matchdayserver.auth.model.dto.enums.JwtTokenType;
 import com.matchday.matchdayserver.auth.model.dto.request.OauthLoginRequest;
 import com.matchday.matchdayserver.auth.model.dto.response.GoogleAccessTokenResponse;
 import com.matchday.matchdayserver.auth.model.dto.response.OauthLoginResponse;
 import com.matchday.matchdayserver.auth.model.dto.response.GoogleProfileResponse;
 import com.matchday.matchdayserver.common.auth.JwtTokenProvider;
+import com.matchday.matchdayserver.user.model.dto.LoginUserDto;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.model.enums.SocialType;
 import com.matchday.matchdayserver.user.repository.UserRepository;
@@ -42,7 +44,7 @@ public class GoogleOauthService {
      * 3. 기존 유저 조회 or 신규 유저 생성
      * 4. User 객체 반환
      */
-    public User googleLogin(OauthLoginRequest oAuthLoginRequest) {
+    public LoginUserDto googleLogin(OauthLoginRequest oAuthLoginRequest) {
         // 인가 코드로 Google Access Token 요청
         GoogleAccessTokenResponse googleAccessToken = getAccessToken(oAuthLoginRequest.getCode());
         // Google Access Token으로 사용자 정보 조회
@@ -52,7 +54,7 @@ public class GoogleOauthService {
         if (user == null) {
             user = createOatuh(googleProfile, SocialType.GOOGLE);
         }
-        return user;
+        return UserMapper.toLoginUserDto(user);
     }
 
     /**

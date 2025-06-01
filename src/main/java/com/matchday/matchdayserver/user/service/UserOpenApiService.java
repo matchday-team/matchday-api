@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.user.service;
 
+import com.matchday.matchdayserver.auth.mapper.UserMapper;
 import com.matchday.matchdayserver.auth.model.dto.enums.JwtTokenType;
 import com.matchday.matchdayserver.auth.model.dto.response.RenewResponse;
 import com.matchday.matchdayserver.auth.service.GoogleOauthService;
@@ -7,6 +8,7 @@ import com.matchday.matchdayserver.common.auth.JwtTokenProvider;
 import com.matchday.matchdayserver.common.auth.TokenHelper;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.JwtStatus;
+import com.matchday.matchdayserver.user.model.dto.LoginUserDto;
 import com.matchday.matchdayserver.user.model.dto.response.LoginResponse;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.repository.UserRepository;
@@ -28,12 +30,12 @@ public class UserOpenApiService {
 
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
-    public LoginResponse doLogin(User user) {
+    public LoginResponse doLogin(LoginUserDto userLoginDto) {
 
-        String accessToken=jwtTokenProvider.createToken(user, JwtTokenType.ACCESS);
-        String refreshToken=jwtTokenProvider.createToken(user, JwtTokenType.REFRESH);
+        String accessToken=jwtTokenProvider.createToken(userLoginDto, JwtTokenType.ACCESS);
+        String refreshToken=jwtTokenProvider.createToken(userLoginDto, JwtTokenType.REFRESH);
         return new LoginResponse(accessToken,createCookie(REFRESH_TOKEN_COOKIE_NAME,refreshToken),
-            user.getId());
+            userLoginDto.getId());
     }
 
     public RenewResponse renewToken(HttpServletRequest request){
@@ -46,7 +48,7 @@ public class UserOpenApiService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ApiException(JwtStatus.NOTFOUND_USER));
 
-        String jwtAccessToken=jwtTokenProvider.createToken(user, JwtTokenType.ACCESS);
+        String jwtAccessToken=jwtTokenProvider.createToken(UserMapper.toLoginUserDto(user), JwtTokenType.ACCESS);
 
         return new RenewResponse(jwtAccessToken);
     }
