@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.user.service;
 
+import com.matchday.matchdayserver.auth.repository.RefreshTokenRepository;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
@@ -31,6 +32,7 @@ public class UserService {
     private final TeamRepository teamRepository;
     private final UserTeamRepository userTeamRepository;
     private final MatchUserRepository matchUserRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public Long createUser(UserCreateRequest request){
         User user = User.builder()
@@ -77,6 +79,11 @@ public class UserService {
       List<Long> teamIds = userTeamRepository.findActiveTeamIdsByUserId(userId);
       List<Long> matchIds = matchUserRepository.findMatchIdsByUserId(userId);
       return UserMapper.userInfoResponse(user, teamIds, matchIds);
+    }
+
+    @Transactional
+    public void logout(Long userId) {
+        refreshTokenRepository.deleteById(userId);
     }
 }
 
