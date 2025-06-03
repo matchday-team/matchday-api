@@ -10,11 +10,23 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoalRatio {
     @Schema(description = "득점 수", requiredMode = Schema.RequiredMode.REQUIRED)
     private int goalsScored;
 
     @Schema(description = "실점 수", requiredMode = Schema.RequiredMode.REQUIRED)
     private int goalsConceded;
+
+    public GoalRatio() {
+        this.goalsScored = 0;
+        this.goalsConceded = 0;
+    }
+
+    public void incrementGoalsScored(int goalsScored) {
+        this.goalsScored += goalsScored;
+    }
+
+    public void incrementGoalsConceded(int goalsConceded) {
+        this.goalsConceded += goalsConceded;
+    }
 }
