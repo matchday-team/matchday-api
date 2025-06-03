@@ -42,3 +42,9 @@ decorator:
     datasource:
         p6spy:
             enable-logging: false
+
+logging:
+    level:
+        org.springframework.messaging: DEBUG
+        org.springframework.web.socket: DEBUG
+        org.springframework.web.socket.messaging: DEBUG

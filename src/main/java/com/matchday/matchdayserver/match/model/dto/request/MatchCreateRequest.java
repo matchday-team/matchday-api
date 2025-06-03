@@ -62,8 +62,4 @@ public class MatchCreateRequest {
 
     @Schema(description = "대기심", example = "정대기", nullable = true)
     private String fourthReferee;
-
-    @NotNull
-    @Schema(description = "경기 상태 (SCHEDULED, ONGOING, FINISHED)", example = "SCHEDULED")
-    private MatchState matchState;
 }

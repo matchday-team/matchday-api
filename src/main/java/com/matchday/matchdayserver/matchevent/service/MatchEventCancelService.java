@@ -3,10 +3,13 @@ package com.matchday.matchdayserver.matchevent.service;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.MatchStatus;
 import com.matchday.matchdayserver.match.model.entity.Match;
-import com.matchday.matchdayserver.match.model.enums.MatchState;
+import com.matchday.matchdayserver.matchevent.mapper.MatchEventMapper;
 import com.matchday.matchdayserver.match.repository.MatchRepository;
 import com.matchday.matchdayserver.match.util.MatchStateValidator;
+import com.matchday.matchdayserver.matchevent.common.MatchEventConstants;
+import com.matchday.matchdayserver.matchevent.model.dto.MatchEventCancelResponse;
 import jakarta.transaction.Transactional;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventCancelRequest;
@@ -14,6 +17,7 @@ import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
 import com.matchday.matchdayserver.matchevent.repository.MatchEventRepository;
 
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Service
 @Transactional
@@ -22,6 +26,7 @@ public class MatchEventCancelService {
 
     private final MatchEventRepository matchEventRepository;
     private final MatchRepository matchRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     public void cancelEvent(Long matchId, MatchEventCancelRequest message) {
 
@@ -41,6 +46,18 @@ public class MatchEventCancelService {
                     matchId, request.getTeamId(), request.getMatchEventType().name())
                 .orElseThrow(() -> new ApiException(MatchStatus.NOTFOUND_MATCH_EVENT));
         }
+
+        //파생 이벤트 삭제
+        List<MatchEvent> childEvents = matchEventRepository.findAllByParentId(matchEvent.getId());
+        matchEventRepository.deleteAll(childEvents);
+
+        // 메인 이벤트 삭제
         matchEventRepository.delete(matchEvent);
+
+//        MatchEventCancelResponse response = MatchEventMapper.toCancelResponse(matchEvent);
+
+//        simpMessagingTemplate.convertAndSend(
+//            MatchEventConstants.getMatchEventUrl(matchId),response);
+
     }
 }

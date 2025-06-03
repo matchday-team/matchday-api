@@ -76,6 +76,10 @@ public class MatchEventStrategy {
         MatchEvent goalEvent = MatchEventMapper.toEntity(request, match, user);
         MatchEvent shotEvent = goalEvent.copyWith(MatchEventType.SHOT);
         MatchEvent validShotEvent = goalEvent.copyWith(MatchEventType.VALID_SHOT);
+
+        shotEvent.setParent(goalEvent);
+        validShotEvent.setParent(goalEvent);
+
         matchEventRepository.saveAll(List.of(goalEvent, shotEvent, validShotEvent));
 
         List<MatchEventResponse> matchEventResponses = new ArrayList<>();
@@ -90,23 +94,20 @@ public class MatchEventStrategy {
      * 오프사이드 이벤트 기록 시 호출됩니다.
      * <ul>
      * <li>오프사이드 이벤트(offsideEvent)를 생성합니다.</li>
-     * <li>오프사이드 이벤트를 기반으로 파울(foulEvent) 이벤트를 복사 생성합니다.</li>
-     * <li>두 이벤트를 모두 저장하고, 각각의 응답 객체를 반환합니다.</li>
+     * <li>이벤트를 모두 저장하고, 각각의 응답 객체를 반환합니다.</li>
      * </ul>
      *
      * @param request   오프사이드 이벤트 요청 정보
      * @param match     해당 경기 정보
      * @param matchUser 이벤트를 기록한 사용자
-     * @return 생성된 이벤트들의 응답 리스트 (오프사이드, 파울)
+     * @return 생성된 이벤트들의 응답 리스트 (오프사이드)
      */
     private List<MatchEventResponse> generateOffsideEvent(MatchEventRequest request, Match match,
         MatchUser matchUser) {
         MatchEvent offsideEvent = MatchEventMapper.toEntity(request, match, matchUser);
-        MatchEvent foulEvent = offsideEvent.copyWith(MatchEventType.FOUL);
-        matchEventRepository.saveAll(List.of(offsideEvent, foulEvent));
+        matchEventRepository.saveAll(List.of(offsideEvent));
         return List.of(
-            MatchEventMapper.toResponse(offsideEvent),
-            MatchEventMapper.toResponse(foulEvent));
+            MatchEventMapper.toResponse(offsideEvent));
     }
 
     /**
@@ -131,12 +132,21 @@ public class MatchEventStrategy {
         if(request.getEventType().equals(MatchEventType.YELLOW_CARD)) {
             boolean isAlreadyGetYellow = matchEventRepository.existsByMatchUserIdAndEventType(
                 matchUser.getId(), MatchEventType.YELLOW_CARD);
-            if(isAlreadyGetYellow)
-                needToSaveEvents.add(cardEvent.copyWith(MatchEventType.RED_CARD));
+            if(isAlreadyGetYellow){
+                MatchEvent redCardEvent = cardEvent.copyWith(MatchEventType.RED_CARD);
+                redCardEvent.setParent(cardEvent);
+                needToSaveEvents.add(redCardEvent);
+            }
         }
+
         needToSaveEvents.add(cardEvent);
-        needToSaveEvents.add(cardEvent.copyWith(MatchEventType.WARNING));
-        needToSaveEvents.add(cardEvent.copyWith(MatchEventType.FOUL));
+        MatchEvent warningEvent = cardEvent.copyWith(MatchEventType.WARNING);
+        warningEvent.setParent(cardEvent);
+        needToSaveEvents.add(warningEvent);
+
+        MatchEvent foulEvent = cardEvent.copyWith(MatchEventType.FOUL);
+        foulEvent.setParent(cardEvent);
+        needToSaveEvents.add(foulEvent);
 
         matchEventRepository.saveAll(needToSaveEvents);
 
@@ -171,6 +181,9 @@ public class MatchEventStrategy {
         MatchUser matchUser) {
         MatchEvent validShotEvent = MatchEventMapper.toEntity(request, match, matchUser);
         MatchEvent shotEvent = validShotEvent.copyWith(MatchEventType.SHOT);
+
+        shotEvent.setParent(validShotEvent);
+
         matchEventRepository.saveAll(List.of(validShotEvent, shotEvent));
         return List.of(
             MatchEventMapper.toResponse(validShotEvent),
