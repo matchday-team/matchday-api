@@ -34,72 +34,48 @@ public class TeamResultSummaryService {
     private final MatchRepository matchRepository;
     private final UserRepository userRepository;
 
+    private int totalGoalsScored = 0;
+    private int totalGoalsConceded = 0;
+    private int win = 0;
+    private int loss = 0;
+    private int draw = 0;
+
     public TeamResultSummaryResponse getTeamResultSummary(Long teamId) {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
 
-        List<Match> matches = matchRepository.findDistinctByHomeTeamIdOrAwayTeamIdOrderByMatchDateDesc(teamId, teamId);
+        List<Match> matches = matchRepository.findDistinctByHomeTeamIdOrAwayTeamIdOrderByMatchDateDesc(
+            teamId, teamId);
 
         String mostPlayedPlayerName = userRepository.findMostPlayedPlayerName(teamId);
 
-        int win = 0;
-        int loss = 0;
-        int draw = 0;
-        
         List<MatchResult> recentResults = new ArrayList<>();
-        
-        int totalGoalsScored = 0;
-        int totalGoalsConceded = 0;
-        
+
         List<Match> completedMatches = matches.stream()
-                .filter(match -> match.getMatchState() == MatchState.FINISHED)
-                .collect(Collectors.toList());
-        
+            .filter(match -> match.getMatchState() == MatchState.FINISHED)
+            .collect(Collectors.toList());
+
         for (Match match : completedMatches) {
             int homeGoals = 0;
             int awayGoals = 0;
-            
+
             for (MatchEvent event : match.getMatchEvents()) {
                 if (event.getEventType() == MatchEventType.GOAL) {
-                    if (Objects.equals(event.getMatchUser().getTeam().getId(), match.getHomeTeam().getId())) {
+                    if (Objects.equals(event.getMatchUser().getTeam().getId(),
+                        match.getHomeTeam().getId())) {
                         homeGoals++;
                     } else {
                         awayGoals++;
                     }
                 }
             }
-            
-            boolean isHomeTeam = Objects.equals(match.getHomeTeam().getId(), teamId);
-            
-            if (isHomeTeam) {
-                totalGoalsScored += homeGoals;
-                totalGoalsConceded += awayGoals;
-                
-                if (homeGoals > awayGoals) {
-                    win++;
-                    if(recentResults.size() < 5) recentResults.add(MatchResult.WIN);
-                } else if (homeGoals < awayGoals) {
-                    loss++;
-                    if(recentResults.size() < 5) recentResults.add(MatchResult.LOSE);
-                } else {
-                    draw++;
-                    if(recentResults.size() < 5) recentResults.add(MatchResult.DRAW);
-                }
-            } else {
-                totalGoalsScored += awayGoals;
-                totalGoalsConceded += homeGoals;
-                
-                if (awayGoals > homeGoals) {
-                    win++;
-                    if(recentResults.size() < 5) recentResults.add(MatchResult.WIN);
-                } else if (awayGoals < homeGoals) {
-                    loss++;
-                    if(recentResults.size() < 5) recentResults.add(MatchResult.LOSE);
-                } else {
-                    draw++;
-                    if(recentResults.size() < 5) recentResults.add(MatchResult.DRAW);
-                }
 
+            boolean isHomeTeam = Objects.equals(match.getHomeTeam().getId(), teamId);
+
+            if (isHomeTeam) {
+                updateTeamResultStats(homeGoals, awayGoals, recentResults);
+            } else {
+                updateTeamResultStats(awayGoals, homeGoals, recentResults);
             }
         }
 
@@ -123,5 +99,28 @@ public class TeamResultSummaryService {
             recentResults,
             goalRatio
         );
+    }
+
+    private void updateTeamResultStats(int teamGoals, int opponentTeamGoal,
+        List<MatchResult> recentResults) {
+        totalGoalsScored += teamGoals;
+        totalGoalsConceded += opponentTeamGoal;
+
+        if (teamGoals > opponentTeamGoal) {
+            win++;
+            if (recentResults.size() < 5) {
+                recentResults.add(MatchResult.WIN);
+            }
+        } else if (teamGoals < opponentTeamGoal) {
+            loss++;
+            if (recentResults.size() < 5) {
+                recentResults.add(MatchResult.LOSE);
+            }
+        } else {
+            draw++;
+            if (recentResults.size() < 5) {
+                recentResults.add(MatchResult.DRAW);
+            }
+        }
     }
 }
