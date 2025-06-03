@@ -34,12 +34,6 @@ public class TeamResultSummaryService {
     private final MatchRepository matchRepository;
     private final UserRepository userRepository;
 
-    private int totalGoalsScored = 0;
-    private int totalGoalsConceded = 0;
-    private int win = 0;
-    private int loss = 0;
-    private int draw = 0;
-
     public TeamResultSummaryResponse getTeamResultSummary(Long teamId) {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
@@ -54,6 +48,18 @@ public class TeamResultSummaryService {
         List<Match> completedMatches = matches.stream()
             .filter(match -> match.getMatchState() == MatchState.FINISHED)
             .collect(Collectors.toList());
+
+        GoalRatio goalRatio = new GoalRatio();
+        MatchResultSummary winLossDraw = new MatchResultSummary();
+        TeamResultSummaryResponse teamResultSummaryResponse = new TeamResultSummaryResponse(
+            team.getName(),
+            team.getTeamImg(),
+            matches.size(),
+            mostPlayedPlayerName,
+            winLossDraw,
+            recentResults,
+            goalRatio
+        );
 
         for (Match match : completedMatches) {
             int homeGoals = 0;
@@ -73,54 +79,44 @@ public class TeamResultSummaryService {
             boolean isHomeTeam = Objects.equals(match.getHomeTeam().getId(), teamId);
 
             if (isHomeTeam) {
-                updateTeamResultStats(homeGoals, awayGoals, recentResults);
+                teamResultSummaryResponse = updateTeamResultStats(homeGoals, awayGoals,
+                    teamResultSummaryResponse);
             } else {
-                updateTeamResultStats(awayGoals, homeGoals, recentResults);
+                teamResultSummaryResponse = updateTeamResultStats(awayGoals, homeGoals,
+                    teamResultSummaryResponse);
             }
         }
 
-        MatchResultSummary winLossDraw = MatchResultSummary.builder()
-            .win(win)
-            .loss(loss)
-            .draw(draw)
-            .build();
-
-        GoalRatio goalRatio = GoalRatio.builder()
-            .goalsScored(totalGoalsScored)
-            .goalsConceded(totalGoalsConceded)
-            .build();
-
-        return new TeamResultSummaryResponse(
-            team.getName(),
-            team.getTeamImg(),
-            matches.size(),
-            mostPlayedPlayerName,
-            winLossDraw,
-            recentResults,
-            goalRatio
-        );
+        return teamResultSummaryResponse;
     }
 
-    private void updateTeamResultStats(int teamGoals, int opponentTeamGoal,
-        List<MatchResult> recentResults) {
-        totalGoalsScored += teamGoals;
-        totalGoalsConceded += opponentTeamGoal;
+    private TeamResultSummaryResponse updateTeamResultStats(int teamGoals, int opponentGoals,
+        TeamResultSummaryResponse teamResultSummaryResponse) {
 
-        if (teamGoals > opponentTeamGoal) {
-            win++;
+        List<MatchResult> recentResults = teamResultSummaryResponse.getRecentMatchResults();
+        MatchResultSummary matchResultSummary = teamResultSummaryResponse.getWinLossDraw();
+        GoalRatio goalRatio = teamResultSummaryResponse.getGoalRatio();
+
+        goalRatio.incrementGoalsScored(teamGoals);
+        goalRatio.incrementGoalsConceded(opponentGoals);
+
+        if (teamGoals > opponentGoals) {
+            matchResultSummary.incrementWin(1);
             if (recentResults.size() < 5) {
                 recentResults.add(MatchResult.WIN);
             }
-        } else if (teamGoals < opponentTeamGoal) {
-            loss++;
+        } else if (teamGoals < opponentGoals) {
+            matchResultSummary.incrementLoss(1);
             if (recentResults.size() < 5) {
                 recentResults.add(MatchResult.LOSE);
             }
         } else {
-            draw++;
+            matchResultSummary.incrementDraw(1);
             if (recentResults.size() < 5) {
                 recentResults.add(MatchResult.DRAW);
             }
         }
+
+        return teamResultSummaryResponse;
     }
 }
