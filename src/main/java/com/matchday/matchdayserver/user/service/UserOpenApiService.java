@@ -38,6 +38,7 @@ public class UserOpenApiService {
         String accessToken=jwtTokenProvider.createToken(userLoginDto, JwtTokenType.ACCESS);
         String refreshToken=jwtTokenProvider.createToken(userLoginDto, JwtTokenType.REFRESH);
 
+        //save 시 @Id 값(userId)이 이미 DB에 존재할 경우 -> UPDATE 쿼리 실행
         refreshTokenRepository.save(RefreshToken.builder().
                 userId(userLoginDto.getId()).
                 token(refreshToken).
