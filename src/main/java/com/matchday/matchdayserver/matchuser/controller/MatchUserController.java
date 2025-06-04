@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.matchuser.controller;
 
+import com.matchday.matchdayserver.common.annotation.UserId;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserCreateRequest;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserGridUpdateRequest;
@@ -11,7 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @Tag(name = "match-users", description = "매치 유저 관련 API")
 @RestController
@@ -22,9 +22,9 @@ public class MatchUserController {
 
     @Operation(summary = "매치 유저 등록", description = "{matchID}에 사용자(user)가 등록됩니다.")
     @PostMapping("/{matchId}/users")
-    public ApiResponse<Long> createMatch(@PathVariable Long matchId,
+    public ApiResponse<Long> createMatch(@UserId Long userId, @PathVariable Long matchId,
                                            @RequestBody @Valid MatchUserCreateRequest request) {
-        Long id = matchUserService.create(matchId, request);
+        Long id = matchUserService.create(userId, matchId, request);
         return ApiResponse.ok(id);
     }
 
