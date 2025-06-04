@@ -6,15 +6,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "매치 참가자 생성 요청")
 public class MatchUserCreateRequest {
-    @NotNull
-    @Schema(description = "사용자 ID", example = "1")
-    private Long userId;
-
     @Schema(description = "팀 ID", example = "1", nullable = true)
     private Long teamId;
 
