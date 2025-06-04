@@ -46,10 +46,10 @@ public class MatchUserService {
   private final MatchEventRepository matchEventRepository;
 
   @Transactional
-  public Long create(Long userId, Long matchId, MatchUserCreateRequest request) {
+  public Long create(Long matchId, MatchUserCreateRequest request) {
     Match match = matchRepository.findById(matchId)
         .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCH));
-      User user = userRepository.findById(userId)
+      User user = userRepository.findById(request.getUserId())
           .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
 
       Team team = null;
@@ -63,7 +63,7 @@ public class MatchUserService {
       throw new ApiException(MatchStatus.NOTFOUND_MATCH);
     }
     //중복 등록 여부 확인
-    if (matchUserRepository.existsByMatchIdAndUserId(matchId, userId)) {
+    if (matchUserRepository.existsByMatchIdAndUserId(matchId, request.getUserId())) {
       throw new ApiException(MatchUserStatus.ALREADY_REGISTERED);
     }
 

@@ -15,6 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Schema(description = "매치 참가자 생성 요청")
 public class MatchUserCreateRequest {
+    @NotNull
+    @Schema(description = "사용자 ID", example = "1")
+    private Long userId;
+
     @Schema(description = "팀 ID", example = "1", nullable = true)
     private Long teamId;
 

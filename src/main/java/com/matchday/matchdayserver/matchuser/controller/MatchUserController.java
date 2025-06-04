@@ -24,7 +24,7 @@ public class MatchUserController {
     @PostMapping("/{matchId}/users")
     public ApiResponse<Long> createMatch(@UserId Long userId, @PathVariable Long matchId,
                                            @RequestBody @Valid MatchUserCreateRequest request) {
-        Long id = matchUserService.create(userId, matchId, request);
+        Long id = matchUserService.create(matchId, request);
         return ApiResponse.ok(id);
     }
 
@@ -38,7 +38,7 @@ public class MatchUserController {
         """
     )
     @GetMapping("/{matchId}/players")
-    public ApiResponse<MatchUserGroupResponse> getGroupedMatchUsers(
+    public ApiResponse<MatchUserGroupResponse> getGroupedMatchUsers(@UserId Long userId,
         @Parameter(description = "매치 ID", example = "1", required = true)
         @PathVariable Long matchId
     ) {
