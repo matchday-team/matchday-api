@@ -86,8 +86,9 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
         accessToken = jwtTokenProvider.createToken(loginUser, JwtTokenType.ACCESS);
     }
 
-    private MatchUserCreateRequest createRequest(Long teamId) {
+    private MatchUserCreateRequest createRequest(Long userId, Long teamId) {
         return new MatchUserCreateRequest(
+            userId,
             teamId,
             MatchUserRole.START_PLAYER,
             "FW",
@@ -99,7 +100,7 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
     @DisplayName("매치 유저 생성 - 성공")
     void createMatchUser_Success() throws Exception {
         // given
-        MatchUserCreateRequest request = createRequest(1L);
+        MatchUserCreateRequest request = createRequest(1L,1L);
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
@@ -117,7 +118,7 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
     @DisplayName("매치 유저 생성 - 실패 (존재하지 않는 매치)")
     void createMatchUser_Fail_MatchNotFound() throws Exception {
         // given
-        MatchUserCreateRequest request = createRequest(1L);
+        MatchUserCreateRequest request = createRequest(1L,1L);
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", 999999L)
@@ -143,7 +144,7 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
             .build();
 
         String fakeAccessToken = jwtTokenProvider.createToken(fakeUser, JwtTokenType.ACCESS);
-        MatchUserCreateRequest request = createRequest(1L);
+        MatchUserCreateRequest request = createRequest(fakeUser.getId(), 1L);
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
@@ -162,6 +163,7 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
     void createMatchUser_Success_TeamNull_AdminRole() throws Exception {
         // given: 팀 ID 없이 ADMIN 역할 요청
         MatchUserCreateRequest request = new MatchUserCreateRequest(
+            1L,
             null,
             MatchUserRole.ADMIN,
             null,
@@ -185,6 +187,7 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
     void createMatchUser_Success_TeamNull_ArchivesRole() throws Exception {
         // given: 팀 ID 없이 ARCHIVES 역할 요청
         MatchUserCreateRequest request = new MatchUserCreateRequest(
+            1L,
             null,
             MatchUserRole.ARCHIVES,
             null,
@@ -210,7 +213,7 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
         Team otherTeam = new Team("테스트팀", "#FFFFFF", "#FFFFFF", "#FFFFFF", null);
         teamRepository.save(otherTeam);
 
-        MatchUserCreateRequest request = createRequest(otherTeam.getId());
+        MatchUserCreateRequest request = createRequest(1L, otherTeam.getId());
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
@@ -229,7 +232,7 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
     @DisplayName("매치 유저 생성 - 실패 (중복 등록)")
     void createMatchUser_Fail_Duplicate() throws Exception {
         // given: 이미 등록된 매치 유저가 있다고 가정하고 동일 요청 반복
-        MatchUserCreateRequest request = createRequest(1L);
+        MatchUserCreateRequest request = createRequest(1L,1L);
 
         // 최초 등록 (성공)
         mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
@@ -255,7 +258,7 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
     void createMatchUser_Fail_TeamNotFound() throws Exception {
         // given
         long nonExistentTeamId = 9999L;
-        MatchUserCreateRequest request = createRequest(nonExistentTeamId);
+        MatchUserCreateRequest request = createRequest(1L, nonExistentTeamId);
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
@@ -275,6 +278,7 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
         // given
         String invalidJson = """
         {
+            "userId": 1,
             "teamId": 1,
             "role": "INVALID_ROLE",
             "matchPosition": "FW",
@@ -300,6 +304,7 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
         // given
         String invalidJson = """
         {
+            "userId": 1,
             "teamId": 1,
             "matchPosition": "FW",
             "matchGrid": 10
