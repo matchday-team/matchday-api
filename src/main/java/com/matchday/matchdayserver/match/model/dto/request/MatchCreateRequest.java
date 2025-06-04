@@ -1,15 +1,16 @@
 package com.matchday.matchdayserver.match.model.dto.request;
 
 import com.matchday.matchdayserver.match.model.entity.Match;
-import com.matchday.matchdayserver.match.model.enums.MatchState;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
+@AllArgsConstructor
 public class MatchCreateRequest {
     @NotNull
     @Schema(description = "경기명", example = "경기명")
