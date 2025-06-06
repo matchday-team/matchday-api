@@ -13,6 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     registry.addMapping("/**")
         .allowedOrigins(
             Constants.FRONTEND_LOCAL_URL,
+            Constants.FRONTEND_LOCAL_HTTPS_URL,
             Constants.FRONTEND_DEV_URL,
             Constants.FRONTEND_PRODUCTION_URL,
             Constants.BACKEND_PRODUCTION_URL,
