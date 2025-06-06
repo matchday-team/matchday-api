@@ -23,6 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns(
                     Constants.FRONTEND_LOCAL_URL,
+                    Constants.FRONTEND_LOCAL_HTTPS_URL,
                     Constants.FRONTEND_DEV_URL,
                     Constants.FRONTEND_PRODUCTION_URL,
                     Constants.FRONTEND_LOCAL_URL_OLD,
