@@ -85,6 +85,7 @@ public class UserController {
     }
 
     @Operation(summary = "유저 권한 부여", description = "지정한 유저의 권한을 변경합니다")
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
     @PostMapping("/roles")
     public ApiResponse<UpdateUserRoleResponse> updateRole(@RequestBody @Valid UpdateUserRoleRequest request) {
         UpdateUserRoleResponse response= userService.updateUserRole(request);
