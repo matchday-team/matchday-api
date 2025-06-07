@@ -30,7 +30,7 @@ public class CheckMatchAspect {
     private final UserTeamRepository userTeamRepository;
     private final MatchRepository matchRepository;
 
-    @Before("@annotation(com.matchday.matchdayserver.common.annotation.CheckTeam)")
+    @Before("@annotation(com.matchday.matchdayserver.common.annotation.CheckMatch)")
     public void checkTeam(JoinPoint joinPoint) {
         // 1. userId 가져오기
         Optional<CustomUserDetails> customUserDetails = Optional.ofNullable(RequestContextHolder.getRequestAttributes())
