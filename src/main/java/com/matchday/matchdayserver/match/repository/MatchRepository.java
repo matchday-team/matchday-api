@@ -14,4 +14,5 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     List<Match> findAllByHomeTeamIdOrAwayTeamId(Long homeTeamId, Long awayTeamId);
 
+    List<Match> findDistinctByHomeTeamIdOrAwayTeamIdOrderByMatchDateDesc(Long homeTeamId, Long awayTeamId);
 }
