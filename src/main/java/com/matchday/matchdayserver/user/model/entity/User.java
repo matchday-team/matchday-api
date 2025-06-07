@@ -63,6 +63,10 @@
             this.profileImg = key;
         }
 
+        public void updateRole(Role newRole) {
+            this.role = newRole;
+        }
+
         @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
         private List<UserTeam> userTeams;
 
