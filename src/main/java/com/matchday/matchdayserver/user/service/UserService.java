@@ -88,6 +88,7 @@ public class UserService {
         refreshTokenRepository.deleteById(userId);
     }
 
+    @Transactional
     public UpdateUserRoleResponse updateUserRole(UpdateUserRoleRequest request) {
         User user = userRepository.findById(request.getUserId())
             .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
