@@ -54,13 +54,12 @@ public class CheckTeamAspect {
             throw new ApiException(AnnotationStatus.BAD_REQUEST_ANNOTATION, "teamId가 필요합니다.");
         }
 
-        // 3. match_user 검증
-        log.warn("match_user 검증 userId: {}, teamId: {}", userId, teamId);
+        // 3. team_user 검증
+        log.warn("[CheckTeam AOP] userId: {}, teamId: {} => 검증시작", userId, teamId);
         boolean exists = userTeamRepository.existsByUserIdAndTeamId(userId, teamId);
         if (!exists) {
             throw new ApiException(AuthStatus.FORBIDDEN, "해당 팀 소속 경기 참가 기록이 없습니다.");
         }
-
         log.warn("[CheckTeam AOP] userId: {}, teamId: {} => 통과", userId, teamId);
     }
 }
