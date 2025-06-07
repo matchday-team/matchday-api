@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -17,6 +20,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity(debug = true)//dev환경에서만 사용
+@EnableMethodSecurity(prePostEnabled = true)//PreAuthorize 사용
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -26,6 +30,15 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final List<String> EXCEPTION = List.of("/open-api/**");
     private final List<String> SWAGGER = List.of("/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/v2/api-docs", "/v3/api-docs/**");
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+
+        return RoleHierarchyImpl.fromHierarchy("""
+            ROLE_SUPER_ADMIN > ROLE_ADMIN
+            ROLE_ADMIN > ROLE_USER
+            """);
+    }
 
     @Bean
     public SecurityFilterChain security(HttpSecurity httpSecurity) throws Exception {
