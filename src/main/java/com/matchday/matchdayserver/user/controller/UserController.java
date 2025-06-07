@@ -4,8 +4,10 @@ import com.matchday.matchdayserver.common.annotation.UserId;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.s3.service.S3PresignedService;
 import com.matchday.matchdayserver.s3.dto.S3PresignedResponse;
+import com.matchday.matchdayserver.user.model.dto.request.UpdateUserRoleRequest;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
 import com.matchday.matchdayserver.user.model.dto.request.UserJoinTeamRequest;
+import com.matchday.matchdayserver.user.model.dto.response.UpdateUserRoleResponse;
 import com.matchday.matchdayserver.user.model.dto.response.UserInfoResponse;
 import com.matchday.matchdayserver.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -80,5 +82,12 @@ public class UserController {
     public ApiResponse<Long> logout(@UserId Long userId) {
         userService.logout(userId);
         return ApiResponse.ok(userId);
+    }
+
+    @Operation(summary = "유저 권한 부여", description = "지정한 유저의 권한을 변경합니다")
+    @PostMapping("/roles")
+    public ApiResponse<UpdateUserRoleResponse> updateRole(@RequestBody @Valid UpdateUserRoleRequest request) {
+        UpdateUserRoleResponse response= userService.updateUserRole(request);
+        return ApiResponse.ok(response);
     }
 }
