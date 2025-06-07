@@ -1,15 +1,20 @@
 package com.matchday.matchdayserver.testcontroller;
 
+import com.matchday.matchdayserver.common.annotation.CheckMatch;
+import com.matchday.matchdayserver.common.annotation.CheckTeam;
 import com.matchday.matchdayserver.common.annotation.UserId;
 import com.matchday.matchdayserver.common.annotation.UserSession;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.user.model.entity.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/test-aop")
+@Slf4j
 public class AOPTestController {
 
     @GetMapping
@@ -24,5 +29,19 @@ public class AOPTestController {
         System.out.println("user.getName():"+user.getName());
         System.out.println("user.getEmail():"+user.getEmail());
         return ApiResponse.ok(user.getId());
+    }
+
+    @GetMapping("/checkTeam/{teamId}")
+    @CheckTeam
+    public ApiResponse<?> hello3(@PathVariable Long teamId) {
+        System.out.println("CheckTeam 어노테이션 작동 테스트 메소드 진행");
+        return ApiResponse.ok(teamId);
+    }
+
+    @GetMapping("/checkMatch/{matchId}")
+    @CheckMatch
+    public ApiResponse<?> hello4(@PathVariable Long matchId) {
+        System.out.println("CheckMatch 어노테이션 작동 테스트 메소드 진행");
+        return ApiResponse.ok(matchId);
     }
 }
