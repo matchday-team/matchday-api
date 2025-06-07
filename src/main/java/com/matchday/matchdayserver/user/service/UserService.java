@@ -8,7 +8,9 @@ import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.team.service.TeamService;
+import com.matchday.matchdayserver.user.model.dto.request.UpdateUserRoleRequest;
 import com.matchday.matchdayserver.user.model.dto.request.UserJoinTeamRequest;
+import com.matchday.matchdayserver.user.model.dto.response.UpdateUserRoleResponse;
 import com.matchday.matchdayserver.user.model.dto.response.UserInfoResponse;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
@@ -84,6 +86,15 @@ public class UserService {
     @Transactional
     public void logout(Long userId) {
         refreshTokenRepository.deleteById(userId);
+    }
+
+    public UpdateUserRoleResponse updateUserRole(UpdateUserRoleRequest request) {
+        User user = userRepository.findById(request.getUserId())
+            .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
+
+        user.updateRole(request.getRole());
+        // 변경 감지(dirty checking)로 자동 반영됨
+        return new UpdateUserRoleResponse(user.getId(),user.getRole());
     }
 }
 
