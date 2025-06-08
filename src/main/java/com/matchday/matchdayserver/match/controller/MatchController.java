@@ -1,5 +1,7 @@
 package com.matchday.matchdayserver.match.controller;
 
+import com.matchday.matchdayserver.common.annotation.CheckMatch;
+import com.matchday.matchdayserver.common.annotation.CheckTeam;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.match.model.dto.request.MatchCreateRequest;
 import com.matchday.matchdayserver.match.model.dto.request.MatchMemoRequest;
@@ -19,6 +21,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +44,7 @@ public class MatchController {
 
     @Operation(summary = "매치 생성")
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Long> createMatch(@RequestBody MatchCreateRequest request) {
         Long id = matchCreateService.create(request);
         return ApiResponse.ok(id);
@@ -48,6 +52,8 @@ public class MatchController {
 
     @GetMapping("/{matchId}")
     @Operation(summary = "매치 정보 조회")
+    @PreAuthorize("hasRole('USER')")
+    @CheckMatch
     public ApiResponse<MatchInfoResponse> getMatchInfo(@PathVariable Long matchId) {
         MatchInfoResponse response = matchService.getMatchInfo(matchId);
         return ApiResponse.ok(response);
@@ -55,6 +61,8 @@ public class MatchController {
 
     @GetMapping("/{matchId}/score")
     @Operation(summary = "매치 점수 조회")
+    @PreAuthorize("hasRole('USER')")
+    @CheckMatch
     public ApiResponse<MatchScoreResponse> getMatchScore(@PathVariable Long matchId) {
         MatchScoreResponse response = matchScoreService.getMatchScore(matchId);
         return ApiResponse.ok(response);
@@ -62,6 +70,7 @@ public class MatchController {
 
     @Operation(summary = "매치 메모 등록/수정", description = "특정 경기에 대한 메모를 생성하거나 수정합니다 null 값 입력시 메모 초기화.")
     @PostMapping("{matchId}/memo")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> createOrUpdate(
         @Parameter(description = "경기 ID") @PathVariable Long matchId,
         @RequestBody MatchMemoRequest request) {
@@ -71,6 +80,8 @@ public class MatchController {
 
     @Operation(summary = "매치 메모 조회", description = "특정 경기의 메모를 조회합니다.")
     @GetMapping("{matchId}/memo")
+    @PreAuthorize("hasRole('USER')")
+    @CheckMatch
     public ApiResponse<MatchMemoResponse> getMemo(
         @Parameter(description = "경기 ID") @PathVariable Long matchId) {
       return ApiResponse.ok(matchService.get(matchId));
@@ -78,12 +89,15 @@ public class MatchController {
 
     @Operation(summary = "특정 팀 매치 리스트 조회", description = "특정 팀이 속한 매치 리스트를 조회합니다. <br> 경기 상태(matchStatus) 값은 SCHEDULED(경기 전), IN_PLAY(경기중), FINISHED(경기 종료) 입니다.")
     @GetMapping("/teams/{teamId}")
+    @PreAuthorize("hasRole('USER')")
+    @CheckTeam
     public ApiResponse<List<MatchListResponse>> getMatchList(@PathVariable Long teamId) {
         return ApiResponse.ok(matchService.getMatchListByTeam(teamId));
     }
 
     @Operation(summary = "전체 매치 리스트 조회", description = " 전체 매치 리스트를 페이징하여 조회합니다.<br> `page: 0부터 시작하는 페이지 번호 (기본값 0)` <br> `size: 한 페이지에 포함할 데이터 개수 (기본값 10)`<br>")
     @GetMapping()
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ApiResponse<MatchListPageResponse> getPagedMatchList(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size
@@ -93,12 +107,16 @@ public class MatchController {
 
     @Operation(summary = "전/후반 시간 등록", description = "특정 매치의 전/후반 시작/종료 시간을 등록합니다. <br> **halfType**은 ``FIRST_HALF(전반) / SECOND_HALF(후반)`` 입니다. <br> **timeType**은 ``START_TIME(시작시간) / END_TIME(종료시간)`` 입니다. ")
     @PatchMapping("/{matchId}/time")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> updateHalfTime(@PathVariable Long matchId, @RequestBody @Valid MatchHalfTimeRequest matchHalfTimeRequest) {
         matchService.setHalfTime(matchId, matchHalfTimeRequest);
         return ApiResponse.ok("시간 등록 완료");
     }
 
+    @Operation(summary = "특정 팀의 매치 결과 조회", description = "특정 팀의 매치 결과 조회입니다.")
     @GetMapping("/teams/{teamId}/result")
+    @PreAuthorize("hasRole('USER')")
+    @CheckTeam
     public ApiResponse<List<MatchResultInfoResponse>> getMatchResultByTeam(
         @PathVariable Long teamId) {
 
