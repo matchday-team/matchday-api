@@ -30,7 +30,6 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final TeamService teamService;
     private final TeamRepository teamRepository;
     private final UserTeamRepository userTeamRepository;
     private final MatchUserRepository matchUserRepository;
@@ -53,9 +52,10 @@ public class UserService {
         Team team = teamRepository.findById(request.getTeamId()).
                 orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
         //이미 팀에 가입되어 있는지 검증
-        if(teamService.validateUserInTeam(userId,request.getTeamId())){
-           throw new ApiException(TeamStatus.ALREADY_JOINED_USER);
+        if(userTeamRepository.existsByUserIdAndTeamId(userId, request.getTeamId())) {
+            throw new ApiException(TeamStatus.ALREADY_JOINED_USER);
         }
+
         //userTeam 객체 생성.
         UserTeam userTeam = UserTeam.builder()
                 .user(user)

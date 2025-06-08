@@ -49,10 +49,10 @@ public class MatchUserService {
   public Long create(Long matchId, MatchUserCreateRequest request) {
     Match match = matchRepository.findById(matchId)
         .orElseThrow(() -> new ApiException(MatchUserStatus.NOTFOUND_MATCH));
-    User user = userRepository.findById(request.getUserId())
-        .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
+      User user = userRepository.findById(request.getUserId())
+          .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
 
-    Team team = null;
+      Team team = null;
 
     if (!canIgnoreTeamConstraints(request.getRole())) {
       team = teamRepository.findById(request.getTeamId())

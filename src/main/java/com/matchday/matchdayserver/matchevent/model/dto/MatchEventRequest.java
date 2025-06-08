@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@AllArgsConstructor
 @Schema(description = "경기 이벤트 요청 DTO")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MatchEventRequest {
@@ -21,4 +20,9 @@ public class MatchEventRequest {
 
     @Schema(description = "이벤트 설명", example = "좋은 골이었습니다!", nullable = true)
     private String description;
+
+    public MatchEventRequest(MatchEventType eventType, String description) {
+        this.eventType = eventType;
+        this.description = description;
+    }
 }
