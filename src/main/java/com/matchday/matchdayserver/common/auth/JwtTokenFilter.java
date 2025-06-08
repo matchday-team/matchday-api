@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.common.auth;
 
+import com.matchday.matchdayserver.auth.model.dto.enums.JwtTokenType;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
@@ -43,7 +44,7 @@ public class JwtTokenFilter extends GenericFilter{
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;//HTTP 전용 메소드를 사용하기 위해 변환
         //토큰 형식 검증(Bearer)
         String jwtToken =resolveToken(httpServletRequest);
-        if(tokenHelper.validateToken(jwtToken)){
+        if(StringUtils.hasText(jwtToken) && tokenHelper.validateToken(jwtToken, JwtTokenType.ACCESS)){
             //문제가 없으면 SecurityContextHolder 에 jwtToken 정보가 담긴 authentication 적재
             Authentication authentication = tokenHelper.getAuthentication(jwtToken);
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();//UserDetails를 구현한 사용자 객체를 Return
@@ -60,7 +61,6 @@ public class JwtTokenFilter extends GenericFilter{
         if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {
             return token.substring(BEARER_PREFIX.length());
         }
-
         return null;
     }
 }

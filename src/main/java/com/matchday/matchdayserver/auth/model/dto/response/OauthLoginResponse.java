@@ -2,12 +2,11 @@ package com.matchday.matchdayserver.auth.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
 public class OauthLoginResponse {
-    String token; //서버 access token
-    Long id;
+    private final String accessToken; //서버 access token
 }

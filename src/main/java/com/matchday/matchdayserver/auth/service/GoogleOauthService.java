@@ -1,14 +1,19 @@
 package com.matchday.matchdayserver.auth.service;
 
+import com.matchday.matchdayserver.auth.mapper.UserMapper;
+import com.matchday.matchdayserver.auth.model.dto.enums.JwtTokenType;
 import com.matchday.matchdayserver.auth.model.dto.request.OauthLoginRequest;
 import com.matchday.matchdayserver.auth.model.dto.response.GoogleAccessTokenResponse;
 import com.matchday.matchdayserver.auth.model.dto.response.OauthLoginResponse;
 import com.matchday.matchdayserver.auth.model.dto.response.GoogleProfileResponse;
 import com.matchday.matchdayserver.common.auth.JwtTokenProvider;
+import com.matchday.matchdayserver.user.model.dto.LoginUserDto;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.model.enums.SocialType;
 import com.matchday.matchdayserver.user.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,42 +25,36 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GoogleOauthService {
+
     @Value("${oauth.google.client-id}")
     private String googleClientId;
-
     @Value("${oauth.google.client-secret}")
     private String googleClientSecret;
-
     @Value("${oauth.google.redirect-url}")
     private String googleRedirectUri;
 
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
 
     /**
-     * Google OAuth 로그인 처리
+     * REST API 방식 Google OAuth 로그인 처리
      * 1. 인가 코드로 Google Access Token 요청
      * 2. Google Access Token으로 사용자 정보 조회
      * 3. 기존 유저 조회 or 신규 유저 생성
-     * 4. JWT 토큰 발급 및 반환 <- 이것이 스프링 서버 Access Token
+     * 4. User 객체 반환
      */
-    public OauthLoginResponse googleLogin(OauthLoginRequest oAuthLoginRequest) {
+    public LoginUserDto googleLogin(OauthLoginRequest oAuthLoginRequest) {
+        // 인가 코드로 Google Access Token 요청
         GoogleAccessTokenResponse googleAccessToken = getAccessToken(oAuthLoginRequest.getCode());
+        // Google Access Token으로 사용자 정보 조회
         GoogleProfileResponse googleProfile = getProfile(googleAccessToken.getAccess_token());
-        //유저 가져오기
+        // 기존 유저 조회 or 신규 유저 생성
         User user = userRepository.findBySocialId(googleProfile.getSub());
-        //없으면 만들기
         if (user == null) {
-            user = createOatuh(googleProfile,SocialType.GOOGLE);
+            user = createOatuh(googleProfile, SocialType.GOOGLE);
         }
-        //토큰발급
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("userId", user.getId());
-        payload.put("role", user.getRole());
-        String jwtToken=jwtTokenProvider.createToken(user.getEmail(), payload);
-
-        return new OauthLoginResponse(jwtToken,user.getId());
+        return UserMapper.toLoginUserDto(user);
     }
 
     /**
@@ -82,7 +81,7 @@ public class GoogleOauthService {
     }
 
     /**
-     * Access Token을 사용하여 Google 사용자 프로필 조회
+     * 구글 Access Token을 사용하여 Google 사용자 프로필 조회
      */
     private GoogleProfileResponse getProfile(String accessToken) {
         RestClient restClient = RestClient.create();

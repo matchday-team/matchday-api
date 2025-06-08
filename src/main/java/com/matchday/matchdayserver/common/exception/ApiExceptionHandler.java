@@ -5,6 +5,7 @@ import com.matchday.matchdayserver.common.response.DefaultStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -37,6 +38,14 @@ public class ApiExceptionHandler {
 
         return ApiResponse.error(DefaultStatus.BAD_REQUEST,
             errorMessageList); //400 에러 발생 후 각 검증 어노테이션에서 설정한 msg 출력
+    }
+
+    //PreAuthorize 실패했을때 예외처리 핸들링
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiResponse<String> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        log.warn("권한 거부: 타입=[{}], 메시지=[{}]", ex.getClass().getName(), ex.getMessage());
+        return ApiResponse.error(DefaultStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)

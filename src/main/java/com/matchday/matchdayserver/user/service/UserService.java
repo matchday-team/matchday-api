@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.user.service;
 
+import com.matchday.matchdayserver.auth.repository.RefreshTokenRepository;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
@@ -7,7 +8,9 @@ import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.team.service.TeamService;
+import com.matchday.matchdayserver.user.model.dto.request.UpdateUserRoleRequest;
 import com.matchday.matchdayserver.user.model.dto.request.UserJoinTeamRequest;
+import com.matchday.matchdayserver.user.model.dto.response.UpdateUserRoleResponse;
 import com.matchday.matchdayserver.user.model.dto.response.UserInfoResponse;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
@@ -31,6 +34,7 @@ public class UserService {
     private final TeamRepository teamRepository;
     private final UserTeamRepository userTeamRepository;
     private final MatchUserRepository matchUserRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public Long createUser(UserCreateRequest request){
         User user = User.builder()
@@ -77,6 +81,21 @@ public class UserService {
       List<Long> teamIds = userTeamRepository.findActiveTeamIdsByUserId(userId);
       List<Long> matchIds = matchUserRepository.findMatchIdsByUserId(userId);
       return UserMapper.userInfoResponse(user, teamIds, matchIds);
+    }
+
+    @Transactional
+    public void logout(Long userId) {
+        refreshTokenRepository.deleteById(userId);
+    }
+
+    @Transactional
+    public UpdateUserRoleResponse updateUserRole(UpdateUserRoleRequest request) {
+        User user = userRepository.findById(request.getUserId())
+            .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
+
+        user.updateRole(request.getRole());
+        // 변경 감지(dirty checking)로 자동 반영됨
+        return new UpdateUserRoleResponse(user.getId(),user.getRole());
     }
 }
 
