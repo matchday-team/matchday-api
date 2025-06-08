@@ -1,6 +1,5 @@
 package com.matchday.matchdayserver.matchuser.controller;
 
-import com.matchday.matchdayserver.common.annotation.UserId;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserCreateRequest;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserGridUpdateRequest;
@@ -40,8 +39,7 @@ public class MatchUserController {
         """
     )
     @GetMapping("/{matchId}/players")
-    public ApiResponse<MatchUserGroupResponse> getGroupedMatchUsers(@UserId Long userId,
-        @Parameter(description = "매치 ID", example = "1", required = true)
+    public ApiResponse<MatchUserGroupResponse> getGroupedMatchUsers(@Parameter(description = "매치 ID", example = "1", required = true)
         @PathVariable Long matchId
     ) {
         MatchUserGroupResponse groupedUsers = matchUserService.getGroupedMatchUsers(matchId);
@@ -50,6 +48,7 @@ public class MatchUserController {
 
     @Operation(summary = "매치유저 그리드 좌표 변경", description = "그리드 좌표 값은 0~29 사이의 값이어야합니다.")
     @PatchMapping("/{matchUserId}/grid")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> updateMatchUserGrid(
         @PathVariable Long matchUserId,
         @RequestBody @Valid MatchUserGridUpdateRequest request
@@ -60,6 +59,7 @@ public class MatchUserController {
 
     @Operation(summary = "매치 유저 삭제")
     @DeleteMapping("/{matchUserId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> deleteMatchUser(@PathVariable Long matchUserId) {
         matchUserService.matchUserDelete(matchUserId);
         return ApiResponse.ok("매치 유저 삭제 완료");
