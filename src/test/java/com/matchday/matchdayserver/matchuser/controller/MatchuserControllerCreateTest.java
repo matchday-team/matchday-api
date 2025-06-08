@@ -76,14 +76,15 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
         );
         matchId = matchCreateService.create(request);
 
-        // given: 로그인 사용자로 토큰 발급
+        // given: ADMIN 사용자로 토큰 발급
         LoginUserDto loginUser = LoginUserDto.builder()
             .id(1L)
-            .email("test@example.com")
-            .role(Role.USER)
+            .email("admin@example.com")
+            .role(Role.ADMIN)
             .socialType(SocialType.GOOGLE)
             .build();
         accessToken = jwtTokenProvider.createToken(loginUser, JwtTokenType.ACCESS);
+
     }
 
     private MatchUserCreateRequest createRequest(Long userId, Long teamId) {
@@ -97,8 +98,8 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("매치 유저 생성 - 성공")
-    void createMatchUser_Success() throws Exception {
+    @DisplayName("매치 유저 생성 - 성공(Role : ADMIN)")
+    void createMatchUser_Success_Admin() throws Exception {
         // given
         MatchUserCreateRequest request = createRequest(1L,1L);
 
@@ -113,6 +114,76 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
             .andDo(print())
             .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("매치 유저 생성 - 성공(Role : SUPER_ADMIN)")
+    void createMatchUser_Success_Super_Admin() throws Exception {
+        // given: 일반 Super Admin 권한 유저로 토큰 생성
+        LoginUserDto user = LoginUserDto.builder()
+            .id(2L)
+            .email("user@example.com")
+            .role(Role.SUPER_ADMIN)
+            .socialType(SocialType.GOOGLE)
+            .build();
+        String userToken = jwtTokenProvider.createToken(user, JwtTokenType.ACCESS);
+
+        MatchUserCreateRequest request = createRequest(user.getId(), 1L);
+
+        // when
+        ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
+            .header("Authorization", "Bearer " + accessToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        actions
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("매치 유저 생성 - 실패 (권한 없는 사용자(USER)")
+    void createMatchUser_Fail_UserRoleNotAllowed() throws Exception {
+        // given: 일반 USER 권한 유저로 토큰 생성
+        LoginUserDto user = LoginUserDto.builder()
+            .id(2L)
+            .email("user@example.com")
+            .role(Role.USER)
+            .socialType(SocialType.GOOGLE)
+            .build();
+        String userToken = jwtTokenProvider.createToken(user, JwtTokenType.ACCESS);
+
+        MatchUserCreateRequest request = createRequest(user.getId(), 1L);
+
+        // when
+        ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
+            .header("Authorization", "Bearer " + userToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        actions
+            .andDo(print())
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("매치 유저 생성 - 실패 (인증되지 않은 사용자)")
+    void createMatchUser_Fail_Unauthenticated() throws Exception {
+        MatchUserCreateRequest request = createRequest(2L, 1L);
+
+        // when
+        ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
+            // 토큰 헤더 없이 요청
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        actions
+            .andDo(print())
+            .andExpect(status().isUnauthorized()); // 401
+    }
+
 
     @Test
     @DisplayName("매치 유저 생성 - 실패 (존재하지 않는 매치)")
@@ -139,7 +210,7 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
         LoginUserDto fakeUser = LoginUserDto.builder()
             .id(9999L)
             .email("notfound@example.com")
-            .role(Role.USER)
+            .role(Role.ADMIN)
             .socialType(SocialType.GOOGLE)
             .build();
 
