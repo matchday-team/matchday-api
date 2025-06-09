@@ -14,6 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
         .allowedOriginPatterns(
             Constants.FRONTEND_LOCAL_URL,
             Constants.FRONTEND_DEV_URL,
+            Constants.FRONTEND_BRANCH_DEPLOY_URL,
             Constants.FRONTEND_PRODUCTION_URL,
             Constants.BACKEND_PRODUCTION_URL,
             Constants.BACKEND_LOCAL_URL,
