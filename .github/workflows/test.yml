@@ -4,10 +4,10 @@ on:
     pull_request:
         branches:
             - release
-            - main
+            - dev
 
 permissions:
-  pull-requests: write
+    pull-requests: write
 
 jobs:
     test:
