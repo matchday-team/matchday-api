@@ -25,6 +25,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     Constants.FRONTEND_LOCAL_URL,
                     Constants.FRONTEND_LOCAL_HTTPS_URL,
                     Constants.FRONTEND_DEV_URL,
+                    Constants.FRONTEND_BRANCH_DEPLOY_URL,
                     Constants.FRONTEND_PRODUCTION_URL,
                     Constants.FRONTEND_LOCAL_URL_OLD,
                     Constants.FRONTEND_PRODUCTION_URL_OLD)
