@@ -51,6 +51,8 @@ oauth:
         client-id: ${OAUTH_GOOGLE_CLIENT_ID}
         client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
         redirect-url: ${OAUTH_GOOGLE_REDIRECT_URL}
+    kakao:
+        client-id: ${OAUTH_KAKAO_CLIENT_ID}
 
 logging:
     level:
