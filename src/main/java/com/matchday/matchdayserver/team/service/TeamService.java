@@ -10,10 +10,13 @@ import com.matchday.matchdayserver.team.model.dto.response.*;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.model.mapper.TeamMapper;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
+import com.matchday.matchdayserver.user.model.dto.request.UserJoinTeamRequest;
+import com.matchday.matchdayserver.user.service.UserService;
 import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
 import com.matchday.matchdayserver.userteam.model.mapper.UserTeamMapper;
 import com.matchday.matchdayserver.userteam.repository.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,13 +30,22 @@ public class TeamService {
     private final UserTeamRepository userTeamRepository;
     private final MatchUserRepository matchUserRepository;
     private final MatchEventRepository matchEventRepository;
+    @Lazy
+    private final UserService userService;
 
     //팀 생성
-    public Long create(TeamCreateRequest request){
+    public Long create(TeamCreateRequest request,Long userId){
         validateDuplicateTeamName(request.getName());
+        //새로운 팀 생성
         Team team = new Team(request.getName(), request.getTeamColor(), request.getBottomColor(), request.getStockingColor(),
             request.getTeamImg());
         teamRepository.save(team);
+        //팀 생성자는 팀과 연관관계를 맺음
+        UserJoinTeamRequest userJoinTeamRequest = UserJoinTeamRequest.builder().
+            teamId(team.getId()).
+            build();
+        userService.joinTeam(userId,userJoinTeamRequest);
+
         return team.getId();
     }
 

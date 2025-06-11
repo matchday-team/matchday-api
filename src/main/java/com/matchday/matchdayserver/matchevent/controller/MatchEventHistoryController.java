@@ -1,11 +1,13 @@
 package com.matchday.matchdayserver.matchevent.controller;
 
+import com.matchday.matchdayserver.common.annotation.CheckMatch;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.matchevent.model.dto.MatchEventResponse;
 import com.matchday.matchdayserver.matchevent.service.MatchEventHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,8 @@ public class MatchEventHistoryController {
 
     @GetMapping("/{matchId}/history")
     @Operation(summary = "매치 이벤트 이력 조회")
+    @PreAuthorize("hasRole('USER')")
+    @CheckMatch
     public ApiResponse<List<MatchEventResponse>> getMatchEventHistory(@PathVariable Long matchId) {
         return ApiResponse.ok(matchEventHistoryService.findAllHistoryByMatchId(matchId));
     }

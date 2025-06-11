@@ -1,5 +1,7 @@
 package com.matchday.matchdayserver.team.controller;
 
+import com.matchday.matchdayserver.common.annotation.CheckTeam;
+import com.matchday.matchdayserver.common.annotation.UserId;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.s3.service.S3PresignedService;
 import com.matchday.matchdayserver.s3.dto.S3PresignedResponse;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,9 +33,10 @@ public class TeamController {
     private static final String FOLDER_NAME = "teams";
 
     @Operation(summary = "팀 생성", description = "팀 생성 API입니다. <br> 컬러는 모두 Hex Code로 입력 해주세요. <br> teamImg는 선택 사항입니다.")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping
-    public ApiResponse<Long> createTeam(@RequestBody @Valid TeamCreateRequest request) {
-        Long teamId = teamService.create(request);
+    public ApiResponse<Long> createTeam(@RequestBody @Valid TeamCreateRequest request,@UserId Long userId) {
+        Long teamId = teamService.create(request,userId);
         return ApiResponse.ok(teamId);
     }
 
@@ -57,6 +61,7 @@ public class TeamController {
 
     @Operation(summary = "팀 검색", description = "키워드로 팀 검색하는 API입니다.")
     @GetMapping("/search")
+    @PreAuthorize("hasRole('USER')")
     public ApiResponse<List<TeamSearchResponse>> searchTeams(@RequestParam String keyword) {
         List<TeamSearchResponse> teamList = teamService.searchTeams(keyword);
         return ApiResponse.ok(teamList);
@@ -78,6 +83,8 @@ public class TeamController {
 
     @Operation(summary = "팀에 속한 맴버 리스트 조회")
     @GetMapping("/{teamId}/users")
+    @PreAuthorize("hasRole('USER')")
+    @CheckTeam
     public ApiResponse<TeamMemberListResponse> getTeamMembers(@PathVariable Long teamId) {
         return ApiResponse.ok(teamService.getTeamMembers(teamId));
     }

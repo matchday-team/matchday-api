@@ -1,15 +1,16 @@
 package com.matchday.matchdayserver.user.service;
 
+import com.matchday.matchdayserver.auth.repository.RefreshTokenRepository;
 import com.matchday.matchdayserver.common.exception.ApiException;
 import com.matchday.matchdayserver.common.response.TeamStatus;
 import com.matchday.matchdayserver.common.response.UserStatus;
-import com.matchday.matchdayserver.match.model.entity.Match;
-import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
 import com.matchday.matchdayserver.matchuser.repository.MatchUserRepository;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.team.service.TeamService;
+import com.matchday.matchdayserver.user.model.dto.request.UpdateUserRoleRequest;
 import com.matchday.matchdayserver.user.model.dto.request.UserJoinTeamRequest;
+import com.matchday.matchdayserver.user.model.dto.response.UpdateUserRoleResponse;
 import com.matchday.matchdayserver.user.model.dto.response.UserInfoResponse;
 import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
@@ -29,10 +30,10 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final TeamService teamService;
     private final TeamRepository teamRepository;
     private final UserTeamRepository userTeamRepository;
     private final MatchUserRepository matchUserRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public Long createUser(UserCreateRequest request){
         User user = User.builder()
@@ -51,9 +52,10 @@ public class UserService {
         Team team = teamRepository.findById(request.getTeamId()).
                 orElseThrow(() -> new ApiException(TeamStatus.NOTFOUND_TEAM));
         //이미 팀에 가입되어 있는지 검증
-        if(teamService.validateUserInTeam(userId,request.getTeamId())){
-           throw new ApiException(TeamStatus.ALREADY_JOINED_USER);
+        if(userTeamRepository.existsByUserIdAndTeamId(userId, request.getTeamId())) {
+            throw new ApiException(TeamStatus.ALREADY_JOINED_USER);
         }
+
         //userTeam 객체 생성.
         UserTeam userTeam = UserTeam.builder()
                 .user(user)
@@ -79,6 +81,21 @@ public class UserService {
       List<Long> teamIds = userTeamRepository.findActiveTeamIdsByUserId(userId);
       List<Long> matchIds = matchUserRepository.findMatchIdsByUserId(userId);
       return UserMapper.userInfoResponse(user, teamIds, matchIds);
+    }
+
+    @Transactional
+    public void logout(Long userId) {
+        refreshTokenRepository.deleteById(userId);
+    }
+
+    @Transactional
+    public UpdateUserRoleResponse updateUserRole(UpdateUserRoleRequest request) {
+        User user = userRepository.findById(request.getUserId())
+            .orElseThrow(() -> new ApiException(UserStatus.NOTFOUND_USER));
+
+        user.updateRole(request.getRole());
+        // 변경 감지(dirty checking)로 자동 반영됨
+        return new UpdateUserRoleResponse(user.getId(),user.getRole());
     }
 }
 

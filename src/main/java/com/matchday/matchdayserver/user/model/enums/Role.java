@@ -1,5 +1,5 @@
 package com.matchday.matchdayserver.user.model.enums;
 
 public enum Role {
-    ADMIN,USER
+    SUPER_ADMIN,ADMIN,USER
 }

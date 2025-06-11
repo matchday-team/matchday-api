@@ -24,4 +24,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
         LIMIT 1
         """, nativeQuery = true)
     String findMostPlayedPlayerName(@Param("teamId") Long teamId);
+    User findBySocialId(String socialId);
 }

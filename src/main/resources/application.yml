@@ -43,6 +43,15 @@ decorator:
         p6spy:
             enable-logging: false
 
+jwt:
+    secret: ${JWT_SECRET}
+
+oauth:
+    google:
+        client-id: ${OAUTH_GOOGLE_CLIENT_ID}
+        client-secret: ${OAUTH_GOOGLE_CLIENT_SECRET}
+        redirect-url: ${OAUTH_GOOGLE_REDIRECT_URL}
+
 logging:
     level:
         org.springframework.messaging: DEBUG
