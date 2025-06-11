@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.common.response;
 
+import com.matchday.matchdayserver.common.exception.ApiException;
 import org.springframework.http.HttpStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,12 +29,4 @@ public class ApiResponse<T> {
         return new ApiResponse<>(HttpStatus.CREATED.value(), data, DefaultStatus.OK.getDescription());
     }
 
-
-    public static <T> ApiResponse<T> error(StatusInterface status) {
-        return new ApiResponse<>(status.getCustomStatusCode(), null, status.getDescription());
-    }
-
-    public static <T> ApiResponse<T> error(StatusInterface status, T data) {
-        return new ApiResponse<>(status.getCustomStatusCode(), data, status.getDescription());
-    }
 }
