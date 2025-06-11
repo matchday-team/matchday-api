@@ -8,7 +8,9 @@ import com.matchday.matchdayserver.s3.dto.S3PresignedResponse;
 import com.matchday.matchdayserver.team.model.dto.request.TeamCreateRequest;
 import com.matchday.matchdayserver.team.model.dto.response.TeamResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamMemberListResponse;
+import com.matchday.matchdayserver.team.model.dto.response.TeamResultSummaryResponse;
 import com.matchday.matchdayserver.team.model.dto.response.TeamSearchResponse;
+import com.matchday.matchdayserver.team.service.TeamResultSummaryService;
 import com.matchday.matchdayserver.team.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +28,7 @@ import java.util.List;
 public class TeamController {
 
     private final TeamService teamService;
+    private final TeamResultSummaryService teamResultSummaryService;
     private final S3PresignedService s3PresignedManager;
     private static final String FOLDER_NAME = "teams";
 
@@ -84,5 +87,11 @@ public class TeamController {
     @CheckTeam
     public ApiResponse<TeamMemberListResponse> getTeamMembers(@PathVariable Long teamId) {
         return ApiResponse.ok(teamService.getTeamMembers(teamId));
+    }
+
+    @Operation(summary = "팀 경기기록 요약 정보 조회")
+    @GetMapping("/{teamId}/results/summary")
+    public ApiResponse<TeamResultSummaryResponse> getTeamSummary(@PathVariable Long teamId) {
+        return ApiResponse.ok(teamResultSummaryService.getTeamResultSummary(teamId));
     }
 }
