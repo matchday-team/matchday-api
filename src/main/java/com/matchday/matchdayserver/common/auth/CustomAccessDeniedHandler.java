@@ -1,6 +1,8 @@
 package com.matchday.matchdayserver.common.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.matchday.matchdayserver.common.exception.ApiExceptionInterface;
+import com.matchday.matchdayserver.common.response.ApiExceptionResponse;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.common.response.AuthStatus;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +42,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json;charset=UTF-8");
 
-        ApiResponse<?> body = ApiResponse.error(AuthStatus.FORBIDDEN);
+        ApiExceptionResponse<ApiExceptionInterface> body = ApiExceptionResponse.error(AuthStatus.FORBIDDEN);
 
         response.getWriter().write(objectMapper.writeValueAsString(body));
     }

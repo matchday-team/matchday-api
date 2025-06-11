@@ -1,5 +1,6 @@
 package com.matchday.matchdayserver.common.exception;
 
+import com.matchday.matchdayserver.common.response.ApiExceptionResponse;
 import com.matchday.matchdayserver.common.response.ApiResponse;
 import com.matchday.matchdayserver.common.response.DefaultStatus;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +19,14 @@ import java.util.List;
 public class ApiExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ApiResponse<ApiExceptionInterface>> handleApiException(Exception ex, ApiException apiException) {
+    public ResponseEntity<ApiExceptionResponse<ApiExceptionInterface>> handleApiException(Exception ex, ApiException apiException) {
         return ResponseEntity.status(apiException.getStatus().getHttpStatusCode())
-                .body(ApiResponse.error(apiException.getStatus()));
+                .body(ApiExceptionResponse.error(apiException.getStatus()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ApiExceptionResponse<List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<String> errorMessageList = ex.getFieldErrors()
             .stream()
             .map(
@@ -36,22 +37,22 @@ public class ApiExceptionHandler {
                 })
             .toList();
 
-        return ApiResponse.error(DefaultStatus.BAD_REQUEST,
+        return ApiExceptionResponse.error(DefaultStatus.BAD_REQUEST,
             errorMessageList); //400 에러 발생 후 각 검증 어노테이션에서 설정한 msg 출력
     }
 
     //PreAuthorize 실패했을때 예외처리 핸들링
     @ExceptionHandler(AuthorizationDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ApiResponse<String> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+    public ApiExceptionResponse<String> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
         log.warn("권한 거부: 타입=[{}], 메시지=[{}]", ex.getClass().getName(), ex.getMessage());
-        return ApiResponse.error(DefaultStatus.FORBIDDEN);
+        return ApiExceptionResponse.error(DefaultStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResponse<String> handleAllExceptions(Exception ex) {
+    public ApiExceptionResponse<String> handleAllExceptions(Exception ex) {
       log.error("예외 발생: 타입=[{}], 메시지=[{}]", ex.getClass().getName(), ex.getMessage(), ex);
-      return ApiResponse.error(DefaultStatus.UNKNOWN_ERROR);
+      return ApiExceptionResponse.error(DefaultStatus.UNKNOWN_ERROR);
     }
 }
