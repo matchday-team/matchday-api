@@ -32,8 +32,8 @@ public class UserController {
     @Operation(
         summary = "임시 유저 생성",
         description = """
-            생성된 user의 Id 값 반환  
-            profileImg는 선택 사항입니다.  
+            임시 유저를 생성하고, 생성된 유저의 ID를 반환합니다.  
+            프로필 이미지는 선택 사항입니다.  
             [필요 권한] ADMIN
             """
     )
@@ -47,22 +47,22 @@ public class UserController {
     @Operation(
         summary = "팀 입단",
         description = """
-            {userId}가 teamId에 소속됩니다  
-            [필요 권한] USER
+            지정한 유저(userId)가 특정 팀(teamId)에 소속됩니다.  
+            [필요 권한] 없음 (추후 별도의 팀 코드를 통해 인증 예정)
             """
     )
     @PostMapping("/{userId}/teams")
-    @PreAuthorize("hasRole('USER')")
-    public ApiResponse<?> joinTeam(@PathVariable Long userId, @RequestBody UserJoinTeamRequest request) {
+    public ApiResponse<?> joinTeam(@PathVariable("userId") Long userId, @RequestBody UserJoinTeamRequest request) {
         return ApiResponse.ok(userService.joinTeam(userId, request));
     }
 
     @Operation(
         summary = "유저 프로필 업로드 presigned URL 발급",
         description = """
-            userid와 확장자(jpg, jpeg, png, webp)를 넘겨주면  
-            이미지 업로드용 URL과 저장할 FileName(파일명)을 반환합니다.  
-            반환 받은 파일명을 저장하세요 (이미지 조회시 필요)
+            userId와 확장자(jpg, jpeg, png, webp)를 전달하면  
+            이미지 업로드용 presigned URL과 저장할 파일명(key)을 반환합니다.  
+            반환받은 파일명은 반드시 저장해주세요. (이미지 조회 시 필요)  
+            [필요 권한] 없음
             """
     )
     @GetMapping("/{userId}/profile/upload-url")
@@ -76,8 +76,9 @@ public class UserController {
     @Operation(
         summary = "유저 프로필 이미지 read presigned URL 조회",
         description = """
-            user 프로필 업로드에서 반환 받은 파일명(key)을 넘겨주면  
-            이미지 read용 URL을 반환합니다
+            프로필 업로드 시 반환받은 파일명(key)을 전달하면  
+            이미지 조회용 presigned URL을 반환합니다.  
+            [필요 권한] 없음
             """
     )
     @GetMapping("/{userId}/profile/read-url")
@@ -91,21 +92,21 @@ public class UserController {
     @Operation(
         summary = "유저 정보 조회",
         description = """
-            유저 정보 조회 API입니다.  
-            특정 유저의 이름, 소속팀 id, 참여한 매치 id를 반환합니다.  
+            특정 유저의 이름, 소속 팀 ID, 참여한 매치 ID들을 조회합니다.  
             [필요 권한] ADMIN
             """
     )
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{userId}")
-    public ApiResponse<UserInfoResponse> getUserInfo(@PathVariable Long userId) {
+    public ApiResponse<UserInfoResponse> getUserInfo(@PathVariable("userId") Long userId) {
         return ApiResponse.ok(userService.getUserInfo(userId));
     }
 
     @Operation(
         summary = "로그아웃",
         description = """
-            현재 로그인된 사용자의 리프레시 토큰을 사용할 수 없게 합니다
+            현재 로그인된 사용자의 리프레시 토큰을 무효화합니다.  
+            [필요 권한] 없음
             """
     )
     @PostMapping("/logout")
@@ -117,7 +118,7 @@ public class UserController {
     @Operation(
         summary = "유저 권한 부여",
         description = """
-            지정한 유저의 권한을 변경합니다  
+            지정한 유저의 권한을 변경합니다.  
             [필요 권한] SUPER_ADMIN
             """
     )
