@@ -2,18 +2,23 @@ package com.matchday.matchdayserver.matchuser.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.matchday.matchdayserver.IntegrationTestSupport;
+import com.matchday.matchdayserver.auth.mapper.UserMapper;
 import com.matchday.matchdayserver.auth.model.dto.enums.JwtTokenType;
 import com.matchday.matchdayserver.common.auth.JwtTokenProvider;
 import com.matchday.matchdayserver.match.model.dto.request.MatchCreateRequest;
-import com.matchday.matchdayserver.match.model.entity.Match.MatchType;
+import com.matchday.matchdayserver.match.model.dto.request.MockMatchCreateRequest;
 import com.matchday.matchdayserver.match.service.MatchCreateService;
 import com.matchday.matchdayserver.matchuser.model.dto.MatchUserCreateRequest;
 import com.matchday.matchdayserver.matchuser.model.enums.MatchUserRole;
+import com.matchday.matchdayserver.team.model.entity.MockTeam;
 import com.matchday.matchdayserver.team.model.entity.Team;
 import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.user.model.dto.LoginUserDto;
+import com.matchday.matchdayserver.user.model.entity.MockUser;
+import com.matchday.matchdayserver.user.model.entity.User;
 import com.matchday.matchdayserver.user.model.enums.Role;
 import com.matchday.matchdayserver.user.model.enums.SocialType;
+import com.matchday.matchdayserver.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,8 +31,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,38 +56,47 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
     @Autowired
     private TeamRepository teamRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     private Long matchId;
     private String accessToken;
 
+    // 테스트에서 사용할 실제 저장된 엔티티 ID들
+    private Long savedUserId;
+    private Long savedSuperAdminUserId;
+    private Long savedTeam1Id;
+
     @BeforeEach
     void setUp() {
-        // given: 매치 생성
-        MatchCreateRequest request = new MatchCreateRequest(
-            "테스트 경기",
-            1L, 2L,
-            MatchType.리그,
-            "서울월드컵경기장",
-            LocalDate.of(2025, 6, 10),
-            LocalTime.of(14, 0),
-            LocalTime.of(16, 0),
-            45,
-            45,
-            "김주심",
-            "이부심",
-            "박부심",
-            "정대기"
-        );
+        // given: 테스트에 필요한 팀 생성
+        Team team1 = MockTeam.create("FC서울");
+        Team team2 = MockTeam.create("수원삼성");
+
+        team1 = teamRepository.save(team1);
+        team2 = teamRepository.save(team2);
+
+        savedTeam1Id = team1.getId();
+
+        // given: 테스트에 필요한 사용자 생성
+        User testUser = MockUser.createAdmin("테스트 관리자");
+
+        User superAdminUser = MockUser.createSuperAdmin("슈퍼관리자");
+
+        User savedUser = userRepository.save(testUser);
+        User savedSuperAdminUser = userRepository.save(superAdminUser);
+
+        // 저장된 사용자 ID를 클래스 필드에 저장
+        savedUserId = savedUser.getId();
+        savedSuperAdminUserId = savedSuperAdminUser.getId();
+
+        // given: 매치 생성 (저장된 팀의 실제 ID 사용)
+        MatchCreateRequest request = MockMatchCreateRequest.create(savedTeam1Id, team2.getId());
         matchId = matchCreateService.create(request);
 
-        // given: ADMIN 사용자로 토큰 발급
-        LoginUserDto loginUser = LoginUserDto.builder()
-            .id(1L)
-            .email("admin@example.com")
-            .role(Role.ADMIN)
-            .socialType(SocialType.GOOGLE)
-            .build();
+        // given: ADMIN 사용자로 토큰 발급 (저장된 사용자의 실제 ID 사용)
+        LoginUserDto loginUser = UserMapper.toLoginUserDto(savedUser);
         accessToken = jwtTokenProvider.createToken(loginUser, JwtTokenType.ACCESS);
-
     }
 
     private MatchUserCreateRequest createRequest(Long userId, Long teamId) {
@@ -93,15 +105,14 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
             teamId,
             MatchUserRole.START_PLAYER,
             "FW",
-            1
-        );
+            1);
     }
 
     @Test
     @DisplayName("매치 유저 생성 - 성공(Role : ADMIN)")
     void createMatchUser_Success_Admin() throws Exception {
         // given
-        MatchUserCreateRequest request = createRequest(1L,1L);
+        MatchUserCreateRequest request = createRequest(savedUserId, savedTeam1Id);
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
@@ -120,18 +131,18 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
     void createMatchUser_Success_Super_Admin() throws Exception {
         // given: 일반 Super Admin 권한 유저로 토큰 생성
         LoginUserDto user = LoginUserDto.builder()
-            .id(2L)
-            .email("user@example.com")
+            .id(savedSuperAdminUserId)
+            .email("superadmin@example.com")
             .role(Role.SUPER_ADMIN)
             .socialType(SocialType.GOOGLE)
             .build();
         String userToken = jwtTokenProvider.createToken(user, JwtTokenType.ACCESS);
 
-        MatchUserCreateRequest request = createRequest(user.getId(), 1L);
+        MatchUserCreateRequest request = createRequest(user.getId(), savedTeam1Id);
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
-            .header("Authorization", "Bearer " + accessToken)
+            .header("Authorization", "Bearer " + userToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)));
 
@@ -184,12 +195,11 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
             .andExpect(status().isUnauthorized()); // 401
     }
 
-
     @Test
     @DisplayName("매치 유저 생성 - 실패 (존재하지 않는 매치)")
     void createMatchUser_Fail_MatchNotFound() throws Exception {
         // given
-        MatchUserCreateRequest request = createRequest(1L,1L);
+        MatchUserCreateRequest request = createRequest(1L, 1L);
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", 999999L)
@@ -234,12 +244,11 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
     void createMatchUser_Success_TeamNull_AdminRole() throws Exception {
         // given: 팀 ID 없이 ADMIN 역할 요청
         MatchUserCreateRequest request = new MatchUserCreateRequest(
-            1L,
+            savedUserId,
             null,
             MatchUserRole.ADMIN,
             null,
-            null
-        );
+            null);
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
@@ -258,12 +267,11 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
     void createMatchUser_Success_TeamNull_ArchivesRole() throws Exception {
         // given: 팀 ID 없이 ARCHIVES 역할 요청
         MatchUserCreateRequest request = new MatchUserCreateRequest(
-            1L,
+            savedUserId,
             null,
             MatchUserRole.ARCHIVES,
             null,
-            null
-        );
+            null);
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
@@ -298,12 +306,11 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
             .andExpect(status().isNotFound());
     }
 
-
     @Test
     @DisplayName("매치 유저 생성 - 실패 (중복 등록)")
     void createMatchUser_Fail_Duplicate() throws Exception {
         // given: 이미 등록된 매치 유저가 있다고 가정하고 동일 요청 반복
-        MatchUserCreateRequest request = createRequest(1L,1L);
+        MatchUserCreateRequest request = createRequest(savedUserId, savedTeam1Id);
 
         // 최초 등록 (성공)
         mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
@@ -345,17 +352,17 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
 
     @Test
     @DisplayName("매치 유저 생성 - 실패 (유효하지 않은 MatchUser Role")
-    void createMatchUser_Fail_InvalidMatchUserRole() throws Exception{
+    void createMatchUser_Fail_InvalidMatchUserRole() throws Exception {
         // given
         String invalidJson = """
-        {
-            "userId": 1,
-            "teamId": 1,
-            "role": "INVALID_ROLE",
-            "matchPosition": "FW",
-            "matchGrid": 10
-        }
-        """;
+            {
+                "userId": 1,
+                "teamId": 1,
+                "role": "INVALID_ROLE",
+                "matchPosition": "FW",
+                "matchGrid": 10
+            }
+            """;
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
@@ -371,16 +378,16 @@ class MatchUserControllerCreateTest extends IntegrationTestSupport {
 
     @Test
     @DisplayName("매치 유저 생성 - 실패 (matchUser Role null일 경우")
-    void createMatchUser_Fail_MatchUserRoleISNull() throws Exception{
+    void createMatchUser_Fail_MatchUserRoleISNull() throws Exception {
         // given
         String invalidJson = """
-        {
-            "userId": 1,
-            "teamId": 1,
-            "matchPosition": "FW",
-            "matchGrid": 10
-        }
-        """;
+            {
+                "userId": 1,
+                "teamId": 1,
+                "matchPosition": "FW",
+                "matchGrid": 10
+            }
+            """;
 
         // when
         ResultActions actions = mockMvc.perform(post("/api/v1/matches/{matchId}/users", matchId)
