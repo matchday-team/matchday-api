@@ -33,6 +33,7 @@ jobs:
             #      - name: .env 파일 생성
             #        run: echo "${{ secrets.DOTENV }}" > .env
 
+            # set yaml
             - name: Set Yaml
               uses: cschleiden/replace-tokens@v1
               with:
