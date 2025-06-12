@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.matchday.matchdayserver.IntegrationTestSupport;
 import com.matchday.matchdayserver.auth.model.dto.enums.JwtTokenType;
 import com.matchday.matchdayserver.common.auth.JwtTokenProvider;
+import com.matchday.matchdayserver.team.model.entity.Team;
+import com.matchday.matchdayserver.team.repository.TeamRepository;
 import com.matchday.matchdayserver.user.model.dto.LoginUserDto;
 import com.matchday.matchdayserver.user.model.dto.request.UpdateUserRoleRequest;
 import com.matchday.matchdayserver.user.model.dto.request.UserCreateRequest;
@@ -35,6 +37,7 @@ class UserControllerTest extends IntegrationTestSupport {
     @Autowired ObjectMapper objectMapper;
     @Autowired UserRepository userRepository;
     @Autowired JwtTokenProvider jwtTokenProvider;
+    @Autowired TeamRepository teamRepository;
 
     private String adminToken;
     private String superAdminToken;
@@ -77,7 +80,15 @@ class UserControllerTest extends IntegrationTestSupport {
     @Test
     @DisplayName("팀 입단 - 성공 (JWT 필요)")
     void joinTeam_success() throws Exception {
-        UserJoinTeamRequest request = UserJoinTeamRequest.builder().teamId(1L).number(10).defaultPosition("FW").build();
+
+        Team team = teamRepository.save(Team.builder()
+            .bottomColor("#FFFFFF")
+            .stockingColor("#FFFFFF")
+            .teamColor("#FFFFFF")
+            .name("테스트팀")
+            .build());
+
+        UserJoinTeamRequest request = UserJoinTeamRequest.builder().teamId(team.getId()).number(10).defaultPosition("FW").build();
 
         mockMvc.perform(post("/api/v1/users/{userId}/teams", userId)
                 .header("Authorization", "Bearer " + userToken)
