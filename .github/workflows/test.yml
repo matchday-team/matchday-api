@@ -38,9 +38,10 @@ jobs:
               with:
                   tokenPrefix: "${"
                   tokenSuffix: "}"
-                  files: '["./src/main/resources/application.yml"]'
+                  files: '["./src/main/resources/application.yml", "./src/main/resources/application-test.yml"]'
               env:
                 SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+                SPRING_TEST_DATASOURCE_URL: ${{ secrets.SPRING_TEST_DATASOURCE_URL }}
                 SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
                 SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
                 BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
