@@ -7,6 +7,7 @@ public enum DefaultStatus implements StatusInterface {
     BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), 400, "Wrong Request"),
     FORBIDDEN(HttpStatus.FORBIDDEN.value(), 403, "Forbidden"),
     UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), 500, "Unknown Error"),
+    INVALID_PATH(HttpStatus.NOT_FOUND.value(), 404, "Invalid Path"),
     ;
 
     private final int httpStatusCode;
