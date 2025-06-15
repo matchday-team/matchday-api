@@ -1,6 +1,7 @@
     package com.matchday.matchdayserver.user.model.entity;
 
     import com.matchday.matchdayserver.matchevent.model.entity.MatchEvent;
+    import com.matchday.matchdayserver.matchuser.model.entity.MatchUser;
     import com.matchday.matchdayserver.user.model.enums.Role;
     import com.matchday.matchdayserver.user.model.enums.SocialType;
     import com.matchday.matchdayserver.userteam.model.entity.UserTeam;
@@ -42,6 +43,9 @@
 
         @Column(nullable = true)
         private String socialId;
+
+        @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "user")
+        private List<MatchUser> matchUsers;
 
         @Builder
         public User(String name, String email, String password, String profileImg,
