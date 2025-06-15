@@ -16,6 +16,9 @@ spring:
             hibernate:
                 dialect: org.hibernate.dialect.MySQLDialect
 
+    flyway:
+        enabled: false
+
     cloud:
         aws:
             s3:
