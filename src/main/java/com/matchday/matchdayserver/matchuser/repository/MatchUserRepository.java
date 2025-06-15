@@ -56,4 +56,11 @@ public interface MatchUserRepository extends JpaRepository<MatchUser, Long> {
     )
 """, nativeQuery = true)
     int countAppearances(@Param("teamId") Long teamId, @Param("userId") Long userId);
+
+    @Query("SELECT COUNT(u) FROM User u" +
+        " LEFT JOIN u.matchUsers mu" +
+        " WHERE (mu.match.id = :matchId" +
+        " AND mu.user.id = :userId AND mu.role = 'ARCHIVES')" +
+        " OR u.role = 'ADMIN'")
+    int getCountArchiver(@Param("matchId") Long matchId, @Param("userId") Long userId);
 }

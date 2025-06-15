@@ -10,9 +10,10 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MatchEventWebSocketController {
@@ -22,24 +23,23 @@ public class MatchEventWebSocketController {
 
     @MessageMapping("/match/{matchId}")
     public void recordEvent(@DestinationVariable Long matchId,
-        MatchEventUserRequest matchEventRequest) {
-
+                           MatchEventUserRequest matchEventRequest) {
+        
         matchEventSaveService.saveMatchEvent(matchId, matchEventRequest);
     }
 
     @MessageMapping("/match/{matchId}/teams/{teamId}")
-    public void recordTeamEvent(
-        @DestinationVariable Long matchId,
-        @DestinationVariable Long teamId,
-        MatchEventRequest matchEventRequest) {
-
+    public void recordTeamEvent(@DestinationVariable Long matchId,
+                               @DestinationVariable Long teamId,
+                               MatchEventRequest matchEventRequest) {
+        
         matchEventSaveService.saveMatchTeamEvent(matchId, teamId, matchEventRequest);
     }
 
     @MessageMapping("/match/{matchId}/cancel")
-    public void cancelEvent(
-        @DestinationVariable Long matchId,
-        MatchEventCancelRequest matchEventCancelRequest) {
+    public void cancelEvent(@DestinationVariable Long matchId,
+                           MatchEventCancelRequest matchEventCancelRequest) {
+        
         matchEventCancelService.cancelEvent(matchId, matchEventCancelRequest);
     }
 }

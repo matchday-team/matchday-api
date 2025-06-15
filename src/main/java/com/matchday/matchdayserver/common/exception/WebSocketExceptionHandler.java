@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.List;
 
+import com.matchday.matchdayserver.common.Constants;
 import com.matchday.matchdayserver.common.response.ApiExceptionResponse;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
@@ -37,21 +38,21 @@ public class WebSocketExceptionHandler {
    */
   @MessageExceptionHandler(SocketException.class)
   // user prefix는 자동으로 붙음, 전체 유저에게 전송하고 싶으면 SendTo()를 써야함
-  @SendToUser("/queue/errors")
+  @SendToUser(Constants.WEBSOCKET_ERROR_PATH)
   public ApiExceptionResponse<ApiExceptionInterface> handleSocketException(Message<?> message) throws IOException {
     removeSession(message);
     return ApiExceptionResponse.error(MatchStatus.SOCKET_ERROR);
   }
 
   @MessageExceptionHandler(ApiException.class)
-  @SendToUser("/queue/errors")
+  @SendToUser(Constants.WEBSOCKET_ERROR_PATH)
   public ApiExceptionResponse<ApiExceptionInterface> handleApiException(ApiException exception) {
     log.error("WebSocket API Exception: {}", exception.getMessage());
     return ApiExceptionResponse.error(exception.getStatus());
   }
 
   @MessageExceptionHandler(Exception.class)
-  @SendToUser("/queue/errors")
+  @SendToUser(Constants.WEBSOCKET_ERROR_PATH)
   public ApiExceptionResponse<ApiExceptionInterface> handleGeneralException(Exception exception) {
     log.error("WebSocket General Exception: {}", exception.getMessage());
     return ApiExceptionResponse.error(DefaultStatus.UNKNOWN_ERROR);
